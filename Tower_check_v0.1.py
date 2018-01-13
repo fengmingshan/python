@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jan  8 15:11:14 2018
-
+fms learn python test github
 @author: Administrator
 """
 import pandas as pd   #导入pandas库
 from pandas import DataFrame   #从pandas库导入数据框这种数据结构
-import numpy as np   #导入numpy库
+import numpy as np   #导入numpy库    
 
     
 def main():  
