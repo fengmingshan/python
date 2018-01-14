@@ -9,6 +9,9 @@ import pandas as pd   #导入pandas库
 from pandas import DataFrame   #从pandas库导入数据框这种数据结构
 import numpy as np   #导入numpy库
 
+"""
+DataFram的创建
+"""
 randn=np.random.randn(8,5) #使用numpy的randn函数构造一个8行5列的数组
 randn                 #显示数组randn
 
