@@ -84,10 +84,23 @@ for i, value in enumerate(['A', 'B', 'C']):   # 这里用enumerate函数把list�
 for x, y in [(1, 1), (2, 4), (3, 9)]:
     print(x, y)
   
-# 练习，请使用迭代查找一个list中最小和最大值，并返回一个tuple：    
-def findMinAndMax(L):
-    
+# 练习题，请使用迭代查找一个list中最小和最大值，并返回一个tuple： 
+# list1=[2,5,7,8,3,9]   
 
+def findMinAndMax(L):
+    if len(L)<1:
+        L_min=None
+        L_max=None
+    else: 
+        L_min=L[0]
+        L_max=L[0]
+        for i in L:
+            if i>L_max:
+                L_max=i
+            elif i<L_min:
+                L_min=i            
+    return (L_min,L_max)
+   
 # 可以使用下面的代码，对所写的代码进行测试。
 if findMinAndMax([]) != (None, None):
     print('测试失败!')
