@@ -1,2 +1,2 @@
 # python
-Start learn python
+# 自学python
