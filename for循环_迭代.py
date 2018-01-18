@@ -9,6 +9,9 @@ list这种数据类型虽然有下标，但很多其他数据类型是没有下�
 @author: Administrator
 """
 # list可以迭代：
+for y in [1,2,3,4,5]:
+    print y
+
 print('for x in iter([1, 2, 3, 4, 5]):')
 for x in iter([1, 2, 3, 4, 5]):
     print(x)

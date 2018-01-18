@@ -92,8 +92,8 @@ print ('nMissing values per row:')
 print(df.apply(num_missing, axis=1).head()) #axis=1 按行执行
 
 df.loc['求和']=df.apply(get_sum)  #在数据框最下面添加一行对数据框进行求和
-df
-df['行求和']=df.apply(get_sum,axis=1)  #在数据框最下面添加一行对数据框进行求和
+
+df['行求和']=df.apply(get_sum,axis=1)  #在数据框最后面添加一行对数据框的行进行求和
 df
 
 
