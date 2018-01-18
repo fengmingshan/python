@@ -73,6 +73,14 @@ df2.loc[:,'4G流量(Gb)']   #选取表1的基站名称列
 a=df1.iloc[:,0]   #选取表1的第一列，注意变量浏览器里的a，实际是两列，第一列是序号
 b=df1.iloc[0]   #选取表1的第一行，同样注意看变量浏览器b也有两行，第一行是行名称。
 
-
+'''
+excel表格相关操作#2  
+表格切片操作:
+'''
+import pandas as pd      #导入pandas库
+from pandas import DataFrame  #从pandas库导入DataFrame数据框
+df3=pd.read_excel(r'f:\test\铁塔产品价格表.xls',encoding='utf-8')    #导入一张excel97,2003表格赋值给df3
+df3.at[3,'铁塔+租赁机房+配套']
+df3.at[4,'挂高']
 
 
