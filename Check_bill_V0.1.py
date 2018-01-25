@@ -87,23 +87,23 @@ def main():
             (jifang_bill.at[df_price.loc[i,'产品类型'],df_price.loc[i,'机房类型']]*0.9/zhejiu[df_price.loc[i,'产品类型']])*1.02*1.15*10000/12
             df_price.loc[i,'计算配套价格']=df_price.loc[i,'产品单元数']*\
             (peitao_bill.at[df_price.loc[i,'产品类型'],df_price.loc[i,'机房类型']]*0.9/6)*1.02*1.15*10000/12
- 
+    
     df_wenti=pd.DataFrame(columns=['账期月份','站址名称','站址编码','误差项目','计算金额','铁塔出账金额','差值'])
-
     df_wenti_tmp=pd.DataFrame(columns=['账期月份','站址名称','站址编码','误差项目','计算金额','铁塔出账金额','差值'])
-   
-    for j in range(0,len(df_price),1):
-        if abs(df_price.iloc[j,7]-df_price.iloc[j,8])>0.01:
-            df_wenti_tmp.loc[j,'账期月份']=df_price.loc[j,'账期月份']
-            df_wenti_tmp.loc[j,'站址名称']=df_price.loc[j,'站址名称']
-            df_wenti_tmp.loc[j,'站址编码']=df_price.loc[j,'站址编码']
-            df_wenti_tmp.loc[j,'误差项目']=list(df_price.columns)[8]
-            df_wenti_tmp.loc[j,'计算金额']=df_price.iloc[j,7]
-            df_wenti_tmp.loc[j,'铁塔出账金额']=df_price.iloc[j,8]
-            df_wenti_tmp.loc[j,'差值']=(df_price.iloc[j,7]-df_price.iloc[j,8]) 
-        elif 
+    df_wenti_tmp['账期月份']=df_price['账期月份']
+    df_wenti_tmp['站址名称']=df_price['站址名称']
+    df_wenti_tmp['站址编码']=df_price['站址编码']
+    for j in range(7,15,2):
+        df_wenti_tmp['误差项目']=df_price.columns[j+1]
+        df_wenti_tmp['计算金额']=df_price.iloc[:,j]
+        df_wenti_tmp['铁塔出账金额']=df_price.iloc[:,j+1]
+        df_wenti_tmp['差值']=df_price.iloc[:,j]-df_price.iloc[:,j+1]
+        df_wenti_tmp=df_wenti_tmp[df_wenti_tmp['差值']>0.01]
+        df_wenti=pd.concat([df_wenti,df_wenti_tmp])
+        
     writer = pd.ExcelWriter(r'd:\2018年工作\2018年铁塔租费核对\核查结果\核查结果.xls') #输出到excel
-    df_price.to_excel(writer, '本月订单价格变化')
+    df_wenti.to_excel(writer, '本月价格异常')
+    df_price.to_excel(writer, '本月订单价格原始数据')
     writer.save()
 if __name__=='__main__':        #python最终封装，python的固定格式
     main()
