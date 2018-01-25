@@ -47,7 +47,7 @@ def main():
 
     # 创建一个空表df_price，用于存放比价格比对的数据
     df_price=pd.DataFrame(columns=['账期月份','运营商区县','站址名称','站址编码','产品类型','机房类型','产品单元数',
-    '计算铁塔价格','对应铁塔基准价格1','计算机房价格','对应机房基准价格1','计算配套价格','对应配套基准价格1','计算维护费','对应维护费1','订单属性','产权属性','原产权方',])
+    '计算铁塔价格','对应铁塔基准价格1','计算机房价格','对应机房基准价格1','计算配套价格','对应配套基准价格1','计算维护费','对应维护费1','订单属性','产权属性','原产权方'])
     df_price['账期月份']=df_new['账期月份']
     df_price['运营商区县']=df_new['运营商区县']
     df_price['站址名称']=df_new['站址名称']
@@ -69,24 +69,39 @@ def main():
     df_price[['产品单元数','计算铁塔价格', '对应铁塔基准价格1','计算机房价格','对应机房基准价格1','计算配套价格','对应配套基准价格1','计算维护费','对应维护费1']] \
     = df_price[['产品单元数','计算铁塔价格', '对应铁塔基准价格1','计算机房价格','对应机房基准价格1','计算配套价格','对应配套基准价格1','计算维护费','对应维护费1']]\
     .astype(float)      #将df_price中有产品价格列强制转换成float数据类型,如果不转换的话，
-    for j in range(0,df_price['账期月份'].count(),1):
-        df_price.loc[j,'计算维护费']=df_price.loc[j,'产品单元数']*\
-        weihu_bill.at[df_price.loc[j,'运营商区县'],df_price.loc[j,'机房类型']]*1.15/12
+    for i in range(0,df_price['账期月份'].count(),1):
+        df_price.loc[i,'计算维护费']=df_price.loc[i,'产品单元数']*\
+        weihu_bill.at[df_price.loc[i,'运营商区县'],df_price.loc[i,'机房类型']]*1.15/12
 
-        if df_new.loc[j,'产权属性']=='注入':
-            df_price.loc[j,'计算铁塔价格']=df_price.loc[j,'产品单元数']*\
-            (tieta_bill.at[df_new.loc[j,'产品类型'],df_new.loc[j,'对应实际最高天线挂高（米）1']]*0.7/10)*1.02*1.15*10000/12
-            df_price.loc[j,'计算机房价格']=df_price.loc[j,'产品单元数']*\
-            (jifang_bill.at[df_price.loc[j,'产品类型'],df_price.loc[j,'机房类型']]*0.7/zhejiu[df_price.loc[j,'产品类型']])*1.02*1.15*10000/12
-            df_price.loc[j,'计算配套价格']=df_price.loc[j,'产品单元数']*\
-            (peitao_bill.at[df_price.loc[j,'产品类型'],df_price.loc[j,'机房类型']]*0.7/6)*1.02*1.15*10000/12
-        elif df_new.loc[j,'产权属性']=='自建':
-            df_price.loc[j,'计算铁塔价格']=df_price.loc[j,'产品单元数']*\
-            (tieta_bill.at[df_new.loc[j,'产品类型'],df_new.loc[j,'对应实际最高天线挂高（米）1']]*0.9/10)*1.02*1.15*10000/12
-            df_price.loc[j,'计算机房价格']=df_price.loc[j,'产品单元数']*\
-            (jifang_bill.at[df_price.loc[j,'产品类型'],df_price.loc[j,'机房类型']]*0.9/zhejiu[df_price.loc[j,'产品类型']])*1.02*1.15*10000/12
-            df_price.loc[j,'计算配套价格']=df_price.loc[j,'产品单元数']*\
-            (peitao_bill.at[df_price.loc[j,'产品类型'],df_price.loc[j,'机房类型']]*0.9/6)*1.02*1.15*10000/12
+        if df_new.loc[i,'产权属性']=='注入':
+            df_price.loc[i,'计算铁塔价格']=df_price.loc[i,'产品单元数']*\
+            (tieta_bill.at[df_new.loc[i,'产品类型'],df_new.loc[i,'对应实际最高天线挂高（米）1']]*0.7/10)*1.02*1.15*10000/12
+            df_price.loc[i,'计算机房价格']=df_price.loc[i,'产品单元数']*\
+            (jifang_bill.at[df_price.loc[i,'产品类型'],df_price.loc[i,'机房类型']]*0.7/zhejiu[df_price.loc[i,'产品类型']])*1.02*1.15*10000/12
+            df_price.loc[i,'计算配套价格']=df_price.loc[i,'产品单元数']*\
+            (peitao_bill.at[df_price.loc[i,'产品类型'],df_price.loc[i,'机房类型']]*0.7/6)*1.02*1.15*10000/12
+        elif df_new.loc[i,'产权属性']=='自建':
+            df_price.loc[i,'计算铁塔价格']=df_price.loc[i,'产品单元数']*\
+            (tieta_bill.at[df_new.loc[i,'产品类型'],df_new.loc[i,'对应实际最高天线挂高（米）1']]*0.9/10)*1.02*1.15*10000/12
+            df_price.loc[i,'计算机房价格']=df_price.loc[i,'产品单元数']*\
+            (jifang_bill.at[df_price.loc[i,'产品类型'],df_price.loc[i,'机房类型']]*0.9/zhejiu[df_price.loc[i,'产品类型']])*1.02*1.15*10000/12
+            df_price.loc[i,'计算配套价格']=df_price.loc[i,'产品单元数']*\
+            (peitao_bill.at[df_price.loc[i,'产品类型'],df_price.loc[i,'机房类型']]*0.9/6)*1.02*1.15*10000/12
+ 
+    df_wenti=pd.DataFrame(columns=['账期月份','站址名称','站址编码','误差项目','计算金额','铁塔出账金额','差值'])
+
+    df_wenti_tmp=pd.DataFrame(columns=['账期月份','站址名称','站址编码','误差项目','计算金额','铁塔出账金额','差值'])
+   
+    for j in range(0,len(df_price),1):
+        if abs(df_price.iloc[j,7]-df_price.iloc[j,8])>0.01:
+            df_wenti_tmp.loc[j,'账期月份']=df_price.loc[j,'账期月份']
+            df_wenti_tmp.loc[j,'站址名称']=df_price.loc[j,'站址名称']
+            df_wenti_tmp.loc[j,'站址编码']=df_price.loc[j,'站址编码']
+            df_wenti_tmp.loc[j,'误差项目']=list(df_price.columns)[8]
+            df_wenti_tmp.loc[j,'计算金额']=df_price.iloc[j,7]
+            df_wenti_tmp.loc[j,'铁塔出账金额']=df_price.iloc[j,8]
+            df_wenti_tmp.loc[j,'差值']=(df_price.iloc[j,7]-df_price.iloc[j,8]) 
+        elif 
     writer = pd.ExcelWriter(r'd:\2018年工作\2018年铁塔租费核对\核查结果\核查结果.xls') #输出到excel
     df_price.to_excel(writer, '本月订单价格变化')
     writer.save()
