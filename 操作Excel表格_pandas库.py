@@ -94,6 +94,14 @@ e=df6.iat[0,0]  #第1行第1列十字切片，得到第一个县名’富源县�
 f=df6.iat[1,1]  #第2行第2列十字切片，得到的是麒麟区,自建砖混机房的价格。
 g=df6.iat[3,2]  #第4行第3列十字切片，得到的是会泽县,自建框架机房的价格。
 
+'''
+excel表格相关操作#3 
+在表格中插入列:
+'''
+col_name = df.columns.tolist()  #获取df的列名，转换为list，赋值给col_name
+col_name.insert(col_name.index('D'),'B')   # 在 col_name的‘B’ 列前面插入'D'
+df.reindex(columns=col_name)  #重排df列的顺序 
+
 
 
 

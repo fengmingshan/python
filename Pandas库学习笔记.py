@@ -47,6 +47,13 @@ df.rename(columns={'A':'a', 'B':'b', 'C':'c','D':'d','E':'e'}, inplace = True)
 #好处是可以随意改个数：
 df.rename(columns={'A':'a', 'C':'c'}, inplace = True)
 
+"""
+在表格中插入列
+"""
+
+col_name = df.columns.tolist()  #获取df的列名，转换为list，赋值给col_name
+col_name.insert(col_name.index('D'),'B')   # 在 col_name的‘B’ 列前面插入'D'
+df.reindex(columns=col_name)  #重排df列的顺序 
 
 
 """

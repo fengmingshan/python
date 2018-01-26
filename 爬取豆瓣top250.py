@@ -15,7 +15,7 @@ def get_one_page(url):        #定义爬取一个页面的函数
     try:                      #尝试打开页面
         response = requests.get(url)
         if response.status_code==200:
-                return response.text  #如果页面打开成功则返回所打开网页的内容
+            return response.text  #如果页面打开成功则返回所打开网页的内容
         return None                   #如果页面打开不成功则返回“None”
     except  RequestException :        #如果发生错误或异常则返回“None”
         return None
@@ -29,9 +29,9 @@ def prase_one_page(html):      #定义解析一个页面的程序
         img=item.select('img')[0]['src']                              #获取影片图片
         title=item.select('.title')[0].text.replace('\xa0','')        #获取影片名称
         titleAll=title
-        #if len(item.select('.title'))>1:                             #获取影片别名          
-            #title1=item.select('.title')[1].text.replace('\xa0','')  #因为影片别名中有日文和韩文影响输出，所以不使用
-            #titleAll+=title1
+        if len(item.select('.title'))>1:                             #获取影片别名          
+            title1=item.select('.title')[1].text.replace('\xa0','')  #因为影片别名中有日文和韩文影响输出，所以不使用
+            titleAll+=title1
         titleother=item.select('.other')[0].text.replace('\xa0','')  #获取影片其他名称
         titleAll+=titleother                                       #获取影片名称和其他名称
         actor =item.select('p')[0].text.replace(' ','')            #获取影片信息
@@ -43,8 +43,8 @@ def prase_one_page(html):      #定义解析一个页面的程序
         releasecountry=otherinfosplited[1]                         #从分隔影片其他信息中获得国家
         typename=otherinfosplited[2]                               #获取影片类型
         score=item.select('.rating_num')[0].text                   #获取影片评分
-        quote=item.select('.quote')[0].text.replace('\n','')       #获取影片经典台词
-        dic={"em":em,"a":a,"img":img,"title":titleAll,"actor":actors,"releasetime":releasetime,"releasecountry":releasecountry,"typename":typename,"score":score,"quote":quote}
+        #quote=item.select('.quote')[0].text.replace('\n','')       #获取影片经典台词
+        dic={"em":em,"a":a,"img":img,"title":titleAll,"actor":actors,"releasetime":releasetime,"releasecountry":releasecountry,"typename":typename,"score":score}
         moivelist.append(dic)
     return moivelist
 
