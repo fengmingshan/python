@@ -5,6 +5,10 @@ Created on Thu Jan 25 15:23:45 2018
 @author: Administrator
 """
 import pandas as pd   #导入pandas库
+from datetime import datetime #导入时间格式datetime
+from datetime import date #导入时间格式date
+from datetime import timedelta #导入时间格式date
+
 
 fadian=r'd:\2018年工作\2018年铁塔发电费用核对\fadian_2017-11.xls'
 jieguo=r'd:\2018年工作\2018年铁塔发电费用核对\计算结果\本月发单清单.xls'
@@ -38,12 +42,18 @@ def main():
     tmp=df_fadian['共享系数']   #使用tmp变流量取出'共享系数'一列
     df_fadian.drop(labels=['共享系数'], axis=1,inplace = True)  #原表中删除'共享系数'一列
     df_fadian.insert(45,'共享系数',tmp)     #将‘共享系数’列插回到原表第46列
-   
+    df_fadian.fillna('0',inplace = True)
+    df_fadian['发电日期']=df_fadian['发电日期'].astype(date)
+    df_fadian[['市电停电时间','系统发电开始时间','系统发电结束时间','铁塔审核发电开始时间','铁塔审核发电结束时间']]=\
+    df_fadian[['市电停电时间','系统发电开始时间','系统发电结束时间','铁塔审核发电开始时间','铁塔审核发电结束时间']].astype(datetime)
+
+    for i in range(0,len(df_fadian),1):
+        if df_fadian[i,'市电停电时间']=Null:
+            df_fadian['剔除蓄电池保障3小时的时长']=df_fadian['铁塔审核发电结束时间']-df_fadian['铁塔审核发电开始时间']
+        elif :
+            df_fadian['剔除蓄电池保障3小时的时长']=df_fadian['铁塔审核发电结束时间']-df_fadian['市电停电时间']
     
-    
-    
-    
-    sheet=df_fadian.iloc[1,13][:-12]    #从发电记录表中第14列第1行取出发电月份2017-11，做为sheet名称
+    sheet=df_fadian.iloc[1,13][:-12]    #从发电表取第14列第1行发电月份的2017-11，做为输出excel的sheet名称
     write_xls(df_fadian,sheet)
 
 
