@@ -57,6 +57,7 @@ from sqlalchemy import Table, MetaData, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import mapper, sessionmaker
 
 engine=create_engine('mysql+pymysql://root:123456@localhost:3306/test?charset=utf8',echo=False)
+Base = declarative_base()   #生成ORM对象的基类
 
 #创建表
 metadata = MetaData()
@@ -80,17 +81,36 @@ Base.metadata.create_all(engine)  #创建表
 
 DBSession=sessionmaker(bind=engine)     #将session实例和engine关联起来。
 session=DBSession()     #生成session实例
-session.commit()    #确认修改
-session.close()     #关闭会话
+session.commit()    #提交修改
+
 
 #往表格中添加元素
 DBSession=sessionmaker(bind=engine)     #将session实例和engine关联起来。
 session=DBSession()     #生成session实例
 user_obj = User(id=27,name="fgf",password="123456")  # 生成你要创建的数据对象
-
 session.add(user_obj)   #在表格中添加元素
 session.commit()    #确认修改
+
+#批量添加元素
+session.add_all([
+    User(id=31,name="alex1", password='123abc'),
+    User(id=32,name="alex2", password='456def'),
+    User(id=33,name="alex3", password='789hij'),
+])
+session.commit()    #提交修改
 session.close()     #关闭会话
+
+#删除表格中的元素
+session.query(User).filter(User.id > 30).delete()
+session.commit()
+
+#修改表格中的元素
+session.query(User).filter(User.id==30).update({"name" : "099"})    #修改id=30的记录，name=099
+session.query(User).filter(User.id==30).update({"name" : "wyb"})    #修改id=30的记录，name=wyb
+session.query(User).filter(User.id==30).update({User.name: User.name + "099"}, synchronize_session=False)   #名字后面加099
+session.query(User).filter(User.id==1).update({"id": User.id + 1}, synchronize_session="evaluate")  #id比原来+1
+
+session.commit()
 
 
 '''
@@ -107,12 +127,10 @@ user_obj = User(id=1,name="ztx",password="z444444")  # 生成你要创建的数�
 user_obj1 = User(id=10,name="gqy",password="x111111")  # 生成你要创建的数据对象
 user_obj2 = User(id=30,name="jyg",password="j222222")  # 生成你要创建的数据对象
 user_obj3 = User(id=20,name="syl",password="s333333")  # 生成你要创建的数据对象
-
 session.add(user_obj)   #在表格中添加元素
 session.add(user_obj1)   #在表格中添加元素
 session.add(user_obj2)   #在表格中添加元素
 session.add(user_obj3)   #在表格中添加元素
-
 session.commit()    #确认修改
 
 my_user = session.query(User).filter_by().all() #查询全部，.all()就是返回所有记录
@@ -148,6 +166,54 @@ print(my_user)
 
 #多条件查询 and_ 和 or_
 from sqlalchemy import and_, or_   #首先要导入and和or函数
-ret = session.query(Users).filter(and_(Users.id > 3, Users.name == 'eric')).all()
+
+my_user = session.query(User).filter(and_(User.id > 10, User.name == 'jyg')).all()
+print(my_user) 
+
+my_user = session.query(User).filter(or_(User.id < 20, User.name == 'fms')).all()
+print(my_user) 
+
+my_user = session.query(User).filter(
+    or_(
+        User.id < 25,
+        and_(User.name == 'syl', User.id > 10),
+        User.password=='654321'
+    )).all()
+print(my_user) 
+
+# 通配符,字符串查询
+my_user1 = session.query(User).filter(User.name.like('s%')).all()
+my_user2 = session.query(User).filter(~User.name.like('%y%')).all()
+print(my_user1,'\n',my_user2) 
+
+# 切片
+my_user = session.query(User)[0:2]
+print(my_user) 
+
+my_user = session.query(User)[-2:]
+print(my_user) 
+
+# 排序
+my_user1 = session.query(User).order_by(User.id.desc()).all()  #User.id倒序
+my_user2 = session.query(User).order_by(User.name.desc(), User.id.asc()).all() #User.name倒序，并且User.id正序
+print(my_user1) 
+print(my_user2) 
+
+# 分组
+from sqlalchemy.sql import func
+my_user = session.query(
+            func.max(User.id),
+            func.sum(User.id),
+            func.min(User.id)).group_by(User.name).all()
+print(my_user)
+
+
+
+
+ret = session.query(
+    func.max(Users.id),
+    func.sum(Users.id),
+    func.min(Users.id)).group_by(Users.name).having(func.min(Users.id) >2).all()
+
 
 session.close()     #最后别忘了关闭会话
