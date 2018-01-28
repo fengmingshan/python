@@ -50,11 +50,14 @@ print('type:', type(user))
 print('name:', user.name)
 
 '''
-#这里还有另外一种创建表的方法
-分别创建表和对象，通过mapper()函数建立关联
+ORM框架里面比较重要的知识点
+另外一种创建表的方法：分别创建表和对象，通过mapper()函数建立关联。
+划重点，这种方法简单易用，是经常用到的，需要重点掌握
 '''
+from sqlalchemy import create_engine
 from sqlalchemy import Table, MetaData, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import mapper, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 engine=create_engine('mysql+pymysql://root:123456@localhost:3306/test?charset=utf8',echo=False)
 Base = declarative_base()   #生成ORM对象的基类
@@ -79,19 +82,18 @@ class User(object):     #定义ORM对象User
 mapper(User, user)  #对象User 和 表格user关联起来
 Base.metadata.create_all(engine)  #创建表
 
+'''
+操作表格的记录
+'''
+#添加单个记录
 DBSession=sessionmaker(bind=engine)     #将session实例和engine关联起来。
 session=DBSession()     #生成session实例
-session.commit()    #提交修改
 
-
-#往表格中添加元素
-DBSession=sessionmaker(bind=engine)     #将session实例和engine关联起来。
-session=DBSession()     #生成session实例
 user_obj = User(id=27,name="fgf",password="123456")  # 生成你要创建的数据对象
 session.add(user_obj)   #在表格中添加元素
 session.commit()    #确认修改
 
-#批量添加元素
+#批量添加记录
 session.add_all([
     User(id=31,name="alex1", password='123abc'),
     User(id=32,name="alex2", password='456def'),
@@ -115,7 +117,20 @@ session.commit()
 
 '''
 查询表格中的元素
+ORM 指定查询返回数据格式 默认使用query查询返回的结果为一个对象
+方法一：#使用for循环遍历列result才能取出name
+result = session.query(User).all()
+print(result)      #直接print看不到数据，因为默认返回的是一个对象，需要用迭代法遍历才能print
+for i in result:
+    print(i.name)
+方法二：在定义表格的时候使用__repr__定义返回的内容和格式
+def __repr__(self):
+    output = "(User(id='%s',name='%s',password='%s')" %(self.id,self.name,self.password)
+    return output
+上面的代码定义了对象的输出格式：User(id=xx,name=xx,password=xx),这样输出的结果直接可读！
+划重点了：第二种方法方便直观，代码少，所以尽量使用第二种方法。
 '''
+
 session=DBSession()     #生成session实例
 
 my_user = session.query(User).filter_by(name="fgf").first()  # 带条件查询，filter_by就是where条件:name='gfg'。.first()表示返回第一条记录 
@@ -208,12 +223,151 @@ my_user = session.query(
 print(my_user)
 
 
+my_user = session.query(
+    func.max(User.id),
+    func.sum(User.id),
+    func.min(User.id)).group_by(User.name).having(func.min(User.id)>10).all()
+print(my_user)
 
+#连接表_left_jion、right_jion,inner_jion
+#为了试验连接表，要先创建其他几个表
+from sqlalchemy import ForeignKey #一对多、多对多表需要用到外键，所以需要先导入外键
+# 一对多表
+class Favor(Base):
+    __tablename__ = 'favor'
+    nid = Column(Integer, primary_key=True)
+    caption = Column(String(50), default='red', unique=True)
 
-ret = session.query(
-    func.max(Users.id),
-    func.sum(Users.id),
-    func.min(Users.id)).group_by(Users.name).having(func.min(Users.id) >2).all()
+class Person(Base):
+    __tablename__ = 'person'
+    nid = Column(Integer, primary_key=True)
+    name = Column(String(32), index=True, nullable=True)
+    favor_id = Column(Integer, ForeignKey("favor.nid"))
 
+# 多对多表
+class ServerToGroup(Base):
+    __tablename__ = 'servertogroup'
+    nid = Column(Integer, primary_key=True, autoincrement=True)
+    server_id = Column(Integer, ForeignKey('server.id'))
+    group_id = Column(Integer, ForeignKey('group.id'))
+
+class Group(Base):
+    __tablename__ = 'group'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), unique=True, nullable=False)
+
+class Server(Base):
+    __tablename__ = 'server'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    hostname = Column(String(64), unique=True, nullable=False)
+    port = Column(Integer, default=22)
+    
+Base.metadata.create_all(engine)  #创建表    
+session.commit()    #确认修改 
+#连接表
+tab1 = session.query(User, Favor).filter(User.id == Favor.nid).all()
+tab2 = session.query(Person).join(Favor).all()
+tab3 = session.query(Person).join(Favor, isouter=True).all()
+
+#组合表 union
+q1 = session.query(User.name).filter(User.id > 20)
+q2 = session.query(Favor.caption).filter(Favor.nid <2)
+tab1 = q1.union(q2).all()
+print(tab1)
+
+q1 = session.query(User.name).filter(User.id < 10)
+q2 = session.query(Favor.caption).filter(Favor.nid < 2)
+tab2 = q1.union_all(q2).all()
+print(tab2)
 
 session.close()     #最后别忘了关闭会话
+
+'''
+ORM 一对多具体使用
+mysql表中一对多指的是表A中的数据和表B中的数据存在对应的映射关系，表A中的数据在表B中对应存在多个对应关系，
+如表A存放用户的角色 DBA，SA，表B中存放用户，表B通过外键关联表A，多个用户可以属于同一个角色
+设计两张表，user表和role表，user 表中存放用户，role表中存放用户角色，role表中角色对应user表中多个用户，
+user表中一个用户只对应role表中一个角色，中间通过外键约束
+'''
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import sessionmaker,relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy import create_engine
+
+engine=create_engine('mysql+pymysql://root:123456@localhost:3306/test?charset=utf8',echo=False)
+Base = declarative_base()   #生成ORM对象的基类
+
+class Role(Base):
+    __tablename__ = 'role'
+    __table_args__ = {"useexisting": True}  #如果已存在就直接使用
+    rid = Column(Integer, primary_key=True, autoincrement=True)    #主键，自增
+    role_name = Column(String(10))
+    def __repr__(self):
+        output = "Role(rid='%s',role_name='%s')" %(self.rid,self.role_name)
+        return output
+    
+class Userinfo(Base):
+    __tablename__ = 'userinfo'
+    __table_args__ = {"useexisting": True}      #如果已存在就直接使用
+    nid = Column(Integer,primary_key=True,autoincrement=True)
+    name = Column(String(10),nullable=False)
+    role = Column(Integer,ForeignKey('role.rid'))  #外键关联
+    group = relationship('Role',backref='uuu')    #建立relationship，Role为类名
+    def __repr__(self):
+        output = " Userinfo(nid='%s',name='%s',role='%s')" %(self.nid,self.name,self.role)
+        return output
+Base.metadata.create_all(engine)
+
+DBsession = sessionmaker(bind=engine)
+session = DBsession()
+
+session.add(Role(role_name='dba'))
+session.add(Role(role_name='sa'))
+session.add(Role(role_name='net'))
+
+session.add_all([   #注意因为这里的role被定义成外键，并与role.rid关联，所以如果role.rid没有的值在userinfo表中就会创建失败
+    Userinfo(name='fuzj',role='4'),
+    Userinfo(name='jie',role='6'),
+    Userinfo(name='张三',role='6'),
+    Userinfo(name='李四',role='4'),
+    Userinfo(name='王五',role='5'),
+])
+session.commit()
+
+#普通连表查询
+res = session.query(Userinfo,Role).join(Role).all()    #查询所有用户,及对应的role id
+print(res)
+
+res1 = session.query(Userinfo.name,Role.role_name).join(Role).all()  #查询所有用户名和角色,
+print(res1)
+
+res2 = session.query(Userinfo.name,Role.role_name).join(Role,isouter=True).filter(Role.role_name=='dba').all() #查询所有dba的用户
+print(res2)
+
+#使用relationship 添加影射关系进行查询
+#首先在Userinfo表中添加relationship影射关系
+class Userinfo(Base):
+    __tablename__ = 'userinfo'
+    nid = Column(Integer,primary_key=True,autoincrement=True)
+    name = Column(String(10),nullable=False)
+    role = Column(Integer,ForeignKey('role.rid'))
+    group = relationship("Role",backref='uuu')    #Role为类名
+#relationship 在user表中创建了新的字段，这个字段只用来存放user表中和role表中的对应关系，在数据库中并不实际存在
+#正向查询：
+res = session.query(Userinfo).all()  #查询所有的用户和角色
+for i in res:
+    print(i.name,i.group.role_name)    #此时的i.group 就是role表对应的关系
+    
+res1 = session.query(Userinfo).filter(Userinfo.name=='fuzj').first()  #查询fuzj用户和角色
+print(res1.name,res1.group.role_name)
+#正向查找： 先从user表中查到符合name的用户之后，此时结果中已经存在和role表中的对应关系，
+#group对象即role表，所以直接使用obj.group.role_name就可以取出对应的角色
+#反向查询：
+res = session.query(Role).filter(Role.role_name =='dba').first()   #查找dba组下的所有用户
+print(res.uuu)  
+for i in res.uuu:
+    print(i.name,res.role_name)
+#反向查找：relationship参数中backref='uuu'，会在role表中的每个字段中加入uuu，而uuu对应的就是本字段在user表中对应的所有用户，所以，obj.uuu.name会取出来用户名
+#所谓正向和反向查找是对于relationship关系映射所在的表而说，如果通过该表（user表）去查找对应的关系表（role表），就是正向查找.
+#反之通过对应的关系表（role表）去查找该表（user表）即为反向查找。而relationship往往会和ForeignKey共存在一个表中。
