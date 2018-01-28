@@ -2,12 +2,22 @@
 """
 Created on Sat Jan 27 09:29:43 2018
 MYSQL数据库连接操作
-连接数据库要使用到pandas和sqlalchemy两个库
+连接数据库要使用到pandas和sqlalchemy两个库。命令格式：
+MySQL-Python
+    mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>
+
+pymysql
+    mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
+
+MySQL-Connector
+    mysql+mysqlconnector://<user>:<password>@<host>[:<port>]/<dbname>
 @author: Administrator
 """
 import pandas as pd   
 from sqlalchemy import create_engine   #这里格式不一样，是因为我们只用用到create_engine这个函数，所以可以只导入一个模块，不用导入整个sqlalchemy库
 from sqlalchemy.orm import sessionmaker
+
+
 
 engine=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/话务周报?charset=utf8',echo=False)
 '''
@@ -35,7 +45,7 @@ df4=pd.read_sql('select SUM(`1X: 小区CS呼叫话务量(Erl)`) from 3g话务量
 #用连接方式打开数据库中的表格
 conn=engine.connect()   #连接数据库
 
-result1=conn.execute('select * from 3g话务量')     #选取表3g话务量
+result1=conn.execute('select * from 3g话务量')     #选取表3g话务量，使用connection方式访问数据库得到的不是表格而是一个result。需要通过迭代才能取出内容
 result2=conn.execute('select * from 小区登记对象 where 定时登记成功次数>300') #选取表小区登记对象
 #主语这里出来的不是
 for row1 in result1:
@@ -45,11 +55,17 @@ for row2 in result2:
 conn.close()
 
 #用session方式打开数据库中的表格
+#本质上session还是使用MYSQL命令来操作
 
-DBsession=sessionmaker(bind=engine) 
-session=DBsession()     #初始化数据库session
-result1=session.execute('select * from 3g话务量')
-result2=session.execute('select * from 小区登记对象 where 定时登记成功次数>200')
+engine1=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/test?charset=utf8',echo=False)
+DBSession=sessionmaker(bind=engine1) 
+session=DBSession()
+result1=session.execute('select * from 3g话务量')  #使用session方式访问数据库得到的不是表格而是一个result。需要通过迭代才能取出内容
+result2=session.execute('select * from 小区登记对象 where 定时登记成功次数=200')
+for row1 in result1:
+    print('BTS:', row1['BTS'])
+for row2 in result2:
+    print('次数:', row2['定时登记成功次数'])
+conn.close()
 
-dengji= session.query('小区登记对象').filter('小区登记对象'.'定时登记成功次数'=='').one()
 
