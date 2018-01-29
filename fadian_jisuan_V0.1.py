@@ -61,7 +61,7 @@ def main():
     for i in range(0,len(df_fadian),1):
         df_fadian.loc[i,'当月发电次数']=cishu[df_fadian.loc[i,'资源系统编码']]
         df_fadian.loc[i,'结算时长']=df_fadian.loc[i,'剔除蓄电池保障3小时的时长']-max(df_fadian.loc[i,'核减时长'],df_fadian.loc[i,'退服时长'])
-        df_fadian.loc[i,'共享系数']=
+        df_fadian.loc[i,'共享系数']=len(df_fadian.loc[i,'CRM'].split('+'))
         if df_fadian.loc[i,'资源系统编码']=df_fadian.loc[i+1,'资源系统编码']:
             if df_fadian.loc[i,'发电日期']=df_fadian.loc[i+1,'发电日期']:
                 df_fadian.loc[i,'结算次数']=0
@@ -72,7 +72,7 @@ def main():
         else:
             fadian_time=df_fadian.loc[i,'铁塔审核发电结束时间']-df_fadian.loc[i,'市电停电时间']-pd.Timedelta('0 days 3:0:00')
             df_fadian.loc[i,'剔除蓄电池保障3小时的时长']==round(fadian_time.total_seconds()/60)
-        
+    df_fadian['油费（不含税）']=df_fadian['结算时长'] /60*2.65 
     d2=df_fadian.iloc[1,12]
     sheet= d2.strftime('%Y-%m-%d %H:%M:%S')[:-12]   #从发电表取第14列第1行发电时间，格式化后，切片出月份：2017-11，做为输出excel的sheet名称
     write_xls(df_fadian,sheet)
