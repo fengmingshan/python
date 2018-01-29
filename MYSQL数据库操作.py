@@ -19,7 +19,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 
-engine=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/话务周报?charset=utf8',echo=False)
+engine=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/铁塔租费?charset=utf8',echo=False)
 '''
 这里的engine是一个对象，用来打开数据库，数据库的IP地址：218.63.75.42:3306 数据库名：话务周报 用户名：root 密码：123456。
 echo = True 是为了方便 控制台 logging 输出一些sql信息，默认是False
@@ -33,14 +33,17 @@ echo = True 是为了方便 控制台 logging 输出一些sql信息，默认是F
 
 
 #无连接方式：打开数据库中的表格，注意，这里小括号里面用的是MYSQL的语句，所以你在MYSQL学的语句统统都可以用了。可以实现很强大的取数操作
+sql_cmd='SELECT CONCAT(\'a_\',铁塔租费.站址编码) AS \'站址编码1\' FROM 铁塔租费'
+
 df1=pd.read_sql('select * from 3g话务量',engine)      #导入数据库话务周报中的表格： 3g话务量
 
-df2=pd.read_sql('select * from 小区登记对象',engine)      #导入数据库话务周报中的表格： 小区登记对象
+df2=pd.read_sql('select * from 小区登记对象 where 定时登记成功次数=346',engine)      #导入数据库话务周报中的表格： 小区登记对象
 
 df3=pd.read_sql('select * from 3g话务量周报',engine)      #导入数据库话务周报中的视图： 3g话务量周报，视图打开会很慢。因为还有复杂的查询运算
 
 df4=pd.read_sql('select SUM(`1X: 小区CS呼叫话务量(Erl)`) from 3g话务量 GROUP BY `cell`',engine)   #导入数据库话务周报中的表格： 3g话务量,带筛选条件
 
+df5=pd.read_sql(sql=sql_cmd,con=engine)
 
 #用连接方式打开数据库中的表格
 conn=engine.connect()   #连接数据库
@@ -50,13 +53,12 @@ result2=conn.execute('select * from 小区登记对象 where 定时登记成功�
 #主语这里出来的不是
 for row1 in result1:
     print('BTS:', row1['BTS'])
-for row2 in result2:
+for row2 in result
     print('次数:', row2['定时登记成功次数'])
 conn.close()
 
 #用session方式打开数据库中的表格
 #本质上session还是使用MYSQL命令来操作
-
 engine1=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/test?charset=utf8',echo=False)
 DBSession=sessionmaker(bind=engine1) 
 session=DBSession()
@@ -67,5 +69,16 @@ for row1 in result1:
 for row2 in result2:
     print('次数:', row2['定时登记成功次数'])
 conn.close()
+
+#写入到数据库
+df.to_sql(name='table', 
+      con=engine, 
+      if_exists='append', 
+      index=False,
+      dtype={'col1':sqlalchemy.types.INTEGER(),     #指定每一列的数据格式。
+             'col2':sqlalchemy.types.NVARCHAR(length=255),
+             'col_time':sqlalchemy.DateTime(),
+             'col_bool':sqlalchemy.types.Boolean
+      })
 
 
