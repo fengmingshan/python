@@ -39,7 +39,7 @@ for k in d.keys():
 
 # iter each value:
 print('iter value:', e)
-for v in d.values():
+for k in d.values():
     print('value:', v)
 
 # iter both key and value:

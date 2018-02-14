@@ -22,6 +22,10 @@ print ("第三个元素为 : ", list[2])
 list1[2] = 2001
 print ("更新后的第三个元素为 : ", list[2])
 
+#添加元素
+list1.append('obj')
+list1
+
 #删除元素
 list2 = ['Google', 'Runoob', 1997, 2000]
 print (list)
@@ -46,4 +50,10 @@ print(x[0][1])
 list4=[7,6,5,4,3,2,1]
 list4.sort()
 print(list1)
+
+#list切片
+list = ['x', 1, 'y', 2, 'z', 3]
+list[::2]
+list[1::2]
+
 

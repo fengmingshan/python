@@ -20,3 +20,49 @@ del dict2   #删除整个字典
 dict3 = {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
 dict3['school']= 'qujing'
 len(dict3)
+
+#字典的初始化
+d={}  
+s = [('Tom', 5), ('Jone', 2), ('Susan', 4), ('Tom', 4), ('Tom', 1)]  
+for i,j in s:  
+    d[i]=j  
+print(d)
+
+
+
+#字典的初始化
+k={}  
+s = [('Tom', 5), ('Jone', 2), ('Susan', 4), ('Tom', 4), ('Tom', 1)]  
+for i,j in s:  
+    if i not in k.keys():#注意不能写成 if not k[i],因为其返回值不是None,而是error  
+        l=[]  
+        l.append(j)  
+        k[i]=l  
+    else:  
+        k[i].append(j)  
+print(k)  
+
+
+#字典的初始化
+from collections import defaultdict  
+d=defaultdict(list)  
+s = [('Tom', 5), ('Jone', 2), ('Susan', 4), ('Tom', 4), ('Tom', 1)]  
+for i,j in s:  
+    d[i].append(j)  
+print(list(d.items()))  
+
+from collections import defaultdict  
+d=defaultdict(set)  
+s = [('Tom', 5), ('Jone', 2), ('Susan', 4), ('Tom', 4), ('Tom', 1)]  
+for i,j in s:  
+    d[i].add(j)  
+print(list(d.items()))  
+
+#字典的操作获取所有key
+info = dict(name='cold', blog='linuxzen.com')
+info.keys()
+
+#获取key,value并循环
+info = dict(name='cold', blog='linuxzen.com')
+for key, value in info.items():
+    print key, ':',  value
