@@ -24,10 +24,39 @@ len(dict3)
 #字典的初始化
 d={}  
 s = [('Tom', 5), ('Jone', 2), ('Susan', 4), ('Tom', 4), ('Tom', 1)]  
+
 for i,j in s:  
     d[i]=j  
 print(d)
+for i in d.keys():
+    print(i)  
 
+#字典的迭代
+# dict没有序号但也可以迭代：
+d = {'a': 1, 'b': 2, 'c': 3}
+for key in d:
+    print(key)
+
+# dict根据三种值进行迭代：
+e = {'a': 1, 'b': 2, 'c': 3}
+# iter each key:
+print('iter key:', e)
+for k in d.keys():
+    print('key:', k)
+
+# iter each value:
+print('iter value:', e)
+for k in d.values():
+    print('value:', v)
+
+# iter both key and value:
+print('iter item:', e)
+for k, v in d.items():
+    print('item:', k, v)
+
+# 默认情况下，dict迭代的是key。因为dict是无序的，所以，两次迭代出的结果顺序很可能不一样。
+# 如果要迭代value，可以用for value in d.values()。
+# 如果要同时迭代key和value，可以用for k, v in d.items()。
 
 
 #字典的初始化

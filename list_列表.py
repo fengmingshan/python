@@ -42,9 +42,11 @@ print(a)
 #list嵌套
 a=['a','b','c']
 n=[1,2,3]
-x=[a,n]
+dic= {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
+x=[a,n,dic]
 print(x)
 print(x[0])
+print(x[2])
 print(x[0][1])
 
 list4=[7,6,5,4,3,2,1]

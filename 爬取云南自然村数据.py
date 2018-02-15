@@ -8,12 +8,19 @@ import requests            #导入requests库
 from bs4 import BeautifulSoup   #导入BeautifulSoup库  
 from requests.exceptions import RequestException     #导入requests库中的错误和异常字段   
 import json                      #导入json库  
-
+from selenium import webdriver 
+from selenium.webdriver.common.by import By #按照什么方式查找，By.ID,By.CSS_SELECTOR 
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait #等待页面加载某些元素
+import sys   
+sys.setrecursionlimit(1000000)   #
+                  
+browser=webdriver.PhantomJS()
 url=r'http://ynszxc.gov.cn' 
 url_city=r'http://ynszxc.gov.cn/S1/S176/'   #定义首页的地址
 
 def write_to_file(content):       #定义输出到文件的程序
-    with open(r'D:\test\qujing_village.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
+    with open(r'D:\test\曲靖自然村信息.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
         f.write(json.dumps(content,ensure_ascii=False)+'\n')      #打开写入文件编码方式：utf-8    
         f.close()
 
@@ -28,63 +35,102 @@ def get_one_page(url):        #定义爬取一个页面的函数
     except  RequestException :        #如果发生错误或异常则返回“None”
         return None
 
-html=get_one_page(url_city)
-soup=BeautifulSoup(html,'lxml')
-content=soup.findAll("option") #找出所有的下拉菜单
-country_info={}
-country_tmp=[]
-for i in content:
-    country_tmp.append(((i.string.strip()),i.attrs['value']))   
-country_tmp=country_tmp[1:]
-country_info=dict(country_tmp)
-
-for i in country_info.values():
-    url_county=url+i
-    html=get_one_page(url_county)
+def get_town(url):
+    html=get_one_page(url)
     soup=BeautifulSoup(html,'lxml')
     content=soup.findAll('div',class_='rowthree')   #class=rowthree的div结构
     for item in content:
         town=item.findAll('a')
     town_info={}
+    town_name=[]
+    town_url=[]
     town_tmp=[]
-    for j in town:
-        town_tmp.append((j.string,j.attrs['href']))
-    town_info=dict(town_tmp)      #形成村庄名称和链接的字典
-    
+    for i in town:
+        town_tmp.append((i.string,i.attrs['href']))
+    town_info=dict(town_tmp)      #形成乡镇名称和链接的字典
     for j in list(town_info.keys()):
         if town_info[j] in ['#']:
-            del town_info[j]     #删除村庄信息字典中，值为#的无用项目    
+            del town_info[j]     #删除村庄信息字典中，值为#的无用项目 
+    return town_info
+
+def get_point(url):
+    html=get_one_page(url)
+    soup=BeautifulSoup(html,'lxml')
+    content=soup.find_all("option") #找出所有的下拉菜单
+    point_info={}
+    point_name=[]
+    point_url=[]
+    url_tmp=[]
+    point_tmp=[]
+    for item in content:   
+        point_name.append(item.text.strip()[3:])
+        url_tmp.append(item.attrs)
+    del point_name[0] #删除下拉菜单中的前两项无用信息
+    del url_tmp[0]
+    url_tmp[0]['value']=url[20:]  #因为option下拉菜单中行政村本身的url为，所以单独对行政村的url进行赋值
+    for i in range(0,len(url_tmp),1):
+        point_url.append(url_tmp[i]['value'])
+        point_tmp.append((point_name[i],point_url[i]))     
+    point_info=dict(point_tmp)      #形成乡镇名称和链接的字典
+    return point_info
+
+def get_introduce(url):
+    browser=webdriver.PhantomJS()
+    try:
+        browser.get(url)
+        browser.switch_to_frame('IframeText')
+        wait=WebDriverWait(browser,2)
+        wait.until(EC.presence_of_element_located((By.ID,'text')))
+        point=browser.find_element_by_id('text')
+        point_introduce=point.text 
+        return point_introduce 
+    finally:       
+        browser.quit()  
+
+html=get_one_page(url_city)
+soup=BeautifulSoup(html,'lxml')
+content=soup.findAll("option") #找出所有的下拉菜单
+country_info={}
+country_name=[]
+country_url=[]
+country_tmp=[]
+for i in content:
+    country_name.append(i.string.strip())
+    country_url.append(i.attrs['value'])
+del country_name[0]
+del country_url[0]
+
+for i in range(0,len(country_name),1):
+    country_tmp.append((country_name[i],country_url[i]))
+country_info=dict(country_tmp) #形成县城名称和链接的字典
+
+for i in country_info.keys(): #通过迭代依次打开县城，抓取乡镇信息
+    url_county=url+country_info[i]
+    town_info= get_town(url_county)  
     
-    for j in town_info.values(): #通过迭代依次打开乡镇，抓取村庄信息
-        url_town=url+j
-        html=get_one_page(url_town)
-        soup=BeautifulSoup(html,'lxml')
-        content=soup.findAll('div',class_='rowthree')   #class=rowthree的div结构  
-        for item in content:
-            village=item.findAll('a')
-        village_info={}
-        village_tmp=[]
-        for k in village:
-            village_tmp.append((k.string,k.attrs['href']))
-        village_info=dict(village_tmp)     #形成村庄名称和链接的字典
-        
-        for k in list(village_info.keys()):
-            if village_info[k] in ['#']:
-                del village_info[k]     #删除村庄信息字典中，值为#的无用项目    
+    for j in town_info.keys(): #通过迭代依次打开乡镇，抓取村庄信息
+        url_town=url+town_info[j]
+        village_info=get_town(url_town)     #因为行政村的页面格式与乡镇town一样，所以直接用get_town
                 
-        for k in village_info.values(): #通过迭代依次打开乡镇，抓取村庄信息
-            url_village=url+k
-            html=get_one_page(url_village)
-            soup=BeautifulSoup(html,'lxml')
-            content=soup.findAll("option")   #class=rowthree的div结构  
-            point_info={}
-            point_tmp=[]
-            for item in content:
-                point_tmp.append((item.string,iteml.attrs['value']))
-            point_info=dict(village_tmp)       #形成村庄名称和链接的字典
+        for k in village_info.keys(): #通过迭代依次打开行政村，抓取自然信息
+            url_village=url+village_info[k]
+            point_info=get_point(url_village)
             
-        
-        
+            for l in point_info.keys():
+                url_point=url+l
+                point_introduce=get_introduce(url_point)
+                dic={"city":'曲靖',"country":i,"town":j,"village":k,"point":l,"introduce":point_introduce}
+                write_to_file(dic)  
+
+                
+                
+                
+            
+                
+            
+            
+            
+
                 
             
         
