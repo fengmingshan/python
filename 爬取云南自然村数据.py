@@ -54,35 +54,39 @@ def get_town(url):
     return town_info
 
 def get_point(url):
-    html=get_one_page(url)
-    soup=BeautifulSoup(html,'lxml')
-    content=soup.find_all("option") #找出所有的下拉菜单
     point_info={}
-    point_name=[]
-    point_url=[]
-    url_tmp=[]
-    point_tmp=[]
-    for item in content:   
-        point_name.append(item.text.strip()[3:])
-        url_tmp.append(item.attrs)
-    del point_name[0] #删除下拉菜单中的前两项无用信息
-    del url_tmp[0]
-    url_tmp[0]['value']=url[20:]  #因为option下拉菜单中行政村本身的url为，所以单独对行政村的url进行赋值
-    for i in range(0,len(url_tmp),1):
-        point_url.append(url_tmp[i]['value'])
-        point_tmp.append((point_name[i],point_url[i]))     
-    point_info=dict(point_tmp)      #形成乡镇名称和链接的字典
+    html=get_one_page(url)
+    if html:
+        soup=BeautifulSoup(html,'lxml')
+        content=soup.find_all("option") #找出所有的下拉菜单
+        point_name=[]
+        point_url=[]
+        url_tmp=[]
+        point_tmp=[]
+        for item in content:   
+            point_name.append(item.text.strip()[3:])
+            url_tmp.append(item.attrs)
+        if point_name:
+            del point_name[0] #删除下拉菜单中的前两项无用信息
+            del url_tmp[0]
+            url_tmp[0]['value']=url[20:]  #因为option下拉菜单中行政村本身的url为，所以单独对行政村的url进行赋值
+            for i in range(0,len(url_tmp),1):
+                point_url.append(url_tmp[i]['value'])
+                point_tmp.append((point_name[i],point_url[i]))     
+        point_info=dict(point_tmp)      #形成乡镇名称和链接的字典
     return point_info
 
 def get_introduce(url):
     browser=webdriver.PhantomJS()
+    point_introduce=''
     try:
         browser.get(url)
-        browser.switch_to_frame('IframeText')
-        wait=WebDriverWait(browser,2)
-        wait.until(EC.presence_of_element_located((By.ID,'text')))
-        point=browser.find_element_by_id('text')
-        point_introduce=point.text 
+        if browser.find_element_by_id('IframeText'):
+            browser.switch_to_frame('IframeText')
+            wait=WebDriverWait(browser,2)
+            wait.until(EC.presence_of_element_located((By.ID,'text')))
+            point=browser.find_element_by_id('text')
+            point_introduce=point.text 
         return point_introduce 
     finally:       
         browser.quit()  
@@ -117,7 +121,7 @@ for i in country_info.keys(): #通过迭代依次打开县城，抓取乡镇信�
             point_info=get_point(url_village)
             
             for l in point_info.keys():
-                url_point=url+l
+                url_point=url+point_info[l]
                 point_introduce=get_introduce(url_point)
                 dic={"city":'曲靖',"country":i,"town":j,"village":k,"point":l,"introduce":point_introduce}
                 write_to_file(dic)  
