@@ -18,10 +18,23 @@ sys.setrecursionlimit(1000000)   #
 browser=webdriver.PhantomJS()
 url=r'http://ynszxc.gov.cn' 
 url_city=r'http://ynszxc.gov.cn/S1/S176/'   #定义首页的地址
+F=open(r'D:\test\曲靖自然村信息_略.txt','r',encoding='utf-8')
+text_tmp=F.readlines()   #读取地名文件中的所有行，读完之后返回一个list
+text=[]                  #构造空list用于存储去换行符号后的新地名
+for line in text_tmp:
+    line=line.replace('\n','')   #替换自然村名最后的换行符号
+    text.append(line)            #构造自然村名信息的list，用于进行断点续爬 
+
+
 
 def write_to_file(content):       #定义输出到文件的程序
     with open(r'D:\test\曲靖自然村信息.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
-        f.write(json.dumps(content,ensure_ascii=False)+'\n')      #打开写入文件编码方式：utf-8    
+        f.write(json.dumps(content,ensure_ascii=False)+'\n')     
+        f.close()
+
+def write_to_file2(content2):       #定义输出到文件的程序
+    with open(r'D:\test\曲靖自然村信息_略.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
+        f.write(content2+'\n')      
         f.close()
 
 
@@ -81,15 +94,21 @@ def get_introduce(url):
     point_introduce=''
     try:
         browser.get(url)
-        if browser.find_element_by_id('IframeText'):
-            browser.switch_to_frame('IframeText')
-            wait=WebDriverWait(browser,2)
-            wait.until(EC.presence_of_element_located((By.ID,'text')))
-            point=browser.find_element_by_id('text')
-            point_introduce=point.text 
+        browser.implicitly_wait(3)  
+        #if browser.find_element_by_id('IframeText'):
+        browser.switch_to_frame('IframeText')
+        wait=WebDriverWait(browser,10)
+        wait.until(EC.presence_of_element_located((By.ID,'text')))
+        point=browser.find_element_by_id('text')
+        point_introduce=point.text 
+        browser.quit()
         return point_introduce 
+    #except Exception as e:
+        #browser.quit()
+        #return None
     finally:       
-        browser.quit()  
+        browser.quit()
+        
 
 html=get_one_page(url_city)
 soup=BeautifulSoup(html,'lxml')
@@ -121,44 +140,15 @@ for i in country_info.keys(): #通过迭代依次打开县城，抓取乡镇信�
             point_info=get_point(url_village)
             
             for l in point_info.keys():
-                url_point=url+point_info[l]
-                point_introduce=get_introduce(url_point)
-                dic={"city":'曲靖',"country":i,"town":j,"village":k,"point":l,"introduce":point_introduce}
-                write_to_file(dic)  
-
-                
-                
-                
-            
-                
-            
-            
-            
+                string= i+'_'+j+'_'+k+'_'+l     #构造当前爬取的自然村名
+                if string not in  text:     #断点判断，当前的自然村是否已经爬过了
+                    url_point=url+point_info[l]
+                    point_introduce=get_introduce(url_point)
+                    dic={"city":'曲靖',"country":i,"town":j,"village":k,"point":l,"introduce":point_introduce}
+                    str_point=i+'_'+j+'_'+k+'_'+l
+                    write_to_file(dic)  
+                    write_to_file2(str_point)
+                    
 
                 
             
-        
-
-
-
-        
-        
-        
-
-
-
-        
-        
-    
-
-
-
-            
-        
-        
-    
-        
-
-    
-
-
