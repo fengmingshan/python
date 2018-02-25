@@ -11,7 +11,20 @@ from datetime import date #导入时间格式date
 from datetime import timedelta #导入时间格式date
 import datetime
 
-engine=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/铁塔租费?charset=utf8',echo=False)
+import sqlalchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+
+engine_alm=create_engine('mysql+pymysql://root:123456@218.63.75.43:3306/3g告警?charset=utf8',echo=False)
+DBSession=sessionmaker(bind=engine) 
+session=DBSession()     #将DBSession()类实例化
+
+Base = declarative_base()   #生成ORM对象的基类 declarative_base()实例化，以调用
+
+
+engine=create_engine('mysql+pymysql://root:123456@218.63.75.43:3306/铁塔租费?charset=utf8',echo=False)
 fadian=r'd:\2018年工作\2018年铁塔发电费用核对\fadian_2017-11.xls'
 jieguo=r'd:\2018年工作\2018年铁塔发电费用核对\计算结果\本月发单清单.xls'
 zhanzhi=r'd:\2018年工作\2018年铁塔发电费用核对\zhanzhi.xls'

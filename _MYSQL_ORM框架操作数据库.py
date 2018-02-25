@@ -19,23 +19,24 @@ engine=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/test?charset
 DBSession=sessionmaker(bind=engine) 
 session=DBSession()
 
-Base = declarative_base()   #生成ORM对象的基类
-# 定义User对象:
-class User(Base):  #这里的User是ORM对象，user是数据库中的表格，通过定义对象将表user与对象User建立了关联
+Base = declarative_base()   #创建对象Base将ORM基类declarative_base()实例化
+# 定义User类:
+# User类属于子类，从Base对象继承了ORM基类declarative_base()的属性和方法
+class User(Base):  #这里的User是ORM对象，user是数据库中的表格，通过定义类将表user与类User建立了关联
     # 表的名字:
     __tablename__ = 'user'
     # 表的结构:
     id = Column(String(20), primary_key=True)
     name = Column(String(20))
     password = Column(String(64))
-Base.metadata.create_all(engine) #创建表结构 （这里是父类调子类）
+Base.metadata.create_all(engine) #调用父类Base类中的方法（函数）.create_all创建表结构 
 session.commit()    #确认修改
 session.close()     #关闭会话
 
 #刚才表格已经创建完成了，可以连上数据库看看，
 #下面可以在表格中插入记录了
 session=DBSession()     #创建session对象，因为刚才的session被关闭了
-new_user = User(id='5', name='Bob')     #创建新User对象:
+new_user = User(id='5', name='Bob')     #创建新对象new_user带有两个参数
 session.add(new_user)
 session.commit()
 session.close()
@@ -70,8 +71,8 @@ user = Table('user', metadata,     #定义SQL表格user,这里建立了两个表
             Column('password', String(12))
         )
 
-class User(object):     #定义ORM对象User
-    def __init__(self, id,name,password):
+class User(object):     #定义ORM类User
+    def __init__(self, id,name,password):   #定义User类初始化的方法和类的3个属性：id，name，password
         self.id = id
         self.name = name
         self.password = password
@@ -86,8 +87,8 @@ Base.metadata.create_all(engine)  #创建表
 操作表格的记录
 '''
 #添加单个记录
-DBSession=sessionmaker(bind=engine)     #将session实例和engine关联起来。
-session=DBSession()     #生成session实例
+DBSession=sessionmaker(bind=engine)     #创建将DBsession类和数据库engine关联起来。
+session=DBSession()     #创建session对象/实例
 
 user_obj = User(id=27,name="fgf",password="123456")  # 生成你要创建的数据对象
 session.add(user_obj)   #在表格中添加元素
@@ -131,7 +132,7 @@ def __repr__(self):
 划重点了：第二种方法方便直观，代码少，所以尽量使用第二种方法。
 '''
 
-session=DBSession()     #生成session实例
+session=DBSession()     #创建session对象/实例
 
 my_user = session.query(User).filter_by(name="fgf").first()  # 带条件查询，filter_by就是where条件:name='gfg'。.first()表示返回第一条记录 
 print(my_user)  #这里my_user是一个查询结果，被映射成一个对象。所以打印不出来。如果创建表格的时候定义了返回格式，那么返回的内容直接可读
@@ -354,6 +355,7 @@ class Userinfo(Base):
     role = Column(Integer,ForeignKey('role.rid'))
     group = relationship("Role",backref='uuu')    #Role为类名
 #relationship 在user表中创建了新的字段，这个字段只用来存放user表中和role表中的对应关系，在数据库中并不实际存在
+
 #正向查询：
 res = session.query(Userinfo).all()  #查询所有的用户和角色
 for i in res:
@@ -363,6 +365,7 @@ res1 = session.query(Userinfo).filter(Userinfo.name=='fuzj').first()  #查询fuz
 print(res1.name,res1.group.role_name)
 #正向查找： 先从user表中查到符合name的用户之后，此时结果中已经存在和role表中的对应关系，
 #group对象即role表，所以直接使用obj.group.role_name就可以取出对应的角色
+
 #反向查询：
 res = session.query(Role).filter(Role.role_name =='dba').first()   #查找dba组下的所有用户
 print(res.uuu)  
