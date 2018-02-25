@@ -103,11 +103,13 @@ def get_introduce(url):
         point_introduce=point.text 
         browser.quit()
         return point_introduce 
-    #except Exception as e:
-        #browser.quit()
-        #return None
-    finally:       
+    except Exception as e:
         browser.quit()
+        with open(r'D:\test\曲靖自然村信息.txt','a',encoding='utf-8') as f_result:
+        f_result.write(url+'\n')
+        return None
+    #finally:       
+        #browser.quit()
         
 
 html=get_one_page(url_city)

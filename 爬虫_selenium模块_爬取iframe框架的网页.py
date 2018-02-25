@@ -46,4 +46,9 @@ try:
 
 finally:
     browser.quit() 
+    
+
+#1. webDriver.Close() - Close the browser window that the driver has focus of //关闭当前焦点所在的窗口
+#2. webDriver.Quit() - Calls dispose //调用dispose方法
+#3. webDriver.Dispose() Closes all browser windows and safely ends the session 关闭所有窗口，并且安全关闭session
 
