@@ -66,7 +66,7 @@ print(isinstance('abc', int))
 print(isinstance(100, str))
 print(isinstance('abc', str))
 
-#python中类方法的多态
+#python类 方法的多态
 #再定义一个狗类：Dog
 class Dog(Animal):
    def __init__(self, name, age, sex):
@@ -94,6 +94,25 @@ D.call()
 #在调用基类的方法时，需要加上基类的类名前缀，且需要带上self参数变量。而在类中调用普通函数时并不需要带上self参数。
 #Python总是先在本类中查找调用的方法，找不到才去基类中找。
 
+
+#定义一个生成斐波那契序列的类
+class Fib:
+    def __init__(self):
+        self.prev = 0
+        self.curr = 1
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        value = self.curr
+        self.curr += self.prev
+        self.prev = value
+        return value
+    
+from itertools import islice
+f = Fib()
+list(islice(f, 0, 10))
 
 
 

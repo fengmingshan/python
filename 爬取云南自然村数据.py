@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By #按照什么方式查找，By.ID,By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait #等待页面加载某些元素
 import sys   
-sys.setrecursionlimit(1000000)   #
+sys.setrecursionlimit(1000000)   #修改系统最大递归数量
                   
 browser=webdriver.PhantomJS()
 url=r'http://ynszxc.gov.cn' 
