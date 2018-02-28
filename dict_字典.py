@@ -17,9 +17,13 @@ del dict2['age']
 dict.clear()  #清除键值对，保留字典
 del dict2   #删除整个字典
 
+
 dict3 = {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
 dict3['school']= 'qujing'
 len(dict3)
+dict3['Name']
+s='Name'
+dict3[s]
 
 #字典的初始化
 d={}  

@@ -98,7 +98,7 @@ print(df.apply(num_missing,axis=0)) #axis=0 按列执行
 print ('nMissing values per row:')
 print(df.apply(num_missing, axis=1).head()) #axis=1 按行执行
 
-df.loc['求和']=df.apply(get_sum)  #在数据框最下面添加一行对数据框进行求和
+df.loc['求和']=df.apply(get_sum)  #在数据框最后面面添加一行对数据框进行求和
 
 df['行求和']=df.apply(get_sum,axis=1)  #在数据框最后面添加一行对数据框的行进行求和
 df
@@ -144,3 +144,5 @@ df1.to_excel(writer, '本月变化订单')
 df2.to_excel(writer, '本月新增订单')
 writer.save()
 
+# 数据透视表
+df_sum=pd.pivot_table(df_data,values='退服时长(分钟)',index=['区县','基站等级'],aggfunc='sum')
