@@ -39,6 +39,8 @@ df_data['退服时长(分钟)']=df_data['退服时长(分钟)'].astype(float)
 df_data['关联小区数量']=df_data['关联小区数量'].astype(int)
 df_data['小区退服时长']=df_data['退服时长(分钟)']/df_data['关联小区数量']
 df_data['小区退服时长']=df_data['小区退服时长'].map(lambda x: round(x,2))
+df_data['小区退服时长']=df_data['小区退服时长'].astype(float)
+
 
 df_cell_list=pd.read_excel(data_path+'\\'+cell_num,sheetname='cell_list',dtype =str,encoding='utf-8')      #加入小区数量项 
 
@@ -53,13 +55,10 @@ df_cell_break=df_cell_list[df_cell_list['退服']==1]
 df_cell_break=df_cell_break.reset_index()
 df_cell_break=df_cell_break.drop('index',axis=1)
 
-for i in range(0,len(df_cell_break),1):   
-    break_time =[]      # 创建一个空list，用来装一个小区的退服时长
-    for j in range(0,len(df_data),1):
-        if df_cell_break.loc[i,'CELL_INDEX'] in df_data.loc[j,'关联小区标识'].split(','):
-             break_time.append(df_data.loc[j,'小区退服时长'])
-    df_cell_break.loc[i,'小区退服时长']=sum(break_time)   # 一个小区的退服时长求和 
-
+for i in range(0,len(df_cell_break),1):
+    df_tmp=df_data['小区退服时长'][df_data['关联小区标识'].str.contains(df_cell_break.loc[i,'CELL_INDEX'])]
+    df_cell_break.loc[i,'小区退服时长']=df_tmp.sum()
+             
 df_tmp=df_cell_break[['区县','小区退服时长']][(df_cell_break['小区等级']=='A')|(df_cell_break['小区等级']=='B')]
 df_sum_AB=df_tmp.groupby(by='区县',as_index=False).sum()
 df_tmp=df_cell_break[['区县','小区退服时长']][(df_cell_break['小区等级']=='C')|(df_cell_break['小区等级']=='D')]
@@ -68,7 +67,7 @@ df_sum=pd.merge(df_sum_AB,df_sum_CD,how='left',on='区县')
 df_sum=df_sum.rename(columns={'小区退服时长_x':'A/B类平均断站时长','小区退服时长_y':'C/D类平均断站时长'})
 
 df_cell_num=pd.read_excel(data_path+'\\'+cell_num,sheetname='cell_num',dtype =str,encoding='utf-8')      #加入小区数量项 
-df_sum=pd.merge(df_sum,df_cell_num,how='left',on='区县')
+df_sum=pd.merge(df_cell_num,df_sum,how='left',on='区县')
 df_sum['小区数量']=df_sum['小区数量'].astype(int)
 df_sum['A/B类小区数量']=df_sum['A/B类小区数量'].astype(int)
 df_sum['C/D类小区数量']=df_sum['C/D类小区数量'].astype(int)
