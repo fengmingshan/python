@@ -26,14 +26,18 @@ df_data['所属eNBID名称']=df_data['所属eNBID名称'].map(lambda x: x.replac
 for i in range(0,len(df_data),1):   
     df_data.loc[i,'CELL_ID']=df_data.loc[i,'小区名称'].split('_')[1]  # 将基站名称切片得到CELL_ID
     df_data.loc[i,'CELL_INDEX']=df_data.loc[i,'所属eNBID']+'_'+df_data.loc[i,'CELL_ID']# 将基站名称切片得到CELL_ID
-    if df_data.loc[i,'小区等级']=='':
+    if df_data.loc[i,'小区等级']=='nan':
         df_data.loc[i,'小区等级']='C'
+
+
     
 df_data=df_data.rename(columns={'区/市/县/旗':'区县'})
 df_data['区县']=df_data['区县'].map(lambda x: x[:-1])
 df_data=df_data[(df_data['CELL_ID'] != '81')&(df_data['CELL_ID']!= '82')&(df_data['CELL_ID']!= '83')
 &(df_data['CELL_ID']!='209')&(df_data['CELL_ID']!='210')&(df_data['CELL_ID']!='211')
 &(df_data['CELL_ID']!='212')&(df_data['CELL_ID']!='213')&(df_data['CELL_ID']!='214')] 
+df_data=df_data.reset_index()
+df_data=df_data.drop('index',axis=1)
 
 
 df_cell_list=df_data[['区县','CELL_INDEX','所属eNBID','CELL_ID','小区名称','小区等级']]

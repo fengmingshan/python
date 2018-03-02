@@ -31,49 +31,43 @@ df_data['告警对象名称']=df_data['告警对象名称'].map(lambda x: x.repl
 df_data['告警对象名称']=df_data['告警对象名称'].map(lambda x: x.replace('调测_',''))
 df_data['告警对象名称']=df_data['告警对象名称'].map(lambda x: x.replace('整治_',''))
 
-df_data['退服时长(分钟)']=df_data['退服时长(分钟)'].astype(float)
-
-df_eric=pd.read_excel(data_path+'\\'+eric_info,dtype =str,encoding='utf-8') 
-df_eric=df_eric.set_index('SiteID')
-dict_eric=df_eric.to_dict()
-dict_eric=dict_eric['RRU中文名']
-df_data.loc[0,'关联小区标识']=='nan'
-
-
-for i in range(0,len(df_data),1):  
+for i in  range(0,len(df_data),1): 
     if df_data.loc[i,'关联小区标识']=='nan':
-        df_data.loc[i,'CELL_INDEX']=df_data.loc[i,'告警对象名称'].split('_')[0]+'_'+df_data.loc[i,'告警对象名称'].split('_')[0]  # 将基站名称切片得到基站等级
-    else: 
-        df_data.loc[i,'基站等级']=df_data.loc[i,'告警对象名称'].split('_')[2][1]   # 将基站名称切片得到基站等级
-    if df_data.loc[i,'告警对象名称'] in dict_eric.keys():
-        df_data.loc[i,'告警对象名称']=dict_eric[df_data.loc[i,'告警对象名称']]
-    if '麒麟' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='麒麟'
-    elif '沾益' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='沾益'
-    elif '马龙' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='马龙'
-    elif '陆良' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='陆良'
-    elif '师宗' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='师宗'
-    elif '罗平' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='罗平'
-    elif '宣威' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='宣威'
-    elif '会泽' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='会泽'
-    elif '富源' in df_data.loc[i,'告警对象名称']:
-        df_data.loc[i,'区县']='富源'
-df_tmp=df_data[(df_data['基站等级']=='A')|(df_data['基站等级']=='B')]
-df_sum_AB=df_tmp.groupby(by='区县',as_index=False).sum()
-df_tmp=df_data[(df_data['基站等级']=='C')|(df_data['基站等级']=='D')]
-df_sum_CD=df_tmp.groupby(by='区县',as_index=False).sum()
-df_sum_CD=df_sum_CD.drop(0)
-df_sum=pd.merge(df_sum_AB,df_sum_CD,how='left',on='区县')
-df_sum=df_sum.rename(columns={'退服时长(分钟)_x':'A/B类平均断站时长','退服时长(分钟)_y':'C/D类平均断站时长'})
+        df_data.loc[i,'关联小区标识']=df_data.loc[i,'告警对象名称'].split('_')[0]+'_'+df_data.loc[i,'告警对象名称'].split('_')[1]
+    df_data.loc[i,'关联小区数量']=len(df_data.loc[i,'关联小区标识'].split(','))
+df_data['退服时长(分钟)']=df_data['退服时长(分钟)'].astype(float)
+df_data['关联小区数量']=df_data['关联小区数量'].astype(int)
+df_data['小区退服时长']=df_data['退服时长(分钟)']/df_data['关联小区数量']
+df_data['小区退服时长']=df_data['小区退服时长'].map(lambda x: round(x,2))
 
-df_cell_num=pd.read_excel(data_path+'\\'+cell_num,dtype =str,encoding='utf-8')      #加入小区数量项 
+df_cell_list=pd.read_excel(data_path+'\\'+cell_num,sheetname='cell_list',dtype =str,encoding='utf-8')      #加入小区数量项 
+
+cell_break=()   # 新建一个元组用来统计所有发生退服的小区
+for i in range(0,len(df_data),1):
+    cell_break=cell_break + tuple(df_data.loc[i,'关联小区标识'].split(','))
+
+for i in range(0,len(df_cell_list),1):
+    if df_cell_list.loc[i,'CELL_INDEX'] in cell_break:
+        df_cell_list.loc[i,'退服']=1
+df_cell_break=df_cell_list[df_cell_list['退服']==1]
+df_cell_break=df_cell_break.reset_index()
+df_cell_break=df_cell_break.drop('index',axis=1)
+
+for i in range(0,len(df_cell_break),1):   
+    break_time =[]      # 创建一个空list，用来装一个小区的退服时长
+    for j in range(0,len(df_data),1):
+        if df_cell_break.loc[i,'CELL_INDEX'] in df_data.loc[j,'关联小区标识'].split(','):
+             break_time.append(df_data.loc[j,'小区退服时长'])
+    df_cell_break.loc[i,'小区退服时长']=sum(break_time)   # 一个小区的退服时长求和 
+
+df_tmp=df_cell_break[['区县','小区退服时长']][(df_cell_break['小区等级']=='A')|(df_cell_break['小区等级']=='B')]
+df_sum_AB=df_tmp.groupby(by='区县',as_index=False).sum()
+df_tmp=df_cell_break[['区县','小区退服时长']][(df_cell_break['小区等级']=='C')|(df_cell_break['小区等级']=='D')]
+df_sum_CD=df_tmp.groupby(by='区县',as_index=False).sum()
+df_sum=pd.merge(df_sum_AB,df_sum_CD,how='left',on='区县')
+df_sum=df_sum.rename(columns={'小区退服时长_x':'A/B类平均断站时长','小区退服时长_y':'C/D类平均断站时长'})
+
+df_cell_num=pd.read_excel(data_path+'\\'+cell_num,sheetname='cell_num',dtype =str,encoding='utf-8')      #加入小区数量项 
 df_sum=pd.merge(df_sum,df_cell_num,how='left',on='区县')
 df_sum['小区数量']=df_sum['小区数量'].astype(int)
 df_sum['A/B类小区数量']=df_sum['A/B类小区数量'].astype(int)
@@ -82,7 +76,8 @@ df_sum['C/D类小区数量']=df_sum['C/D类小区数量'].astype(int)
 for i in range(0,len(df_sum),1):
     df_sum.loc[i,'A/B类平均断站时长']= df_sum.loc[i,'A/B类平均断站时长']/df_sum.loc[i,'A/B类小区数量']
     df_sum.loc[i,'C/D类平均断站时长']= df_sum.loc[i,'C/D类平均断站时长']/df_sum.loc[i,'C/D类小区数量']
-df_sum=df_sum.sort_values(by='A/B类平均断站时长',ascending=True) # 根据退服时长升序排列
+
+df_sum=df_sum.sort_values(by='A/B类平均断站时长',ascending=True) # 根据A/B类平均断站时长升序排列
 df_sum=df_sum.reset_index()
 del df_sum['index']
 for i in range(0,len(df_sum),1):
@@ -100,10 +95,10 @@ df_sum['A/B类断站排名']=df_sum['A/B类断站排名'].astype(int)
 df_sum['C/D类断站排名']=df_sum['C/D类断站排名'].astype(int)
 
 df_sum.loc[9,'区县']='全市'
-df_tmp=df_data[(df_data['基站等级']=='A')|(df_data['基站等级']=='B')]
-df_sum.loc[9,'A/B类平均断站时长']=df_tmp['退服时长(分钟)'].sum()/df_sum['A/B类小区数量'].sum()
-df_tmp=df_data[(df_data['基站等级']=='C')|(df_data['基站等级']=='D')]
-df_sum.loc[9,'C/D类平均断站时长']=df_tmp['退服时长(分钟)'].sum()/df_sum['C/D类小区数量'].sum()
+df_tmp=df_cell_break[['区县','小区退服时长']][(df_cell_break['小区等级']=='A')|(df_cell_break['小区等级']=='B')]
+df_sum.loc[9,'A/B类平均断站时长']=df_tmp['小区退服时长'].sum()/df_sum['A/B类小区数量'].sum()
+df_tmp=df_cell_break[['区县','小区退服时长']][(df_cell_break['小区等级']=='C')|(df_cell_break['小区等级']=='D')]
+df_sum.loc[9,'C/D类平均断站时长']=df_tmp['小区退服时长'].sum()/df_sum['C/D类小区数量'].sum()
 df_sum.loc[9,'小区数量']=df_sum['小区数量'].sum()
 df_sum.loc[9,'A/B类小区数量']=df_sum['A/B类小区数量'].sum()
 df_sum.loc[9,'C/D类小区数量']=df_sum['C/D类小区数量'].sum()
