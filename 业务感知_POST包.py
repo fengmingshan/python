@@ -24,24 +24,36 @@ text=F.readlines()
 a=text[-1].split('=',1)
 b=a[-1]
 b_url=parse.unquote(b)    #对b进行url解码
-c=json.dumps(b_url)
-tmp=c.split('"}',2)
-d=tmp[0].split(':\\"',3)
-d_tmp=d[3].encode('utf-8')
-enTest = base64.encodestring(d_tmp)
-enTest=str(enTest,'utf-8')
+#c=json.dumps(b_url)
+#tmp=c.split('"}',2)
+#d=tmp[0].split(':\\"',3)
+#d_tmp=d[3].encode('utf-8')
+c=b_url.split('data":"',2)
+d1=c[1].split('"},')
+d2=c[2].split('"},')
+file1=d1[0]
+
+d3=d2[0].split('"}')
+file2=d3[0]
+
+file1_li=file1.split('\\n')
+
+file1=bytes(file1,encoding='utf-8')
+file2=bytes(file2,encoding='utf-8')
+
+file1_en = base64.encodestring(file1)
+file2_en = base64.encodestring(file2)
+file1_str=file1_en
+file1_en=bytes().fromhex(file1_en)
+
+print(file1_en)
+print(file2_en)
 
 
-def gzip_uncompress(c_data):  
-    buf = StringIO(c_data)  
-    f = gzip.GzipFile(mode='wb',fileobj = buf)  
-    try:  
-        r_data = f.read()  
-    finally:  
-        f.close()  
-    return r_data  
+file1_unzip=gzip.decompress(file1_en)
+file2_unzip=gzip.decompress(file2_en)
 
-data=gzip_uncompress(enTest)
+
 
 
 

@@ -8,7 +8,6 @@ Created on Wed Feb 28 10:25:13 2018
 import os
 import sys
 import pandas as pd
-import numpy as np   #导入numpy库    
 #确定该程序是python脚本还是封装的exe文件
 eric_info=r'Eric_info.xls'
 cell_num=r'cell_num.xls'
