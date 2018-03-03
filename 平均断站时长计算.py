@@ -23,7 +23,6 @@ for filename in files:
         df_tmp=pd.read_excel(file,skiprows=1,dtype =str,encoding='utf-8') 
         df_data=df_data.append(df_tmp,ignore_index=True)        
 col_name = df_data.columns.tolist()  #获取df的列名，转换为list，赋值给col_name
-col_name.insert(col_name.index('统计时间'),'区县')   # 在 col_name的‘统计时间’ 列前面插入'区县'
 df_data=df_data.reindex(columns=col_name)  #重排df列的顺序     
 df_data.loc[:,'区县']=''
 df_data['告警对象名称']=df_data['告警对象名称'].map(lambda x: x.replace('GCTC',''))
@@ -71,6 +70,7 @@ df_sum=pd.merge(df_cell_num,df_sum,how='left',on='区县')
 df_sum['小区数量']=df_sum['小区数量'].astype(int)
 df_sum['A/B类小区数量']=df_sum['A/B类小区数量'].astype(int)
 df_sum['C/D类小区数量']=df_sum['C/D类小区数量'].astype(int)
+df_sum=df_sum.fillna(0)
 
 for i in range(0,len(df_sum),1):
     df_sum.loc[i,'A/B类平均断站时长']= df_sum.loc[i,'A/B类平均断站时长']/df_sum.loc[i,'A/B类小区数量']
@@ -107,6 +107,6 @@ df_sum.loc[9,'C/D类断站排名']='---------'
 df_sum=df_sum.set_index(['区县'])
 
 writer = pd.ExcelWriter(data_path+'\\'+'计算结果.xls') #输出到excel
-df_sum.to_excel(writer, '断站时长汇总表')
+df_sum.to_excel(writer,'断站时长')
 writer.save()
 

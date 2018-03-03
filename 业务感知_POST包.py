@@ -11,49 +11,51 @@ from urllib import request
 import base64
 import gzip
 from io import StringIO
-import zlib
-import demjson
+from io import BytesIO  
+  
+
+
 
 #File=os.listdir(r'D:\Packet')  #第一步取得文件夹里的所有文件名
-D=r'D:\Packet'
+file_path=r'D:\Packet'
+file_name='20180131-3.txt'
 
-f='20180131-3.txt'
-
-F= open(D+'\\'+f,'r',encoding='utf-8') 
-text=F.readlines()
-a=text[-1].split('=',1)
-b=a[-1]
-b_url=parse.unquote(b)    #对b进行url解码
-#c=json.dumps(b_url)
-#tmp=c.split('"}',2)
-#d=tmp[0].split(':\\"',3)
-#d_tmp=d[3].encode('utf-8')
-c=b_url.split('data":"',2)
-d1=c[1].split('"},')
-d2=c[2].split('"},')
-file1=d1[0]
-
-d3=d2[0].split('"}')
-file2=d3[0]
-
-file1_li=file1.split('\\n')
+file_content= open(file_path+'\\'+file_name,'r',encoding='utf-8') 
+text=file_content.readlines()
+text_tmp=text[-1].split('=',1)
+text_tmp1=text_tmp[-1]
+text_url_decode=parse.unquote(text_tmp1)    #对b进行url解码
+text_json_decode=json.loads(text_url_decode)
+file1=text_json_decode[0]['data']
+file2=text_json_decode[1]['data']
 
 file1=bytes(file1,encoding='utf-8')
 file2=bytes(file2,encoding='utf-8')
 
-file1_en = base64.encodestring(file1)
-file2_en = base64.encodestring(file2)
-file1_str=file1_en
-file1_en=bytes().fromhex(file1_en)
-
-print(file1_en)
-print(file2_en)
 
 
-file1_unzip=gzip.decompress(file1_en)
-file2_unzip=gzip.decompress(file2_en)
 
+file1_b64_decode = base64.b64decode(file1)
+file2_b64_decode = base64.b64decode(file2)
 
+file1_comp=file1_b64_decode[:-388]
+file2_comp=file1_b64_decode[:-388]
+
+def gzip_uncompress(c_data):  
+    '''定义gzip解压函数'''
+    buf =BytesIO(c_data)   # 通过IO模块的BytesIO函数将Bytes数据输入，这里也可以改成StringIO，根据你输入的数据决定
+    f = gzip.GzipFile(mode = 'rb', fileobj = buf)  
+    try:  
+        r_data = f.read()  
+    finally:  
+        f.close()  
+    return r_data  
+
+file1_uncompress=gzip_uncompress(file1_comp)
+file2_uncompress=gzip_uncompress(file2_comp)
+
+print(file1_uncompress.decode('utf-8'))
+print(file2_uncompress.decode('utf-8'))
 
 
 
