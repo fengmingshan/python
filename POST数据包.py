@@ -1,26 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb 27 18:59:50 2018
+Created on Sun Mar  4 18:32:08 2018
 
 @author: Administrator
 """
-import os
-import json
-from urllib import parse
-from urllib import request
-import base64
-import gzip
-from io import StringIO
-from io import BytesIO  
-  
-data_path=r'd:\Post_data'+'\\'
-sub_num='sub_num.xls'
-eob_file='eob_templet'
-bob_file='bob_templet'
 
-# 打开存储手机号码的文件
+import string
+import httplib
+import urllib2
 
-# 数据包header
+host = "www.mywbsite.fr/sport/multiplex.aspx"
+    params='"isLeftColumn":"false","liveID":"-1","userIpCountryCode":"FR","version":"null","languageCode":"fr","siteCode":"frfr","Quotation":"eu"'
+
 headers = { Host: www.mywbsite.fr,
 "Connection": "keep-alive",
 "Content-Length": 129,
@@ -34,16 +25,15 @@ headers = { Host: www.mywbsite.fr,
 "Accept-Language": "fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4",
 "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.3",
 "Cookie": "ASP.NET_SessionId=j1r1b2a2v2w245; GSFV=FirstVisit=;     GSRef=https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CHgQFjAA&url=https://www.mywbsite.fr/&ei=FZq_T4abNcak0QWZ0vnWCg&usg=AFQjCNHq90dwj5RiEfr1Pw; HelpRotatorCookie=HelpLayerWasSeen=0; NSC_GSPOUGS!TTM=ffffffff09f4f58455e445a4a423660; GS=Site=frfr; __utma=1.219229010.1337956889.1337956889.1337958824.2; __utmb=1.1.10.1337958824; __utmc=1; __utmz=1.1337956889.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)"
+
 }
 
-# post数据包
+url = "/Services/GetFromDataBaseVersionned"
 
-r = requests.post(url, data = data, headers = headers);
+# POST the request
+conn = httplib.HTTPConnection(host,port=443)
+conn.request("POST",url,params,headers)
+response = conn.getresponse()
 
-
-
-
-
-
-
-
+data = response.read()
+print data

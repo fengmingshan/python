@@ -29,7 +29,7 @@ pattern_img = re.compile(p_img) # 编译正则表达式
 img = re.findall(pattern_img,content) # 搜索整个网页内容
 
 # 爬取影片名称 和 别名，因为有的影片没有别名后期数据缺失不好处理，所以两个名字一起爬
-p_title=r'<span class="title">[\u4e00-\u9fa5]+</span>[\s\S]{1}s.+'
+p_title=r'<span class="title">[\u4e00-\u9fa5]+</span>[\s\S]+?.+'
 pattern_title = re.compile(p_title) # 编译正则表达式
 title = re.findall(pattern_title,content) # 搜索整个网页内容
 
@@ -38,20 +38,23 @@ p_titleother=r'<span class="other">.+</span>'
 pattern_titleother = re.compile(p_titleother) # 编译正则表达式
 titleother = re.findall(pattern_titleother,content) # 搜索整个网页内容
 
-actor =item.select('p')[0].text.replace(' ','')            #获取演员信息
-actorsplited=actor.split('\n')
-actors=actorsplited[1].replace('\xa0','')                  #获取影片导演演员信息
-otherinfos=actorsplited[2]                                 #获取影片其他信息
-otherinfosplited= otherinfos.replace('\xa0','').split('/') #分隔影片其他信息
-releasetime=otherinfosplited[0]                            #从分隔影片其他信息中获得发布时间
-releasecountry=otherinfosplited[1]                         #从分隔影片其他信息中获得国家
-typename=otherinfosplited[2]                               #获取影片类型
-score=item.select('.rating_num')[0].text                   #获取影片评分
-quote=item.select('.quote')[0].text.replace('\n','')       #获取影片经典台词
-dic={"em":em,"a":a,"img":img,"title":titleAll,"actor":actors,"releasetime":releasetime,"releasecountry":releasecountry,"typename":typename,"score":score,"quote":quote}
-moivelist.append(dic)
+
+#actor =item.select('p')[0].text.replace(' ','')            #获取演员信息
+#actorsplited=actor.split('\n')
+#actors=actorsplited[1].replace('\xa0','')                  #获取影片导演演员信息
+#otherinfos=actorsplited[2]                                 #获取影片其他信息
+#otherinfosplited= otherinfos.replace('\xa0','').split('/') #分隔影片其他信息
+#releasetime=otherinfosplited[0]                            #从分隔影片其他信息中获得发布时间
+#releasecountry=otherinfosplited[1]                         #从分隔影片其他信息中获得国家
+#typename=otherinfosplited[2]                               #获取影片类型
+#score=item.select('.rating_num')[0].text                   #获取影片评分
+#quote=item.select('.quote')[0].text.replace('\n','')       #获取影片经典台词
+
+for i in range(0,len(em),1):
+    dic={"em":em[i],"a":a[i],"img":img[i],"title":title[i],"titleother":titleother[i]}
+    moivelist.append(dic)
     
-with open(r'D:\python\movielist.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
+with open(r'D:\test\movielist.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
     for content in  moivelist:   
         f.write(json.dumps(content,ensure_ascii=False)+'\n')      #打开写入文件编码方式：utf-8    
     f.close()

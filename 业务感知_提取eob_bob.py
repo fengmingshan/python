@@ -44,24 +44,26 @@ def get_eob_bob(file):
     bob_b64_decode = base64.b64decode(bob)
     
     eob_comp=eob_b64_decode[:-388]
-    bob_comp=eob_b64_decode[:-388]
+    bob_comp=bob_b64_decode[:-388]
     
     eob_uncompress=gzip_uncompress(eob_comp)
     bob_uncompress=gzip_uncompress(bob_comp)
     return (eob_uncompress,bob_uncompress)
 
 def write_to_file(content,file_out):       #定义输出到文件的程序
-    with open(file_out,'a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8，'a'表示追加写入
-        f.write(content+'\n')      #打开写入文件编码方式：utf-8    
+    with open(file_out,'w',encoding='utf-8',newline='') as f:  #打开写入文件编码方式utf-8，'w'表示文件存在的话先删除，newline=''表示换行的时候不要加任何符号
+        f.write(content)      #打开写入文件编码方式：utf-8    
         f.close()
+
 
 for file_name in file_list:
     file=file_path  + file_name
     eob_file_out=out_path + file_name[:-4]+'_eob.txt'
     bob_file_out=out_path + file_name[:-4]+'_bob.txt'
     content=get_eob_bob(file)
+
     write_to_file(content[0].decode('utf-8'),eob_file_out)
-    write_to_file(content[1].decode('utf-8'),eob_file_out)
+    write_to_file(content[1].decode('utf-8'),bob_file_out)
     
     
 
