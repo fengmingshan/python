@@ -58,4 +58,16 @@ list = ['x', 1, 'y', 2, 'z', 3]
 list[::2]
 list[1::2]
 
+lis2=list(x+2 for x in lis1)
+
+# map和 lambda
+foo = [1, 2, 3, 4, 5]
+map(lambda x: x + 10, foo)
+map(lambda x: x*2, foo)
+list(map(lambda x: x + 10, foo))
+list(map(lambda x: x*2, foo))
+print(list(map(lambda x: x + 10, foo)))
+print(list(map(lambda x: x*2, foo)))
+
+
 

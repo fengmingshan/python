@@ -36,6 +36,7 @@ print('my home is %(meters)f meters away'%{'meters':21.35})     #再练习下浮
       
 ####还有一种更方便和易读的占位符运用 .format
 s1 = 'I like {0}'.format('python')   
+print(s1)
 s1  #这里的集合{0}就是占位符，可以有多个占位符，分别用0,1,2表示
 s2 = 'qujing is more than {0} years. {1} lives in here.'.format(2000, 'fms') 
 s2  #但是当有很多个占位符的时候，这样写可读性会差一点

@@ -17,8 +17,6 @@ import pandas as pd
 from sqlalchemy import create_engine   #这里格式不一样，是因为我们只用用到create_engine这个函数，所以可以只导入一个模块，不用导入整个sqlalchemy库
 from sqlalchemy.orm import sessionmaker
 
-
-
 engine=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/铁塔租费?charset=utf8',echo=False)
 '''
 这里的engine是一个对象，用来打开数据库，数据库的IP地址：218.63.75.42:3306 数据库名：话务周报 用户名：root 密码：123456。

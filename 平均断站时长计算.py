@@ -24,7 +24,6 @@ for filename in files:
         df_data=df_data.append(df_tmp,ignore_index=True)        
 col_name = df_data.columns.tolist()  #获取df的列名，转换为list，赋值给col_name
 df_data=df_data.reindex(columns=col_name)  #重排df列的顺序     
-df_data.loc[:,'区县']=''
 df_data['告警对象名称']=df_data['告警对象名称'].map(lambda x: x.replace('GCTC',''))
 df_data['告警对象名称']=df_data['告警对象名称'].map(lambda x: x.replace('调测-',''))
 df_data['告警对象名称']=df_data['告警对象名称'].map(lambda x: x.replace('调测_',''))
@@ -50,7 +49,7 @@ for i in range(0,len(df_data),1):
 for i in range(0,len(df_cell_list),1):
     if df_cell_list.loc[i,'CELL_INDEX'] in cell_break:
         df_cell_list.loc[i,'退服']=1
-df_cell_break=df_cell_list[df_cell_list['退服']==1]
+df_cell_break=df_cell_list[df_cell_list['退服']==1] #筛选出退费的小区
 df_cell_break=df_cell_break.reset_index()
 df_cell_break=df_cell_break.drop('index',axis=1)
 
@@ -108,5 +107,7 @@ df_sum=df_sum.set_index(['区县'])
 
 writer = pd.ExcelWriter(data_path+'\\'+'计算结果.xls') #输出到excel
 df_sum.to_excel(writer,'断站时长')
+df_cell_list.to_excel(writer,'小区等级')
+df_data.to_excel(writer,'断站明细')
 writer.save()
 

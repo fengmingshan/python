@@ -72,9 +72,9 @@ file = open(r'D:\test\file .txt','a',encoding='utf-8')     #新建一个供写�
 for i in File: #第一层循环，逐个迭代文件
     F= open(D+'\\'+i,'r',encoding='utf-8')    # F是个对象用来打开文件,'r'是读取 'utf-8'是解码方式，打开中文必须定义
     for line in F:  
-        file.write(line+'\n')
-    file.write('\n')    #这一句write的作用是每写完一个文件在末尾加个换行，不然两个文件之间是连在一起的，大家可以注释掉这句看看效果
-file.close()  #写完之后关闭文件。
+        F.write(line+'\n')
+    F.write('\n')    #这一句write的作用是每写完一个文件在末尾加个换行，不然两个文件之间是连在一起的，大家可以注释掉这句看看效果
+F.close()  #写完之后关闭文件。
 
 
 def write_to_file(content):       #定义输出到文件的程序

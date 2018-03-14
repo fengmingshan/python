@@ -16,6 +16,7 @@ file_path = r'D:\Packet'+'\\'
 out_path = r'D:\eob_bob'+'\\'
 file_name='20180110-1.txt'
 
+
 file=file_path  + file_name
 eob_file_out=out_path + file_name[:-4]+'_eob.txt'
 bob_file_out=out_path + file_name[:-4]+'_bob.txt'
