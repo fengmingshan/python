@@ -159,6 +159,6 @@ df1.to_excel(writer,'Sheet1',startrow=5,sol=5) # 可以将两个df写入到一�
 
 df_sum.to_csv(r'd:\data\计算结果.csv')
 df_cell_num.to_csv(r'd:\data\计算结果.csv',mode='a') # to_csv有追加写入模式不会覆盖原来的内容
-
+help(DataFrame.to_csv)
 
 

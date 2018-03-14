@@ -106,7 +106,7 @@ df_sum.loc[9,'C/D类断站排名']='---------'
 df_sum=df_sum.set_index(['区县'])
 
 writer = pd.ExcelWriter(data_path+'\\'+'计算结果.xls') #输出到excel
-df_sum.to_excel(writer,'断站时长')
+df_sum.to_csv(writer,'断站时长')
 df_cell_list.to_excel(writer,'小区等级')
 df_data.to_excel(writer,'断站明细')
 writer.save()
