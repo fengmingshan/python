@@ -42,9 +42,9 @@ df_data['小区退服时长']=df_data['小区退服时长'].astype(float)
 
 df_cell_list=pd.read_excel(data_path+'\\'+cell_num,sheetname='cell_list',dtype =str,encoding='utf-8')      #加入小区数量项 
 
-cell_break=()   # 新建一个元组用来统计所有发生退服的小区
+cell_break=set()   # 新建一个set用来统计所有发生退服的小区
 for i in range(0,len(df_data),1):
-    cell_break=cell_break + tuple(df_data.loc[i,'关联小区标识'].split(','))
+    cell_break=cell_break|set(df_data.loc[i,'关联小区标识'].split(','))
 
 for i in range(0,len(df_cell_list),1):
     if df_cell_list.loc[i,'CELL_INDEX'] in cell_break:
@@ -106,7 +106,7 @@ df_sum.loc[9,'C/D类断站排名']='---------'
 df_sum=df_sum.set_index(['区县'])
 
 writer = pd.ExcelWriter(data_path+'\\'+'计算结果.xls') #输出到excel
-df_sum.to_csv(writer,'断站时长')
+df_sum.to_excel(writer,'断站时长')
 df_cell_list.to_excel(writer,'小区等级')
 df_data.to_excel(writer,'断站明细')
 writer.save()

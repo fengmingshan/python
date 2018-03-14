@@ -47,10 +47,12 @@ for file_name in file_list:
     df_state=df_state.append(df_state_tmp,ignore_index=True)           
 df_state = df_state.reset_index()   
 df_state=df_state.drop('index',axis=1)    
-df_break = df_state[df_state['状态'] == '链路断开。---']
-break_tuple=tuple(list(df_break['eNodeB']))
+df_break = df_state[df_state['状态'] == '链路断开。---'] #筛选出所有发生郭断站的基站
+break_set=set(list(df_break['eNodeB'])) # 断站基站去重复
+break_list = list(break_set)  # 得到去重后的断站list
+
 for i in range(0,len(break_tuple),1):
-    df_tmp=df_state[(df_state['eNodeB'] == break_tuple[i])&(df_state['状态'] == '链路断开。---')]
+    df_tmp=df_state[(df_state['eNodeB'] == break_list[i])&(df_state['状态'] == '链路断开。---')] # 逐个筛选断站基站，找出断站开始时间
     df_tmp=df_tmp.sort_values(by='更新时间',ascending = True)
     df_tmp=df_tmp.reset_index()
     df_result.loc[i,'eNodeB']=df_tmp.loc[0,'eNodeB']
@@ -60,10 +62,12 @@ for i in range(0,len(break_tuple),1):
     hour = int(df_tmp.loc[len(df_tmp)-1,'更新时间'][0:2]) - int(df_tmp.loc[0,'更新时间'][0:2])
     minute = int(df_tmp.loc[len(df_tmp)-1,'更新时间'][3:5]) - int(df_tmp.loc[0,'更新时间'][3:5])
     df_result.loc[i,'持续时间']= hour*60 + minute
-
-
-
-
+    df_tmp=df_state[df_state['eNodeB'] == break_tuple[i]] # 逐个筛选出发生过断站的基站，包含已恢复的
+    df_tmp=df_tmp.sort_values(by='更新时间',ascending = True)
+    df_tmp=df_tmp.reset_index()
+    if df_tmp.loc[len(df_tmp)-1,'状态'] == '---':
+        df_result.loc[i,'恢复时间']= df_tmp.loc[len(df_tmp)-1,'更新时间']
+    
 writer = pd.ExcelWriter(data_path + day + '基站断站及停电.xls')
 df_state.to_excel(writer,sheet_time + '_更新') 
 df_result.to_excel(writer,sheet_time + '_断站') 
