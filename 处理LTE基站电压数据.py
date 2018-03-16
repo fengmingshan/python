@@ -17,8 +17,7 @@ sheet_time = data_array[11:13]+'点'+ data_array[14:16]+'分' # 获取表格生�
 data_trans = {'Jan':'1月','Feb':'2月','Mar':'3月','Apr':'4月','May':'5月','June':'6月',
               'July':'7月','Aug':'8月','Sept':'9月','Oct':'10月','Nov':'11月','Dec':'12月'} # 中英文月份对照字典
 month = data_trans[today[0:3]]  # 将月份翻译为中文 
-#month_day = month + today[4:6]+'日'  # 构建当天日期格式为 '3月14日'
-month_day = '3月15日'
+month_day = month + today[4:6]+'日'  # 构建当天日期格式为 '3月14日'
 
 voltage_path =r'D:\4G_voltage'+'\\'
 bts_battery='bts_battery.xls'
@@ -75,7 +74,7 @@ if len(vo_file_list) > 0:
         updata_time=[]  # 用来存储数据更新时间
         for j in range(0,len(df_btsvol)-1,1):
             df_btsvol.loc[j,'电压差']=df_btsvol.loc[j,'直流电压']-df_btsvol.loc[j+1,'直流电压']
-            if df_btsvol.loc[j,'电压差'] > 2:
+            if df_btsvol.loc[j,'电压差'] > 1:
                 break_bts.append(df_btsvol.loc[0,'网元名称'])
                 break_country.append(df_btsvol.loc[0,'区县'])
                 bts_id.append(df_btsvol.loc[0,'基站代码'])
@@ -85,6 +84,9 @@ if len(vo_file_list) > 0:
                 updata_time.append(df_btsvol.loc[len(df_btsvol)-1,'采集时间'])
             elif df_btsvol.loc[j,'电压差'] < -2:
                 end_time.append(df_btsvol.loc[j+1,'采集时间'])
+            if len(end_time)>0 and len(start_time)>0:
+                if time.strptime(start_time[0],'%Y/%m/%d %H:%M:%S') > time.strptime(end_time[0],'%Y/%m/%d %H:%M:%S'):
+                    del end_time[0]
             df_down_tmp = pd.DataFrame(columns=['网元名称','区县','基站代码','当前电压',
             '市电状态','停电时间','恢复时间','数据更新时间'])
             for k in range(0,len(break_bts),1):
@@ -96,7 +98,7 @@ if len(vo_file_list) > 0:
                 df_down_tmp.loc[k,'停电时间'] = start_time[k]
                 df_down_tmp.loc[k,'数据更新时间'] = updata_time[k]
             for k in range(0,len(end_time),1):
-                df_down_tmp.loc[k,'恢复时间'] = end_time[k]
+                    df_down_tmp.loc[k,'恢复时间'] = end_time[k]
         df_power_down = df_power_down.append(df_down_tmp,ignore_index=True)
             
     writer = pd.ExcelWriter(voltage_path + month_day + sheet_time + '基站断站及停电.xls')
