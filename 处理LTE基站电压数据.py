@@ -20,7 +20,6 @@ month = data_trans[today[0:3]]  # 将月份翻译为中文
 month_day = month + today[4:6]+'日'  # 构建当天日期格式为 '3月14日'
 
 voltage_path =r'D:\4G_voltage'+'\\'
-bts_battery='bts_battery.xls'
 vo_files = os.listdir(voltage_path)
 
 vo_file_list=[]
@@ -62,6 +61,8 @@ if len(vo_file_list) > 0:
     df_low_power = df_vol[df_vol['直流电压']<50]     # 筛选电池电压低于50v的基站，可能发生了停电
     low_power_bts =  list(set(list(df_low_power['基站代码']))) #通过转换为set去重复
     for i in range(0,len(low_power_bts),1):
+        df_down_tmp = pd.DataFrame(columns=['网元名称','区县','基站代码','当前电压',
+            '市电状态','停电时间','恢复时间','数据更新时间'])
         df_btsvol = df_vol[df_vol['基站代码']== low_power_bts[i]]
         df_btsvol = df_btsvol.reset_index()
         break_bts = []  # 用来存储停电基站列表
@@ -87,8 +88,7 @@ if len(vo_file_list) > 0:
             if len(end_time)>0 and len(start_time)>0:
                 if time.strptime(start_time[0],'%Y/%m/%d %H:%M:%S') > time.strptime(end_time[0],'%Y/%m/%d %H:%M:%S'):
                     del end_time[0]
-            df_down_tmp = pd.DataFrame(columns=['网元名称','区县','基站代码','当前电压',
-            '市电状态','停电时间','恢复时间','数据更新时间'])
+           
             for k in range(0,len(break_bts),1):
                 df_down_tmp.loc[k,'网元名称'] = break_bts[k]
                 df_down_tmp.loc[k,'区县'] = break_country[k]

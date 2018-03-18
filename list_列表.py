@@ -16,17 +16,17 @@ print (li1 + li2) # 连接列表
 newlist=list+ li2
 print(newlist)
 
-#更新元素
+# 更新元素
 list1 = ['Google', 'Runoob', 1997, 2000]
 print ("第三个元素为 : ", list[2])
 list1[2] = 2001
 print ("更新后的第三个元素为 : ", list[2])
 
-#添加元素
+# 添加元素
 list1.append('obj')
 list1
 
-#删除元素
+# 删除元素
 list2 = ['Google', 'Runoob', 1997, 2000]
 print (list)
 del list2[2]
@@ -34,12 +34,12 @@ print ("删除第三个元素 : ", list2)
 list2.remove(2000)
 print ("删除2000 : ", list2)
 
-#计算元素个数
+# 计算元素个数
 list3= ['Google', 'Runoob', 1997, 2000]
 a= len(list)
 print(a)
 
-#list嵌套
+# list嵌套
 a=['a','b','c']
 n=[1,2,3]
 dic= {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
@@ -53,11 +53,12 @@ list4=[7,6,5,4,3,2,1]
 list4.sort()
 print(list1)
 
-#list切片
+# list切片
 list = ['x', 1, 'y', 2, 'z', 3]
 list[::2]
 list[1::2]
 
+# 生成器构造list
 lis2=list(x+2 for x in lis1)
 
 # map和 lambda
