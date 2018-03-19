@@ -17,13 +17,25 @@ bts = 'bts_list.xls'
 # =============================================================================
 # 获取当前时间信息
 # =============================================================================
-data_array=time.ctime(time.time()) # 获取当前时间
-today = data_array[4:7]+'-'+data_array[8:10]  # 获取当前日期 格式为‘Mar-14’
-collect_time = data_array[11:13]+'点'+ data_array[14:16]+'分' # 获取报表生成的时间
-data_trans = {'Jan':'1月','Feb':'2月','Mar':'3月','Apr':'4月','May':'5月','June':'6月',
-              'July':'7月','Aug':'8月','Sept':'9月','Oct':'10月','Nov':'11月','Dec':'12月'} # 中英文月份对照字典
-month = data_trans[today[0:3]]  # 将月份翻译为中文 
-month_day = month + today[4:6]+'日'  # 构建当天日期格式为 '3月14日'
+def get_current_time():
+    month_trans = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'June':6,
+              'July':7,'Aug':8,'Sept':9,'Oct':10,'Nov':11,'Dec':12} # 中英文月份对照字典
+    time_str = time.ctime(time.time())
+    time_tuple = tuple(time.localtime())
+    
+    year = int(time_str[-4:])
+    month = month_trans[time_str.split(' ')[1]]  # 查月份翻译表得到数字的月份
+    day = int(time_str.split(' ')[2])
+    hour = int(time_str.split(' ')[3][0:2])
+    minute = int(time_str.split(' ')[3][3:5])
+    second = int(time_str.split(' ')[3][-2:])
+    tm_wday = time_tuple[-3]    # 周几
+    tm_yday = time_tuple[-2]    # 一年中的第几天
+    tm_isdst = time_tuple[-1]    # 是否夏令时
+    
+    struct_time = (year,month,day,hour,minute,second,tm_wday,tm_yday,tm_isdst)
+    current_time = time.strftime('%Y-%m-%d %H:%M:%S',struct_time) # 转换采集时间为正常时间格式
+    return current_time
 
 
 # =============================================================================
@@ -49,7 +61,9 @@ time.sleep(2)
 content = tn.read_all().decode('ascii')     # 保存ping测试结果
 tn.close() 
 
-output= open(path + month_day + '_' + collect_time + '原始数据.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+current_time = get_current_time()
+file_time = file_time.replace(':','.')
+output= open(path + file_time + '原始数据.txt','a',encoding='utf-8')    # 将结果输出到文件夹
 output.write(content)
 output.close()
 
@@ -57,45 +71,63 @@ output.close()
 # 汇总处理ping测试数据
 # =============================================================================
 def get_time_info(record_file):
-    data_array=time.ctime(time.time()) # 获取当前时间
-    year = data_array[-4:]
-    month =  record_file.split('月')[0]
-    if len(month) == 1:
-        month = '0' + month
-    day =  record_file.split('_')[0].split('月')[1][:-1]
-    if len(day) == 1:
-        day = '0' + day
-  
-    data = year + '/' + 
+    time_array = record_file[:-4]
+    time_info = time_array.replace('.',':') 
+    return time_info
 
-
-record_file = '3月19日_17点44分原始数据.txt'
+record_file = '2018-03-19 19.40.20.txt'
 F= open(path + record_file,'r',encoding='utf-8')
 lines = F.readlines()
+
 success_record=[]
 break_record=[]
-
-df_total = pd.DataFrame(columns=('IP','状态','数据更新时间'))
-df_break = pd.DataFrame(columns=('eNodeB','基站名称','IP','状态','断站发生时间','恢复时间','数据更新时间'))
-
-
 for line in lines:
     if 'is alive' in line:
         success_record.append(line)
     elif 'no answer from' in line:
         break_record.append(line)
 
+success_record = list(x.replace(' is alive','') for x in success_record)
+break_record = list(x.replace('no answer from ','') for x in break_record)
+
+df_total = pd.DataFrame(columns=('IP','状态','数据更新时间'))
+df_break = pd.DataFrame(columns=('eNodeB','基站名称','IP','状态','断站时间','持续时长(分)','恢复时间','数据更新时间'))
+
+
+
+
 for i in range(0,len(success_record),1):
     df_total.loc[i,'IP'] = success_record[i]
     df_total.loc[i,'状态'] = '正常'
-    df_total.loc[i,'数据更新时间'] = record_file[6:12]
+    df_total.loc[i,'数据更新时间'] = get_time_info(record_file)
 
 for i in range(0,len(break_record),1):
     df_total.loc[i,'IP'] = break_record[i]
     df_total.loc[i,'状态'] = '断站'
-    df_total.loc[i,'数据更新时间'] = record_file[6:12]
+    df_total.loc[i,'数据更新时间'] = get_time_info(record_file)
 
-    
+df_total = df_total.sort_values(by='数据更新时间',ascending = True)    
+df_break = df_total[df_total['状态'] == '断站']
+break_list = list(set(list(df_break['IP'])))  # 通过set去重复，取出所有断站的基站IP的list
+for i in range(0,len(break_list),1):
+    df_tmp_break = df_total[(df_total['IP'] == break_list[i])&(df_total['状态'] == '断站')] # 逐个筛选断站的基站，找出所有断站记录
+    df_tmp_break = df_tmp_break.reset_index()   # 重排序
+    df_break[i,'IP'] = break_list[i]
+    df_break.loc[i,'状态']=df_tmp_break.loc[0,'状态']
+    df_break.loc[i,'断站时间']=df_tmp_break.loc[0,'数据更新时间']     # 取第一行记录的更新时间就是基站断站发生时间
+    detal_time = (time.mktime(time.strptime(df_tmp_break.loc[len(df_tmp_break)-1,'数据更新时间'],'%Y-%m-%d %H:%M:%S')) - 
+                  time.mktime(time.strptime(df_tmp_break.loc[0,'数据更新时间'],'%Y-%m-%d %H:%M:%S')))/60 #计算断站时长
+    df_break.loc[i,'持续时长(分)']=detal_time    # 取最后一行断站记录时间和第一行记录的更新时间的差就是基站断站持续时间
+    df_tmp_all = df_total[df_total['IP'] == break_list[i]]  # 筛选该基站的全部记录，包含正常的记录
+    df_tmp_all = df_tmp_all.reset_index()
+    for j in range(0,len(df_tmp_all)-1,1):
+        if df_tmp_all.loc[j,'状态'] == '断站' and df_tmp_all.loc[j+1,'状态'] == '正常': # 如果'断站'后面有一行正常状态'正常'则表示故障恢复
+            df_break.loc[i,'恢复时间'] = df_tmp_all.loc[j+1,'数据更新时间']    # 取最后一行断站记录时间和第一行记录的更新时间的差就是基站断站持续时间
+
+
+
+
+
 
 
 

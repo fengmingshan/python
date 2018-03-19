@@ -61,8 +61,36 @@ otherstyletime4=time.strftime('%Y/%m/%d %H:%M:%S',c)    # 转换为其他格式
 # time.strftime()可以把任意格式时间字符串转换成自定义格式的时间字符串str
 # time.strptime()可以把任意自定义格式的时间字符串，转换成time模块的标准格式struct_time
 
+# =============================================================================
+# 函数取当前时间并转换成strftime
+# =============================================================================
+def get_current_time():
+    month_trans = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'June':6,
+              'July':7,'Aug':8,'Sept':9,'Oct':10,'Nov':11,'Dec':12} # 中英文月份对照字典
+    time_str = time.ctime(time.time())
+    time_tuple = tuple(time.localtime())
+    year = int(time_str[-4:])
+    month = month_trans[time_str.split(' ')[1]]  # 查月份翻译表得到数字的月份
+    day = int(time_str.split(' ')[2])
+    hour = int(time_str.split(' ')[3][0:2])
+    minute = int(time_str.split(' ')[3][3:5])
+    second = int(time_str.split(' ')[3][-2:])
+    tm_wday = time_tuple[-3]    # 周几
+    tm_yday = time_tuple[-2]    # 一年中的第几天
+    tm_isdst = time_tuple[-1]    # 是否夏令时
 
+    struct_time = (year,month,day,hour,minute,second,tm_wday,tm_yday,tm_isdst)
+    current_time = time.strftime('%Y/%m/%d %H:%M:%S',struct_time) # 转换采集时间为正常时间格式
+    return current_time
 
+time1 ='2018-03-19 20:07:02'
+time2 ='2018-03-19 22:07:02'  
+a = time.strptime(time1,'%Y-%m-%d %H:%M:%S') 
+b = time.strptime(time2,'%Y-%m-%d %H:%M:%S') 
+c=time.mktime(a)
+d=time.mktime(b)
+(d-c)/60
+detal_time =
 
 
 
