@@ -40,7 +40,7 @@ if len(file_list) > 1:
     df_result=pd.DataFrame(columns=('eNodeB','基站名称','状态','发生时间','持续时间（分钟）','恢复时间')) #创建表格用于存放断站数据
     
     for file_name in file_list:
-        updata_time = file_name[12:20].replace('-',':') # 通过原始文件名获取数据采集的时间
+        updata_time = file_name[:-4] # 通过原始文件名获取数据采集的时间
         file_tmp = open(data_path + file_name,'r',encoding='gbk')  # 用零时文件读取原始记录文件
         content = file_tmp.readlines() 
         df_state_tmp=pd.DataFrame(columns=('eNodeB','基站名称','状态','更新时间')) # 新建零时表格用于存放打开的原始记录
@@ -65,9 +65,23 @@ if len(file_list) > 1:
     
     
     for i in range(0,len(break_list),1):
-        df_tmp1=df_state[(df_state['eNodeB'] == break_list[i])&(df_state['状态'] == '链路断开。---')] # 逐个筛选断站基站，找出断站开始时间
-        df_tmp1=df_tmp1.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
-        df_tmp1=df_tmp1.reset_index()
+        df_tmp = df_state[df_state['eNodeB'] == break_list[i]] # 逐个筛选出发生过断站的基站，包含已恢复的
+        df_tmp = df_tmp.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
+        df_tmp = df_tmp.reset_index()
+        break_list = []
+        resume_list = []
+        for j in range(0,len(df_tmp2)-1,1):
+            if df_tmp.loc[j,'状态'] == '链路断开。---' and df_tmp.loc[j+1,'状态'] == '---': # 如果链路断开后面有一行正常状态则表示故障恢复
+                resume_time.append(df_tmp.loc[j+1,'更新时间'])
+            elif df_tmp.loc[j,'状态'] == '---'  and df_tmp.loc[j+1,'状态'] == '链路断开。---': # 如果链路断开后面有一行正常状态则表示故障恢复
+                break_time.append(df_tmp.loc[j+1,'更新时间'])
+            else:
+                break_time.append(df_tmp.loc[0,'更新时间'])
+                resume_time.append(' ')
+        if time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S') <  time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S'):
+           break_time.insert(0,' ')
+
+        df_result.loc[i,'恢复时间']= df_tmp2.loc[j+1,'更新时间'] 
         df_result.loc[i,'eNodeB']=df_tmp1.loc[0,'eNodeB']
         df_result.loc[i,'基站名称']=df_tmp1.loc[0,'基站名称']
         df_result.loc[i,'状态']=df_tmp1.loc[0,'状态']
@@ -75,12 +89,6 @@ if len(file_list) > 1:
         hour = int(df_tmp1.loc[len(df_tmp1)-1,'更新时间'][0:2]) - int(df_tmp1.loc[0,'更新时间'][0:2])
         minute = int(df_tmp1.loc[len(df_tmp1)-1,'更新时间'][3:5]) - int(df_tmp1.loc[0,'更新时间'][3:5])
         df_result.loc[i,'持续时间（分钟）']= hour * 60 + minute # 计算基站中断持续的时间
-        df_tmp2=df_state[df_state['eNodeB'] == break_list[i]] # 逐个筛选出发生过断站的基站，包含已恢复的
-        df_tmp2=df_tmp2.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
-        df_tmp2=df_tmp2.reset_index()
-        for j in range(0,len(df_tmp2)-1,1):
-            if df_tmp2.loc[j,'状态'] == '链路断开。---' and df_tmp2.loc[j+1,'状态'] == '---': # 如果链路断开后面有一行正常状态‘---’则表示故障恢复
-                df_result.loc[i,'恢复时间']= df_tmp2.loc[j+1,'更新时间'] 
             
     df_result = pd.merge(df_result,df_eNodeB_name,how='left',on='eNodeB')
     df_result['基站名称'] = df_result['网元名称'] 
