@@ -15,8 +15,8 @@ import pandas as pd
 
 sche=sched.scheduler(time.time,time.sleep)  # 实例化sched.scheduler类
 
-data_path = 'E:\采集爱立信基站状态'+'\\'
-out_path = 'F:\爱立信基站断站数据'+'\\'
+data_path = 'D:\Eric'+'\\'
+out_path = 'D:\Eric'+'\\'
 
 bts = 'bts_list.xls'
 
@@ -53,33 +53,203 @@ def task():
     
     current_time = get_current_time()
     print('任务开始时间:',current_time)
-
-    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=30)     # 连接telnet服务器
-    
+    #0-99条
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
     tn.read_until(b'login:',timeout=5)   # 登录
-    tn.write(b'qujing\n')  
-    
+    tn.write(b'qujing\n')      
     tn.read_until(b'password:',timeout=5)  # 登录
     tn.write(b'qjjk@2017\n' )  
-    
-    for command in command_list:
-        try:
-            tn.write(command.encode('ascii') + b'\n')       # 输入ping命令
-        except socket.timeout:
-            pass
-    
+    for i in range(0,100,1):
+        tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
     tn.write(b'exit'+b'\n')     # 退出telnet服务器     
-    time.sleep(2)
-    
+    time.sleep(2)    
     #content = tn.set_debuglevel(10000)
     #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
     content = tn.read_all().decode('ascii')  # 保存测试结果   
-    tn.close() 
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
     
+    #100-199条
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(100,200,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+
+    #200-299条    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(200,300,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+    
+    #300-399条    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(300,400,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+    
+    #400-499条    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(400,500,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+    
+    #500-599条    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(500,600,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+    
+    #600-699条    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(600,700,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+    
+    #700-799条    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(700,800,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+
+    #800-899条    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(800,900,1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
+    current_time = get_current_time()
+    current_time = current_time.replace(':','.')
+    output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
+    output.write(content)
+    output.close()
+
+    #900-结束    
+    tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
+    tn.read_until(b'login:',timeout=5)   # 登录
+    tn.write(b'qujing\n')      
+    tn.read_until(b'password:',timeout=5)  # 登录
+    tn.write(b'qjjk@2017\n' )  
+    for i in range(900,len(command_list),1):
+    tn.write(command_list[i].encode('ascii') + b'\n')       # 输入ping命令    
+    tn.write(b'exit'+b'\n')     # 退出telnet服务器     
+    time.sleep(2)    
+    #content = tn.set_debuglevel(10000)
+    #content = tn.read_very_eager().decode('ascii')  # 保存测试结果   
+    content = tn.read_all().decode('ascii')  # 保存测试结果   
+    tn.close()      
     current_time = get_current_time()
     print('任务结束时间:',current_time)
     print('---------------------')
-
     current_time = current_time.replace(':','.')
     output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
     output.write(content)
@@ -98,34 +268,38 @@ def task():
     df_break = pd.DataFrame(columns=('eNodeB','基站名称','IP','状态','断站时间','持续时长(分)','恢复时间'))
     df_total = pd.DataFrame(columns=('IP','状态','数据更新时间'))
     
+    current_time = get_current_time()
+    today = current_time.split(' ')[0]
     for file in all_files:
         if '测试结果' in file:
-            file_list.append(file)
+            if file.split(' ')[0] == today:
+                file_list.append(file)
             
-    for record_file in file_list:
-        F= open(data_path + record_file,'r',encoding='utf-8')
-        lines = F.readlines()
-        success_record=[]
-        break_record=[]
-        for line in lines:
-            if 'is alive' in line:
-                success_record.append(line)
-            elif 'no answer from' in line:
-                break_record.append(line)
-                
-        success_record = list(x.replace(' is alive','') for x in success_record)
-        break_record = list(x.replace('no answer from ','') for x in break_record)    
-        df_total_tmp = pd.DataFrame(columns=('IP','状态','数据更新时间'))
-        for i in range(0,len(success_record),1):
-            df_total_tmp.loc[i,'IP'] = success_record[i]
-            df_total_tmp.loc[i,'状态'] = '正常'
-            df_total_tmp.loc[i,'数据更新时间'] = get_time_info(record_file)    
-        df_total = df_total.append(df_total_tmp,ignore_index=True)
-        for i in range(0,len(break_record),1):
-            df_total_tmp.loc[i,'IP'] = break_record[i]
-            df_total_tmp.loc[i,'状态'] = '断站'
-            df_total_tmp.loc[i,'数据更新时间'] = get_time_info(record_file)
-        df_total = df_total.append(df_total_tmp,ignore_index=True)
+    if len(file_list) > 0:    # 如果取到的文件列表不为空，则开始处理文件     
+        for record_file in file_list:
+            F= open(data_path + record_file,'r',encoding='utf-8')
+            lines = F.readlines()
+            success_record=[]
+            break_record=[]
+            for line in lines:
+                if 'is alive' in line:
+                    success_record.append(line)
+                elif 'no answer from' in line:
+                    break_record.append(line)
+                    
+            success_record = list(x.replace(' is alive','') for x in success_record)
+            break_record = list(x.replace('no answer from ','') for x in break_record)    
+            df_total_tmp = pd.DataFrame(columns=('IP','状态','数据更新时间'))
+            for i in range(0,len(success_record),1):
+                df_total_tmp.loc[i,'IP'] = success_record[i]
+                df_total_tmp.loc[i,'状态'] = '正常'
+                df_total_tmp.loc[i,'数据更新时间'] = get_time_info(record_file)    
+            df_total = df_total.append(df_total_tmp,ignore_index=True)
+            for i in range(0,len(break_record),1):
+                df_total_tmp.loc[i,'IP'] = break_record[i]
+                df_total_tmp.loc[i,'状态'] = '断站'
+                df_total_tmp.loc[i,'数据更新时间'] = get_time_info(record_file)
+            df_total = df_total.append(df_total_tmp,ignore_index=True)
     
     df_total = df_total.sort_values(by='数据更新时间',ascending = True)    
         
