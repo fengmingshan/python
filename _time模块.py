@@ -60,6 +60,18 @@ otherstyletime4=time.strftime('%Y/%m/%d %H:%M:%S',c)    # 转换为其他格式
 # time模块的时间格式有3种：标准格式struct_time，时间戳格式（float），自定义格式（str）
 # time.strftime()可以把任意格式时间字符串转换成自定义格式的时间字符串str
 # time.strptime()可以把任意自定义格式的时间字符串，转换成time模块的标准格式struct_time
+time1 ='2018-03-19 20:07:02'
+time2 ='2018-03-19 22:07:02'  
+a = time.strptime(time1,'%Y-%m-%d %H:%M:%S') 
+b = time.strptime(time2,'%Y-%m-%d %H:%M:%S') 
+c=time.mktime(a)
+d=time.mktime(b)
+
+detal_time =(d-c)/60
+
+
+
+
 
 # =============================================================================
 # 函数取当前时间并转换成strftime
@@ -83,14 +95,7 @@ def get_current_time():
     current_time = time.strftime('%Y/%m/%d %H:%M:%S',struct_time) # 转换采集时间为正常时间格式
     return current_time
 
-time1 ='2018-03-19 20:07:02'
-time2 ='2018-03-19 22:07:02'  
-a = time.strptime(time1,'%Y-%m-%d %H:%M:%S') 
-b = time.strptime(time2,'%Y-%m-%d %H:%M:%S') 
-c=time.mktime(a)
-d=time.mktime(b)
-(d-c)/60
-detal_time =
+
 
 
 
