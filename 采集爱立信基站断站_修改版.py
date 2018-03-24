@@ -7,19 +7,29 @@ Created on Mon Mar 19 16:41:49 2018
 
 import sched # 导入定时任务库
 import time # 导入time模块
+import datetime 
 import os
 import telnetlib  
 from telnetlib import Telnet
-import socket
+import socket 
 import pandas as pd
 
-sche=sched.scheduler(time.time,time.sleep)  # 实例化sched.scheduler类
+def test_socket_timeout():      #设置和测试socket_timeout的函数
+    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    print("Default socket timeout: %s" %s.gettimeout())
+    s.settimeout(300)
+    print("Current socket timeout: %s" %s.gettimeout())
+#test_socket_timeout()
 
+
+sche=sched.scheduler(time.time,time.sleep)  # 实例化sched.scheduler类
+# =============================================================================
+# 设置环境变量
+# =============================================================================
 data_path = 'D:\Eric'+'\\'
 out_path = 'D:\Eric'+'\\'
-
 bts = 'bts_list.xls'
-
+delay_time = 90 
 df_bts = pd.read_excel(data_path + bts , encoding='utf-8')
 ip_list=list(df_bts['IP'])
 command_list=list('ping '+x for x in ip_list)   # 生成ping命令
@@ -49,7 +59,8 @@ def get_current_time():
 # 通过telnet ping测试基站
 # =============================================================================
 def ping_test(n):
-    for i in range(n,10,1):        
+    fault_list = []
+    for i in n:        
         tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
         tn.read_until(b'login:',timeout=5)   # 登录
         tn.write(b'qujing\n')      
@@ -62,7 +73,7 @@ def ping_test(n):
             for j in range(i,len(command_list),1):
                 tn.write(command_list[j].encode('ascii') + b'\n')       # 输入ping命令 
         tn.write(b'exit'+b'\n')     # 退出telnet服务器     
-        time.sleep(120)    
+        time.sleep(delay_time)    
         #content = tn.set_debuglevel(10000)
         #content = tn.read_all().decode('ascii')  # 保存测试结果
         try:
@@ -73,17 +84,29 @@ def ping_test(n):
             output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
             output.write(content)
             output.close()
-            return 10
         except socket.timeout:
-            return i
+            fault_list.append(i)
+            if i < 9:
+                ping_test(list(range(i+1,10,1)))
+            else:
+                pass
+    return fault_list
+
     
 def task():
     sche.enter(1800,1,task)  # 调用sche实例的enter方法创建一个定时任务，1800秒之后执行，任务内容执行task()函数
     current_time = get_current_time()
     print('任务开始时间:',current_time)   # print任务开始时间
-    n = ping_test(0)  
-    if n != 10:
-        ping_test(n)
+    t0 = datetime.datetime.now()
+
+    input_list = ping_test(list(range(0,10,1)))
+    t1 = datetime.datetime.now()
+    if len(input_list) > 0:
+        delay_time = delay_time + 90
+        if (t1-t0).seconds <1800:
+            ping_test(input_list)
+    
+    current_time = get_current_time()      
     print('任务结束时间：',current_time)
     
     

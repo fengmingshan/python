@@ -4,6 +4,8 @@ Created on Tue Dec 19 16:18:06 2017
 字典_数据结构:由键值对组成（键和对应的值，键是一个KEY,是不允许重复的，但是值可以重复），是无序的
 @author: Administrator
 """
+import pandas as pd 
+
 dict1 = {'Alice': '2341', 'Beth': '9102', 'Cecil': '3258'}
 dict2 = {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
 print ("dict2['Name']: ", dict2['Name'])
@@ -33,7 +35,20 @@ for i,j in s:
     d[i]=j  
 print(d)
 for i in d.keys():
-    print(i)  
+    print(i) 
+    
+# =============================================================================
+# 进阶字典与map联合使用
+# =============================================================================
+df1 = pd.DataFrame({'name':['abc', 'def', 'ghi']})
+df2 = pd.DataFrame()
+df3 = pd.DataFrame()
+
+dict1 = {'name':1,'def':2,'ghi':3}
+dict2 = {1:'1st',2:'2nd',3:'3rd'}
+df2['name'] = df1['name'].map(dict1)
+df3['name'] = df2['name'].map(dict2)
+
 
 #字典的迭代
 # dict没有序号但也可以迭代：
@@ -99,3 +114,5 @@ info.keys()
 info = dict(name='cold', blog='linuxzen.com')
 for key, value in info.items():
     print key, ':',  value
+    
+
