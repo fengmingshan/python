@@ -7,6 +7,7 @@ Created on Tue Mar  6 10:41:21 2018
 import pyautogui # 
 import sched # 导入定时任务库
 import time # 导入time模块
+from datetime import datetime
 import os
 import pandas as pd
 
@@ -38,7 +39,7 @@ def get_current_time():     # 定义获取当前时间的函数
 
 def task():
     sche.enter(1800,1,task)  # 调用sche实力的enter方法创建一个定时任务，1800秒之后执行，任务内容执行task()函数
-    current_time = get_current_time()
+    current_time = str(datetime.now()).split('.')[0]
     print('任务开始时间:',current_time)
 
 # =============================================================================
@@ -437,7 +438,7 @@ def task():
     df_power_down.to_excel(writer,sheet_time + '_停电') 
     writer.save()
     
-    current_time = get_current_time()
+    current_time = str(datetime.now()).split('.')[0]
     print('报表完成时间:',current_time)
     print('-----------------------------------')
 

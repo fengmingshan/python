@@ -70,7 +70,7 @@ if len(file_list) > 1:
         content = file_tmp.readlines() 
         df_state_tmp=pd.DataFrame(columns=('eNodeB','基站名称','状态','更新时间')) # 新建零时表格用于存放打开的原始记录
         for i in range(0,len(content),1):
-            if 'NE=' in  content[i]:
+            if 'NE=' in  content[i] and '运行状态' in  content[i+2]:
                 eNodeB = content[i].split(',')[1][3:9]
                 state = content[i+4].split('      ')[2]
                 state = state.replace(' ','')
