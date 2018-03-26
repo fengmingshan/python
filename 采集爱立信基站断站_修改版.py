@@ -7,7 +7,9 @@ Created on Mon Mar 19 16:41:49 2018
 
 import sched # 导入定时任务库
 import time # 导入time模块
-import datetime 
+from datetime import datetime 
+from datetime import timedelta 
+
 import os
 import telnetlib  
 from telnetlib import Telnet
@@ -19,42 +21,22 @@ sche=sched.scheduler(time.time,time.sleep)  # 实例化sched.scheduler类
 # =============================================================================
 # 设置环境变量
 # =============================================================================
-data_path = 'D:\Eric'+'\\'
-out_path = 'D:\Eric'+'\\'
+data_path = 'E:\采集爱立信基站状态'+'\\'
+out_path = 'F:\爱立信基站断站数据'+'\\'
 bts = 'bts_list.xls'
-delay_time = 90  # 每一批测试命令中间的延时
+sleeptime = 90  # 每一批测试命令中间的延时
 
-df_bts = pd.read_excel(data_path + bts , encoding='utf-8')
+df_bts = pd.read_excel(data_path + bts , encoding='utf-8')  # 打开基站名称表
+
 ip_list=list(df_bts['IP'])
-command_list=list('ping '+x for x in ip_list)   # 生成ping命令
-# =============================================================================
-# 获取当前时间信息函数
-# =============================================================================
-def get_current_time():
-    month_trans = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'June':6,
-              'July':7,'Aug':8,'Sept':9,'Oct':10,'Nov':11,'Dec':12} # 中英文月份对照字典
-    time_str = time.ctime(time.time())
-    time_tuple = tuple(time.localtime())    
-    year = int(time_str[-4:])
-    month = month_trans[time_str.split(' ')[1]]  # 查月份翻译表得到数字的月份
-    day = int(time_str.split(' ')[2])
-    hour = int(time_str.split(' ')[3][0:2])
-    minute = int(time_str.split(' ')[3][3:5])
-    second = int(time_str.split(' ')[3][-2:])
-    tm_wday = time_tuple[-3]    # 周几
-    tm_yday = time_tuple[-2]    # 一年中的第几天
-    tm_isdst = time_tuple[-1]    # 是否夏令时    
-    struct_time = (year,month,day,hour,minute,second,tm_wday,tm_yday,tm_isdst)
-    current_time = time.strftime('%Y-%m-%d %H:%M:%S',struct_time) # 转换采集时间为正常时间格式
-    return current_time
-
+command_list=list('ping '+x for x in ip_list)   # 生成ping命令列表
 
 # =============================================================================
 # 通过telnet ping测试基站
 # =============================================================================
-def ping_test(n):
+def ping_test(init_list,sleeptime):
     fault_list = []
-    for i in n:        
+    for i in init_list:        
         tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
         tn.read_until(b'login:',timeout=5)   # 登录
         tn.write(b'qujing\n')      
@@ -66,14 +48,15 @@ def ping_test(n):
         elif (i+1)*100 > len(command_list):
             for j in range(i*100,len(command_list),1):
                 tn.write(command_list[j].encode('ascii') + b'\n')       # 输入ping命令 
-        tn.write(b'exit'+b'\n')     # 退出telnet服务器     
-        time.sleep(delay_time)    
+        tn.write(b'exit'+b'\n')     # 退出telnet服务器 
+        
+        time.sleep(sleeptime)    
         #content = tn.set_debuglevel(10000)
         #content = tn.read_all().decode('ascii')  # 保存测试结果
         try:
             content = tn.read_very_eager().decode('ascii')  # 保存测试结果
             tn.close()   
-            current_time = get_current_time()
+            current_time = str(datetime.now()).split(' ')[0]
             current_time = current_time.replace(':','.')
             output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
             output.write(content)
@@ -89,18 +72,17 @@ def ping_test(n):
     
 def task():
     sche.enter(1800,1,task)  # 调用sche实例的enter方法创建一个定时任务，1800秒之后执行，任务内容执行task()函数
-    current_time = get_current_time()
+    current_time = str(datetime.now()).split('.')[0]
     print('任务开始时间:',current_time)   # print任务开始时间
-    t0 = datetime.datetime.now()
-
-    fault_list = ping_test(list(range(0,10,1)))
-    t1 = datetime.datetime.now()
-    if len(fault_list) > 0:
-        delay_time = delay_time + 90
-        if (t1-t0).seconds <1500:  # 计算程序运行时间，如果小于25分钟，则重测测试失败的部分 
-            ping_test(fault_list)   # 调用ping_test 函数再测一遍测试失败的部分 
+    t0 = datetime.now()
+    init_list = list(range(0,10,1))
+    return_list = ping_test(init_list,sleeptime)    #以list[0,1,2..9]启动测试，如果失败，返回一个失败列表
+    t1 = datetime.now()
+    if len(return_list) > 0:
+        if (t1-t0).seconds <1620:  # 计算程序运行时间，如果小于25分钟，则重测测试失败的部分 
+            ping_test(return_list,180)   # 调用ping_test 函数再测一遍测试失败的部分 
     
-    current_time = get_current_time()      
+    current_time = str(datetime.now()).split('.')[0]
     print('任务结束时间：',current_time)
     
     
@@ -117,10 +99,10 @@ def task():
     df_break = pd.DataFrame(columns=('eNodeB','基站名称','IP','状态','断站时间','持续时长(分)','恢复时间'))
     df_total = pd.DataFrame(columns=('IP','状态','数据更新时间'))
     
-    today = datetime.date.today()
-    yestoday =  today - datetime.timedelta(1)
-    today = str(today) 
-    yestoday = str(yestoday) 
+    today = datetime.today()
+    yestoday =  today - timedelta(days=1)
+    today = str(today).split(' ')[0] 
+    yestoday = str(yestoday).split(' ')[0] 
     for file in all_files:
         if '_测试结果' in file:
             if get_time_info(file).split(' ')[0] == today or get_time_info(file).split(' ')[0] == yestoday:
@@ -208,7 +190,7 @@ def task():
         del df_break['eNBId']
         del df_break['Site Name(Chinese)']
         
-        current_time = get_current_time() 
+        current_time = str(datetime.now()).split('.')[0]
         current_time = current_time.replace(':','.')       
         writer = pd.ExcelWriter(out_path + current_time + '_断站.xls')
         df_break.to_excel(writer,current_time + '_断站') 
