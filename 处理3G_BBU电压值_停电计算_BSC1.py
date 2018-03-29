@@ -70,7 +70,7 @@ for i in range(0,len(low_power_bts),1):
         elif df_btsvol.loc[len(df_btsvol)-1,'输入电压(V)'] -df_btsvol.loc[len(df_btsvol)-2,'输入电压(V)'] >= 0.3: 
             df_btsvol.loc[len(df_btsvol)-1,'市电状态'] = '来电'
 
-    for j in range(1,len(df_btsvol)-1,1):
+    for j in range(0,len(df_btsvol)-1,1):
         if df_btsvol.loc[j,'输入电压(V)'] - df_btsvol.loc[j+1,'输入电压(V)'] >= 0.3:      # 循环计算电压差，得到市电状态
             df_btsvol.loc[j,'市电状态'] = '停电'
         elif df_btsvol.loc[j,'输入电压(V)'] - df_btsvol.loc[j+1,'输入电压(V)'] <= -0.3:
