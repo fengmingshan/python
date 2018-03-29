@@ -33,8 +33,8 @@ all_files = os.listdir(data_path)
 vo_file_list = []
 for file in all_files:
     if '-fm-envi-info' in file:
-        if (get_time_info(file).split(' ')[0] == today 
-        or get_time_info(file).split(' ')[0] == yestoday):
+        #if (get_time_info(file).split(' ')[0] == today 
+        #or get_time_info(file).split(' ')[0] == yestoday):
             vo_file_list.append(file)
 
 df_vol = pd.DataFrame(columns=['名称','系统号','BTS类型','输入电压(V)','更新时间'])
@@ -54,6 +54,7 @@ for i in range(0,len(vo_file_list),1):
     df_file = df_file.groupby(by='别名',as_index=False)[['系统号','BTS类型','输入电压(V)','更新时间']].max() 
     df_file.rename(columns=({'别名':'名称'}), inplace=True)
     df_vol = df_vol.append(df_file,ignore_index=True)
+    df_vol = df_vol.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
     
 df_low_power = df_vol[df_vol['输入电压(V)']<50]     # 筛选电池电压低于50v的基站，可能发生了停电
 low_power_bts =  list(set(list(df_low_power['名称'])))  # 通过转换为set去重复
@@ -82,28 +83,36 @@ for i in range(0,len(low_power_bts),1):
     end_time = df_btsvol.loc[len(df_btsvol)-1,'更新时间']     
     break_time = [] # 用来存储停电时间
     resume_time = [] # 用来存储恢复时间
+    if df_btsvol.loc[0,'市电状态'] =='停电':
+        break_time.append(start_time)
     for k in range(0,len(df_btsvol)-1,1):
-        if df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'输入电压(V)'] < 53.5 :
+        if df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'输入电压(V)'] < 55 :
             break_time.append(df_btsvol.loc[k+1,'更新时间'])
-        elif df_btsvol.loc[k,'市电状态'] =='来电' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'输入电压(V)'] < 53.5 :
+        elif df_btsvol.loc[k,'市电状态'] =='来电' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'输入电压(V)'] < 55 :
             break_time.append(df_btsvol.loc[k+1,'更新时间'])
-        elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'输入电压(V)'] <53.5:
+        elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'输入电压(V)'] <54:
             resume_time.append(df_btsvol.loc[k+1,'更新时间'])
-        elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'输入电压(V)'] <53.5:
+        elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'输入电压(V)'] <54:
             resume_time.append(df_btsvol.loc[k+1,'更新时间'])
+
     if len(break_time) == 0 and  len(resume_time) > 0:
-        break_time.insert(0,start_time)     # 如果break_time没有值，则说明停电发生在更早的时间，则视为发生在start_time
+        break_time.append(start_time)     # 如果break_time没有值，则说明停电发生在更早的时间，则视为发生在start_time
+    elif len(break_time) > 1 and  len(resume_time) == 0:
+        break_time = [break_time[0]]    #如果有多条停电时间没有恢复时间，则说明停电一直没有恢复，则只需保留第一条停电记录就行了
     elif len(break_time) > 0 and  len(resume_time) > 0:
-        if time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S') < time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S') : 
-            break_time.insert(0,start_time)     # 如果第一次回复时间比第一次停电时间还早，则说明在start_time之前发生了停电
-        break_time_copy = break_time[:]    # [:]是深拷贝，注意这里还有有个大坑，详见下面的注释。 
         if len(break_time) > len(resume_time):
-            for element in break_time_copy:
-                if  break_time_copy.index(element) > len(resume_time)-1 and time.strptime(element,'%Y-%m-%d %H:%M:%S') < time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
-                    break_time.remove(element)
+            for l in reversed(range(len(resume_time),len(break_time),1)):
+                if time.strptime(break_time[l],'%Y-%m-%d %H:%M:%S') < time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
+                    break_time.pop(l)
+        if time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S'):
+            resume_time.pop(0)  #如果第一次停电时间比第一次恢复时间还早，则说明停电时间发生在更早，则第一次恢复时间无意思，删除
+        if len(break_time) > len(resume_time):
+            for m in range(0,len(resume_time),1):
+                if time.strptime(break_time[m],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[m],'%Y-%m-%d %H:%M:%S'):
+                    resume_time.pop(m)
 # =============================================================================
 #   注意这里有个大坑，如果通过循环遍历删除list：break_time中的元素，list后面的元素会自动向上补位，导致循环报错
-#   所有需要复制一份list的副本作为循环的条件，然后删除原list中的值                      
+#   所有需要复制一份list的副本作为循环的条件，然后删除原list中的值。或者倒序删除                    
 # =============================================================================
     for n in range(0,len(break_time),1):
         df_down_tmp.loc[n,'名称'] = df_btsvol.loc[0,'名称']
