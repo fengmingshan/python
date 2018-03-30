@@ -33,8 +33,8 @@ all_files = os.listdir(data_path)
 vo_file_list = []
 for file in all_files:
     if '-fm-envi-info' in file:
-        #if (get_time_info(file).split(' ')[0] == today 
-        #or get_time_info(file).split(' ')[0] == yestoday):
+        if (get_time_info(file).split(' ')[0] == today 
+        or get_time_info(file).split(' ')[0] == yestoday):
             vo_file_list.append(file)
 
 df_vol = pd.DataFrame(columns=['名称','系统号','BTS类型','输入电压(V)','更新时间'])
@@ -101,8 +101,8 @@ for i in range(0,len(low_power_bts),1):
         break_time = [break_time[0]]    #如果有多条停电时间没有恢复时间，则说明停电一直没有恢复，则只需保留第一条停电记录就行了
     elif len(break_time) > 0 and  len(resume_time) > 0:
         if len(break_time) > len(resume_time):
-            for l in reversed(range(len(resume_time),len(break_time),1)):
-                if time.strptime(break_time[l],'%Y-%m-%d %H:%M:%S') < time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
+            for l in reversed(range(len(resume_time)+1,len(break_time),1)):
+                if time.strptime(break_time[l],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
                     break_time.pop(l)
         if time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S'):
             resume_time.pop(0)  #如果第一次停电时间比第一次恢复时间还早，则说明停电时间发生在更早，则第一次恢复时间无意思，删除
