@@ -84,7 +84,11 @@ if len(file_list) > 1:
     df_state['状态']=df_state['状态'].map(lambda x:x.replace('---','正常'))
     df_state = pd.merge(df_state,df_eNodeB_name,how='left',on='eNodeB')
     df_state['基站名称']=df_state['网元名称']
-    df_state =df_state.drop('网元名称',axis=1)
+    df_state = df_state.drop('网元名称',axis=1)
+    df_state = df_state.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
+    df_state = df_state.reset_index()
+    del df_state['index']
+
     
     df_break = df_state[df_state['状态'] == '断站'] #筛选出所有发生郭断站的基站
     break_set=set(list(df_break['eNodeB'])) # 断站基站去重复
@@ -92,7 +96,6 @@ if len(file_list) > 1:
         
     for i in range(0,len(break_bts),1):
         df_tmp = df_state[df_state['eNodeB'] == break_bts[i]] # 逐个筛选出发生过断站的基站，包含已恢复的
-        df_tmp = df_tmp.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
         df_tmp = df_tmp.reset_index()
         break_list = []
         resume_list = []

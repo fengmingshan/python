@@ -213,6 +213,10 @@ def task():
         df_state = pd.merge(df_state,df_eNodeB_name,how='left',on='eNodeB')
         df_state['基站名称']=df_state['网元名称']
         df_state =df_state.drop('网元名称',axis=1)
+        df_state = df_state.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
+        df_state = df_state.reset_index()
+        del df_state['index']
+
         
         df_break = df_state[df_state['状态'] == '断站'] #筛选出所有发生郭断站的基站
         break_set=set(list(df_break['eNodeB'])) # 断站基站去重复
@@ -220,7 +224,6 @@ def task():
             
         for i in range(0,len(break_bts),1):
             df_tmp = df_state[df_state['eNodeB'] == break_bts[i]] # 逐个筛选出发生过断站的基站，包含已恢复的
-            df_tmp = df_tmp.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
             df_tmp = df_tmp.reset_index()
             break_list = []
             resume_list = []
@@ -287,6 +290,7 @@ def task():
         df_vol = pd.merge(df_vol,df_eNodeB_name,how = 'left',on = 'eNodeB')
         df_vol['基站名称'] = df_vol['网元名称']
         df_vol['区县']=df_vol['基站名称'].map(lambda x:x.split('_')[1][2:4])
+        df_vol = df_vol.sort_values(by='采集时间',ascending = True) # 按时间顺序升序排列
         df_vol=df_vol.reset_index()
         del df_vol['网元名称']
         del df_vol['index']
@@ -323,9 +327,9 @@ def task():
                     break_time.append(df_btsvol.loc[k+1,'采集时间'])
                 elif df_btsvol.loc[k,'市电状态'] =='来电' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'直流电压'] < 55 :
                     break_time.append(df_btsvol.loc[k+1,'采集时间'])
-                elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <54:
+                elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <55:
                     resume_time.append(df_btsvol.loc[k+1,'采集时间'])
-                elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <54:
+                elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <55:
                     resume_time.append(df_btsvol.loc[k+1,'采集时间'])
             
             if len(break_time) == 0 and  len(resume_time) > 0:
@@ -403,7 +407,7 @@ def task():
         current_time = current_time.replace(':','.')
         
         writer = pd.ExcelWriter(out_path + current_time + '_基站断站及停电.xls')
-        #df_result.to_excel(writer,current_time + '_断站') 
+        df_result.to_excel(writer,current_time + '_断站') 
         df_power_down.to_excel(writer,current_time +'_停电') 
         df_vol.to_excel(writer,'电压原始数据') 
         writer.save()
