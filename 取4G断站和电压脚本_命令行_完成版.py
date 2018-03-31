@@ -7,7 +7,9 @@ Created on Tue Mar  6 10:41:21 2018
 import pyautogui # 
 import sched # 导入定时任务库
 import time # 导入time模块
-import datetime
+from datetime import datetime
+from datetime import timedelta
+
 import os
 import pandas as pd
 
@@ -22,7 +24,7 @@ width, height = pyautogui.size()
 
 def task():
     sche.enter(1800,1,task)  # 调用sche实力的enter方法创建一个定时任务，1800秒之后执行，任务内容执行task()函数
-    current_time = str(datetime.datetime.today()).split('.')[0]
+    current_time = str(datetime.today()).split('.')[0]
     print('任务开始时间:',current_time)
 
 # =============================================================================
@@ -144,7 +146,7 @@ def task():
     pyautogui.click()
     
     
-    current_time = str(datetime.datetime.today()).split('.')[0]
+    current_time = str(datetime.today()).split('.')[0]
     print('任务结束时间:',current_time)
     
 
@@ -160,8 +162,8 @@ def task():
     # =============================================================================
     # 处理SCTP状态数据
     # =============================================================================
-    #today = datetime.datetime.today()
-    #yestoday = today - datetime.timedelta(1)
+    #today = datetime.today()
+    #yestoday = today - timedelta(1)
     #today = str(today).split(' ')[0]
     #yestoday = str(yestoday).split(' ')[0]
     today = '2018-03-30'
@@ -231,15 +233,15 @@ def task():
             end_time = df_tmp.loc[len(df_tmp)-1,'更新时间']     # 取最后一条记录时间为end_time
             if '正常' not in list(df_tmp['状态']):  # 如果状态全是断站，则断站开始时间为第一条记录时间
                 break_list.append(start_time)
+            elif df_tmp.loc[0,'状态'] =='断站':     # 如果第一条就是断站，则使用后面的前后关联方法无法提取出来，所以单独提取断站时间
+                break_list.append(start_time)
             else:    
                 for j in range(0,len(df_tmp)-1,1):
                     if df_tmp.loc[j,'状态'] == '断站' and df_tmp.loc[j+1,'状态'] == '正常': # 如果断站后面有一行正常状态则表示故障恢复
                         resume_list.append(df_tmp.loc[j+1,'更新时间'])
                     elif df_tmp.loc[j,'状态'] == '正常'  and df_tmp.loc[j+1,'状态'] == '断站': # 如果‘正常’后面有一行‘断站’则表示发生断站
                         break_list.append(df_tmp.loc[j+1,'更新时间'])
-            if len(break_list) == 0 and len(resume_list) > 0:  # 表示从第一条记录开始就是断站，则断站时间一定是 start_time
-                break_list.insert(0,start_time)
-            elif len(resume_list) == 0 and len(break_list) > 0:  # 表示发生过断站但一直没恢复，无需处理
+            if len(resume_list) == 0 and len(break_list) > 0:  # 表示发生过断站但一直没恢复，无需处理
                 pass                
             elif len(break_list) > 0 and len(resume_list) > 0:
                 if time.strptime(resume_list[0],'%Y-%m-%d %H:%M:%S') <  time.strptime(break_list[0],'%Y-%m-%d %H:%M:%S'):
@@ -401,7 +403,7 @@ def task():
                     df_down_tmp.loc[n,'持续时间'] = (time.mktime(time.strptime(df_down_tmp.loc[n,'恢复时间'],'%Y-%m-%d %H:%M:%S')) - time.mktime(time.strptime(df_down_tmp.loc[n,'停电时间'],'%Y-%m-%d %H:%M:%S')))/60
             df_power_down = df_power_down.append(df_down_tmp,ignore_index=True)
         
-        current_time = str(datetime.datetime.today()).split('.')[0]
+        current_time = str(datetime.today()).split('.')[0]
         print('报表完成时间:',current_time)
         print('---------------------------------')
         current_time = current_time.replace(':','.')
