@@ -107,9 +107,10 @@ for i in range(0,len(low_power_bts),1):
         if time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S'):
             resume_time.pop(0)  #如果第一次停电时间比第一次恢复时间还早，则说明停电时间发生在更早，则第一次恢复时间无意思，删除
         if len(break_time) > len(resume_time):
-            for m in range(0,len(resume_time),1):
-                if time.strptime(break_time[m],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[m],'%Y-%m-%d %H:%M:%S'):
-                    resume_time.pop(m)
+            resume_time_copy = resume_time[:]
+            for m in range(0,len(resume_time_copy),1):
+                if time.strptime(break_time[m],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time_copy[m],'%Y-%m-%d %H:%M:%S'):
+                    resume_time.remove(resume_time_copy[m])
 # =============================================================================
 #   注意这里有个大坑，如果通过循环遍历删除list：break_time中的元素，list后面的元素会自动向上补位，导致循环报错
 #   所有需要复制一份list的副本作为循环的条件，然后删除原list中的值。或者倒序删除                    

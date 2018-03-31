@@ -28,53 +28,58 @@ def task():
 # =============================================================================
 # 登陆BSC    
 # =============================================================================
+    pyautogui.hotkey('winleft', 'd')    # 返回桌面
+    time.sleep(1)
+
     pyautogui.moveTo(109,246, duration=0.5)   # 找到BSC客户端
     pyautogui.doubleClick()     # 双击打开BSC客户端
     
     pyautogui.moveTo(649,480, duration=0.5)   # 找到密码窗
     pyautogui.click()     # 点击
     
-    pyautogui.typewrite('Fms1234567!',0.5)  # 输入密码
-    
-    
+    pyautogui.typewrite('Fms1234567!',0.7)  # 输入密码
+
     pyautogui.moveTo(809,557, duration=0.5)   # 找到登录按钮
     pyautogui.click()     # 登录BSC客户端
+    time.sleep(5)
+    pyautogui.hotkey('altleft', 'y')
     
-    time.sleep(20)
+    pyautogui.moveTo(700,300, duration=25)   # 慢慢移动到屏幕中间等待网管加载
     
 # =============================================================================
 # 取传输状态 和电压脚本
 # =============================================================================
     
     pyautogui.hotkey('altleft', 'c')
-
+    time.sleep(2)
     pyautogui.hotkey('altleft', 'o')
-    
+    time.sleep(2)
     pyautogui.hotkey('altleft', 'm')
-    time.sleep(15)
-    
-    pyautogui.moveTo(561,100, duration=0.5)   # 找到批处理标签
+    time.sleep(3)
+
+       
+    pyautogui.moveTo(484,101, duration=20)   # 找到批处理标签
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(785,145, duration=0.5)   # 找到选择网元
+    pyautogui.moveTo(705,145, duration=0.5)   # 找到选择网元
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(586,217, duration=0.5)   # 选择OMMB1
+    pyautogui.moveTo(506,217, duration=0.5)   # 选择OMMB1
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(753,404, duration=0.5)   # 找到确定
+    pyautogui.moveTo(678,402, duration=0.5)   # 找到确定
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(913,148, duration=0.5)   # 找到导入脚本按钮
+    pyautogui.moveTo(835,146, duration=0.5)   # 找到导入脚本按钮
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(640,511, duration=0.5)   # 找到文件名框
+    pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名框
     pyautogui.click()     # 点击
     
     pyautogui.typewrite('SCTP_ommb1.txt',0.4)  # 输入文件名
     pyautogui.press('enter')
     
-    pyautogui.moveTo(808,144, duration=0.5)   # 找到运行按钮
+    pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
     pyautogui.click()     # 点击
     
     pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
@@ -89,28 +94,28 @@ def task():
         pyautogui.moveTo(700,300, duration=2)   # 画框
         time.sleep(1)   # 等待任务执行
             
-    pyautogui.moveTo(785,145, duration=0.5)   # 找到选择网元
+    pyautogui.moveTo(705,145, duration=0.5)   # 找到选择网元
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(586,217, duration=0.5)   # 取消选择OMMB1
+    pyautogui.moveTo(506,217, duration=0.5)   # 取消选择OMMB1
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(585,240, duration=0.5)   # 选择OMMB2
+    pyautogui.moveTo(507,240, duration=0.5)   # 选择OMMB2
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(753,404, duration=0.5)   # 找到确定
+    pyautogui.moveTo(678,402, duration=0.5)   # 找到确定
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(913,148, duration=0.5)   # 找到导入脚本按钮
+    pyautogui.moveTo(835,146, duration=0.5)   # 找到导入脚本按钮
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(640,511, duration=0.5)   # 找到文件名框
+    pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名框
     pyautogui.click()     # 点击
     
     pyautogui.typewrite('SCTP_ommb2.txt',0.4)  # 输入文件
     pyautogui.press('enter')
     
-    pyautogui.moveTo(808,144, duration=0.5)   # 找到运行按钮
+    pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
     pyautogui.click()     # 点击
     
     pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
@@ -133,7 +138,7 @@ def task():
     pyautogui.hotkey('altleft', 'y') # 确认注销
     time.sleep(6) 
 
-    pyautogui.moveTo(891,320, duration=0.5)   # 关闭登陆窗
+    pyautogui.moveTo(895,320, duration=0.5)   # 关闭登陆窗
     pyautogui.click()
     pyautogui.moveTo(684,484, duration=0.5)   # 确认退出
     pyautogui.click()
@@ -172,7 +177,7 @@ def task():
     file_list = []
     file_delete = [] 
     for file in all_files:
-        if '-云南曲靖电信LTE' in file: # 找出今天采集的所有记录文件
+        if 'QJ_OMMB' in file: # 找出今天采集的所有记录文件
             if get_data_info(file).split(' ')[0] == today or get_data_info(file).split(' ')[0] == yestoday:
                 file_list.append(file)  
         elif '-系统命令-' in file:      #  找出不需要系统命令记录
@@ -287,7 +292,7 @@ def task():
         
         df_low_power = df_vol[df_vol['直流电压']<50]     # 筛选电池电压低于50v的基站，可能发生了停电
         low_power_bts =  list(set(list(df_low_power['eNodeB']))) #通过转换为set去重复
-        for i in range(0,len(low_power_bts)-1,1):        
+        for i in range(0,len(low_power_bts),1):        
             df_btsvol = df_vol[df_vol['eNodeB'] == low_power_bts[i]]
             df_btsvol = df_btsvol.reset_index()
             df_btsvol['市电状态'] = ''
@@ -299,7 +304,7 @@ def task():
     
             for j in range(1,len(df_btsvol)-1,1):
                 if df_btsvol.loc[j,'直流电压'] - df_btsvol.loc[j+1,'直流电压'] >= 0.3:      # 循环计算电压差，得到市电状态
-                    df_btsvol.loc[j+1,'市电状态'] = '停电'
+                    df_btsvol.loc[j,'市电状态'] = '停电'
                 elif df_btsvol.loc[j,'直流电压'] - df_btsvol.loc[j+1,'直流电压'] <= -0.3:
                     df_btsvol.loc[j,'市电状态'] = '来电'
         
@@ -359,7 +364,7 @@ def task():
         writer = pd.ExcelWriter(out_path + current_time + '_基站断站及停电.xls')
         df_result.to_excel(writer,current_time + '_断站') 
         df_power_down.to_excel(writer,current_time +'_停电') 
-        df_vol.to_excel(writer,current_time +'_电压原始数据') 
+        #df_vol.to_excel(writer,current_time +'_电压原始数据') 
         writer.save()
         
 
