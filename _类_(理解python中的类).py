@@ -28,8 +28,8 @@ Animal.__class__    #返回所在的类
 
 #现在我们需要定义一个Animal的子类:Cat猫类,它继承于Animal，但猫类比动物类多一个sex属性。
 class Cat(Animal):  #定义类：猫，它的父类是Animal，即：继承了Animal类所有的属性和方法
-   def __init__(self,name,age,sex):
-       super(Cat, self).__init__(name,age)  # 要用 super(Cat, self)初始化父类Animal的name和age属性
+   def __init__(self,sex,*args,**kwargs):
+       super(Cat, self).__init__(*args,**kwargs)  # 要用 super(Cat, self)初始化父类Animal的name和age属性
        self.sex=sex     #自己新增的属性sex单独定义
 
 if __name__ == '__main__':  # 当类被引用时下面代码不会执行，只有在它位于自己的模块才会执行，一般用于调试
