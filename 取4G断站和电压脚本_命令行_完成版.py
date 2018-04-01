@@ -354,12 +354,16 @@ def task():
                 break_time = [break_time[0]]    #如果有多条停电时间没有恢复时间，则说明停电一直没有恢复，则只需保留第一条停电记录就行了
             elif len(break_time) > 0 and  len(resume_time) > 0:
                 lis_tmp=[] 
-                for k in range(0,len(break_time),1) :
-                    if time.strptime(break_time[k],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
-                        lis_tmp.append(break_time[k])  # 找出时间晚于最后一次恢复时间的所有停电，可以视为都是一次停电
+                break_time_copy = break_time[:]
+                for k in range(0,len(break_time_copy),1) :
+                    if time.strptime(break_time_copy[k],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
+                        lis_tmp.append(break_time_copy[k])  # 找出时间晚于最后一次恢复时间的所有停电，可以视为都是一次停电
                         if len(lis_tmp) > 1:
                             for m in range(1,len(lis_tmp),1):
-                                break_time.remove(lis_tmp[m]) # 保留最早的一条，其余可视为重复记录删除                        
+                                if lis_tmp[m] in break_time:
+                                    break_time.remove(lis_tmp[m]) # 保留最早的一条，其余可视为重复记录删除   
+                    # 注意这里有个大坑，list.remove元素的时候，后面的元素会向上补位，导致index发生改变。
+                    # 迭代就会因为index不存在而发生错误。所以要复制一个list的副本进行迭代。
                 if time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S'):
                     resume_time.pop(0)  #如果第一次停电时间比第一次恢复时间还晚，则说明停电时间发生在更早，则第一次恢复时间无意思，删除        
             if len(break_time) > 1 and  len(resume_time) > 0:
