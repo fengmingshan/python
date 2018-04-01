@@ -38,10 +38,19 @@ for vofile in vo_files:
             file_list.append(vofile)  # 找出昨天天采集的所有文件
 
 df_eNodeB_name = pd.read_excel(data_path +eNodeB_name ,encoding='utf-8') 
-df_one_day = pd.DataFrame(columns=['eNodeB','网元名称','区县'])
-df_one_day['eNodeB'] = df_eNodeB_name['eNodeB']
-df_one_day['网元名称'] = df_eNodeB_name['网元名称']
-df_one_day['区县'] = df_eNodeB_name['网元名称'].map(lambda x:x.split('QJ')[1][0:2])
+df_eNodeB_name['区县'] = df_eNodeB_name['网元名称'].map(lambda x:x.split('QJ')[1][0:2])
+
+df_OMMB1 =  df_eNodeB_name[df_eNodeB_name['网元名称'].str.contains('麒麟')|
+                           df_eNodeB_name['网元名称'].str.contains('沾益')|
+                           df_eNodeB_name['网元名称'].str.contains('马龙')|
+                           df_eNodeB_name['网元名称'].str.contains('陆良')
+]
+df_OMMB2 =  df_eNodeB_name[df_eNodeB_name['网元名称'].str.contains('宣威')|
+                           df_eNodeB_name['网元名称'].str.contains('会泽')|
+                           df_eNodeB_name['网元名称'].str.contains('富源')|
+                           df_eNodeB_name['网元名称'].str.contains('师宗')|
+                           df_eNodeB_name['网元名称'].str.contains('罗平')
+]
 
 for i in range(0,48,1):
     df_one_day['时间_%s'% str(i+1)] =''
