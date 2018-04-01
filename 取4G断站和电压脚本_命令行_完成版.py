@@ -152,20 +152,21 @@ def task():
     #==============================================================================
     # 设置环境变量
     #==============================================================================
-    data_path = r'F:\4G_SCTP_Voltage_data'+'\\'
-    out_path = r'F:\_中兴4G网管断站与停电'+'\\'
-    bak_path = r'F:\SCTP_Voltage_data_备份' + '\\'
+    data_path = r'D:\4G_voltage'+'\\'
+    out_path = r'D:\4G_voltage'+'\\'
+    bak_path = r'D:\4G_voltage' + '\\'
     eNodeB_name='eNode_name.xls'
     df_eNodeB_name = pd.read_excel(data_path + eNodeB_name ,dtype =str,encoding='utf-8') 
     df_eNodeB_name['eNodeB'] =df_eNodeB_name['eNodeB'].astype(int)
     # =============================================================================
     # 处理SCTP状态数据
     # =============================================================================
-    today = datetime.datetime.today()
-    yestoday = today - datetime.timedelta(1)
-    today = str(today).split(' ')[0]
-    yestoday = str(yestoday).split(' ')[0]
-    
+    #today = datetime.datetime.today()
+    #yestoday = today - datetime.timedelta(1)
+    #today = str(today).split(' ')[0]
+    #yestoday = str(yestoday).split(' ')[0]
+    today = '2018-03-30'
+    yestoday = '2018-03-29'
     def get_data_info(file):    # 定义从文件中获取日期信息的函数
         data_array = file.split('-')[3]
         time_array1 = file.split('-')[4]
@@ -202,7 +203,7 @@ def task():
     
     if len(file_list) > 1:
         df_state=pd.DataFrame(columns=('eNodeB','基站名称','状态','更新时间')) # 新建表格用于存放基站状态汇总数据
-        df_result=pd.DataFrame(columns=('eNodeB','基站名称','状态','发生时间','持续时间（分钟）','恢复时间')) #创建表格用于存放断站数据    
+        df_result=pd.DataFrame(columns=('eNodeB','基站名称','状态','发生时间','持续时间（分钟）','恢复时间','数据更新时间')) #创建表格用于存放断站数据    
         for file_name in file_list:
             updata_time = get_data_info(file_name)  # 通过原始文件名获取数据采集的时间
             file_tmp = open(data_path + file_name,'r',encoding='gbk')  # 用零时文件读取原始记录文件
@@ -258,12 +259,14 @@ def task():
                 if time.strptime(resume_list[0],'%Y-%m-%d %H:%M:%S') <  time.strptime(break_list[0],'%Y-%m-%d %H:%M:%S'):
                     break_list.insert(0, start_time)    # 如果恢复时间比断站时间还早则说明在更早的时候还有一次断站，断站时间为 start_time
             
-            df_result_tmp = pd.DataFrame(columns=('eNodeB','基站名称','状态','发生时间','持续时间（分钟）','恢复时间')) #创建表格用于存放断站数据    
+            df_result_tmp = pd.DataFrame(columns=('eNodeB','基站名称','状态','发生时间','持续时间（分钟）','恢复时间','数据更新时间')) #创建表格用于存放断站数据    
             for k in range(0,len(break_list),1): 
                 df_result_tmp.loc[k,'eNodeB']= df_tmp.loc[0,'eNodeB']
                 df_result_tmp.loc[k,'基站名称']= df_tmp.loc[0,'基站名称']
                 df_result_tmp.loc[k,'状态']='断站'
                 df_result_tmp.loc[k,'发生时间']= break_list[k] 
+                df_result_tmp.loc[k,'数据更新时间']= end_time
+
                 if len(resume_list) > k:
                     df_result_tmp.loc[k,'恢复时间']= resume_list[k] 
                 df_result_tmp = df_result_tmp.fillna('-')
@@ -418,8 +421,9 @@ def task():
         
         writer = pd.ExcelWriter(out_path + current_time + '_基站断站及停电.xls')
         df_result.to_excel(writer,current_time + '_断站') 
+        #df_state.to_excel(writer,'断站原始数据') 
         df_power_down.to_excel(writer,current_time +'_停电') 
-        #df_vol.to_excel(writer,current_time +'_电压原始数据') 
+        #df_vol.to_excel(writer,'电压原始数据') 
         writer.save()
         
 
