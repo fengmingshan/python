@@ -358,10 +358,9 @@ def task():
                 for k in range(0,len(break_time_copy),1) :
                     if time.strptime(break_time_copy[k],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
                         lis_tmp.append(break_time_copy[k])  # 找出时间晚于最后一次恢复时间的所有停电，可以视为都是一次停电
-                        if len(lis_tmp) > 1:
-                            for m in range(1,len(lis_tmp),1):
-                                if lis_tmp[m] in break_time:
-                                    break_time.remove(lis_tmp[m]) # 保留最早的一条，其余可视为重复记录删除   
+                if len(lis_tmp) > 1: #如果取到断站时间则继续处理
+                    for m in range(1,len(lis_tmp),1):
+                        break_time.remove(lis_tmp[m]) # 保留最早的一条，其余可视为重复记录删除   
                     # 注意这里有个大坑，list.remove元素的时候，后面的元素会向上补位，导致index发生改变。
                     # 迭代就会因为index不存在而发生错误。所以要复制一个list的副本进行迭代。
                 if time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S'):
@@ -427,7 +426,7 @@ def task():
         df_result.to_excel(writer,current_time + '_断站') 
         #df_state.to_excel(writer,'断站原始数据') 
         df_power_down.to_excel(writer,current_time +'_停电') 
-        #df_vol.to_excel(writer,'电压原始数据') 
+        df_vol.to_excel(writer,'电压原始数据') 
         writer.save()
         
 
