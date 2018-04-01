@@ -7,12 +7,10 @@ Created on Tue Mar  6 10:41:21 2018
 import pyautogui # 
 import sched # 导入定时任务库
 import time # 导入time模块
-from datetime import datetime
-from datetime import timedelta
-
+import datetime
 import os
+import shutil
 import pandas as pd
-
 
 sche=sched.scheduler(time.time,time.sleep)  # 实例化sched.scheduler类
 
@@ -24,7 +22,7 @@ width, height = pyautogui.size()
 
 def task():
     sche.enter(1800,1,task)  # 调用sche实力的enter方法创建一个定时任务，1800秒之后执行，任务内容执行task()函数
-    current_time = str(datetime.today()).split('.')[0]
+    current_time = str(datetime.datetime.today()).split('.')[0]
     print('任务开始时间:',current_time)
 
 # =============================================================================
@@ -146,7 +144,7 @@ def task():
     pyautogui.click()
     
     
-    current_time = str(datetime.today()).split('.')[0]
+    current_time = str(datetime.datetime.today()).split('.')[0]
     print('任务结束时间:',current_time)
     
 
@@ -154,21 +152,20 @@ def task():
     #==============================================================================
     # 设置环境变量
     #==============================================================================
-    data_path = r'D:\4G_voltage'+'\\'
-    out_path = r'D:\4G_voltage'+'\\'
+    data_path = r'F:\4G_SCTP_Voltage_data'+'\\'
+    out_path = r'F:\_中兴4G网管断站与停电'+'\\'
+    bak_path = r'F:\SCTP_Voltage_data_备份' + '\\'
     eNodeB_name='eNode_name.xls'
     df_eNodeB_name = pd.read_excel(data_path + eNodeB_name ,dtype =str,encoding='utf-8') 
     df_eNodeB_name['eNodeB'] =df_eNodeB_name['eNodeB'].astype(int)
     # =============================================================================
     # 处理SCTP状态数据
     # =============================================================================
-    #today = datetime.today()
-    #yestoday = today - timedelta(1)
-    #today = str(today).split(' ')[0]
-    #yestoday = str(yestoday).split(' ')[0]
-    today = '2018-03-30'
-    yestoday = '2018-03-29'
-
+    today = datetime.datetime.today()
+    yestoday = today - datetime.timedelta(1)
+    today = str(today).split(' ')[0]
+    yestoday = str(yestoday).split(' ')[0]
+    
     def get_data_info(file):    # 定义从文件中获取日期信息的函数
         data_array = file.split('-')[3]
         time_array1 = file.split('-')[4]
@@ -179,14 +176,27 @@ def task():
     
     all_files = os.listdir(data_path) 
     file_list = []
-    file_delete = [] 
+    file_delete = []
+    file_copy = []
     for file in all_files:
         if 'QJ_OMMB' in file: # 找出今天采集的所有记录文件
             if get_data_info(file).split(' ')[0] == today or get_data_info(file).split(' ')[0] == yestoday:
                 file_list.append(file)  
         elif '-系统命令-' in file:      #  找出不需要系统命令记录
             file_delete.append(file) 
-            
+    
+    vo_file_list = []
+    for file in all_files:
+        if 'QJ_OMMB' in file :
+            vo_file_list.append(file)        
+    file_copy = list(set(vo_file_list) - set(file_list))    
+    for copyfile in file_copy:
+        shutil.copy(data_path + copyfile, bak_path)     #将文件备份到bakpath    
+    print(today + '数据入库完成：本次入库 %d 个文件!' % len(file_copy))
+    
+    for deletefile in file_copy: 
+        os.remove(data_path + deletefile)   # 备份完成后，删除源文件
+        
     for file_del in file_delete:    #  删除不需要系统命令记录文件
         os.remove(data_path + file_del)
     
@@ -210,12 +220,13 @@ def task():
         df_state = df_state.reset_index()   
         df_state=df_state.drop('index',axis=1) 
         df_state['状态']=df_state['状态'].map(lambda x:x.replace('链路断开。---','断站'))
+        df_state['状态']=df_state['状态'].map(lambda x:x.replace('处理超时。---','断站'))
         df_state['状态']=df_state['状态'].map(lambda x:x.replace('---','正常'))
         df_state['eNodeB']=df_state['eNodeB'].astype(int)
         df_state = pd.merge(df_state,df_eNodeB_name,how='left',on='eNodeB')
         df_state['基站名称']=df_state['网元名称']
         df_state =df_state.drop('网元名称',axis=1)
-        df_state = df_state.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列
+        df_state = df_state.sort_values(by='更新时间',ascending = True) # 按时间顺序升序排列        
         df_state = df_state.reset_index()
         del df_state['index']
 
@@ -292,7 +303,7 @@ def task():
         df_vol = pd.merge(df_vol,df_eNodeB_name,how = 'left',on = 'eNodeB')
         df_vol['基站名称'] = df_vol['网元名称']
         df_vol['区县']=df_vol['基站名称'].map(lambda x:x.split('_')[1][2:4])
-        df_vol = df_vol.sort_values(by='采集时间',ascending = True) # 按时间顺序升序排列
+        df_vol = df_vol.sort_values(by='采集时间',ascending = True)
         df_vol=df_vol.reset_index()
         del df_vol['网元名称']
         del df_vol['index']
@@ -329,9 +340,9 @@ def task():
                     break_time.append(df_btsvol.loc[k+1,'采集时间'])
                 elif df_btsvol.loc[k,'市电状态'] =='来电' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'直流电压'] < 55 :
                     break_time.append(df_btsvol.loc[k+1,'采集时间'])
-                elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <55:
+                elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <54:
                     resume_time.append(df_btsvol.loc[k+1,'采集时间'])
-                elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <55:
+                elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <54:
                     resume_time.append(df_btsvol.loc[k+1,'采集时间'])
             
             if len(break_time) == 0 and  len(resume_time) > 0:
@@ -379,11 +390,8 @@ def task():
                     for m in range(1,len(lis_tmp),1):
                         if  lis_tmp[m] in resume_time:
                             resume_time.remove(lis_tmp[m])
-            
-            # =============================================================================
-            #   注意这里有个大坑，如果通过循环遍历删除list：break_time中的元素，list后面的元素会自动向上补位，导致循环报错
-            #   所有需要复制一份list的副本作为循环的条件，然后删除原list中的值。或者倒序删除                    
-            # =============================================================================
+
+            #填断站恢复时间表
             for n in range(0,len(break_time),1):
                 df_down_tmp.loc[n,'基站名称'] = df_btsvol.loc[0,'基站名称']
                 df_down_tmp.loc[n,'区县'] = df_btsvol.loc[0,'基站名称'].split('QJ')[1][0:2]
@@ -403,7 +411,7 @@ def task():
                     df_down_tmp.loc[n,'持续时间'] = (time.mktime(time.strptime(df_down_tmp.loc[n,'恢复时间'],'%Y-%m-%d %H:%M:%S')) - time.mktime(time.strptime(df_down_tmp.loc[n,'停电时间'],'%Y-%m-%d %H:%M:%S')))/60
             df_power_down = df_power_down.append(df_down_tmp,ignore_index=True)
         
-        current_time = str(datetime.today()).split('.')[0]
+        current_time = str(datetime.datetime.today()).split('.')[0]
         print('报表完成时间:',current_time)
         print('---------------------------------')
         current_time = current_time.replace(':','.')
@@ -411,9 +419,11 @@ def task():
         writer = pd.ExcelWriter(out_path + current_time + '_基站断站及停电.xls')
         df_result.to_excel(writer,current_time + '_断站') 
         df_power_down.to_excel(writer,current_time +'_停电') 
-        df_vol.to_excel(writer,'电压原始数据') 
+        #df_vol.to_excel(writer,current_time +'_电压原始数据') 
         writer.save()
         
+
+
 sche.enter(12,1,task)  # 调用sche实力的enter方法创建一个定时任务，12秒之后执行，任务内容执行task()函数
 
 print('task will run in 10 second') # 提示信息 10秒计时
