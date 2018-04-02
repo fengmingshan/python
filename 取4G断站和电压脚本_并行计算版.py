@@ -7,9 +7,7 @@ Created on Tue Mar  6 10:41:21 2018
 import pyautogui # 
 import sched # 导入定时任务库
 import time # 导入time模块
-from datetime import datetime
-from datetime import timedelta
-
+import datetime
 import os
 import shutil
 import pandas as pd
@@ -216,8 +214,8 @@ def task():
     # =============================================================================
     # 处理SCTP状态数据
     # =============================================================================
-    today = datetime.today()
-    yestoday = today - timedelta(days = 1)
+    today = datetime.datetime.today()
+    yestoday = today - datetime.timedelta(1)
     today = str(today).split(' ')[0]
     yestoday = str(yestoday).split(' ')[0]
     
@@ -227,40 +225,40 @@ def task():
         time_array2 = file.split('-')[5]
         time_info =  data_array[0:4] + '-' + data_array[4:6] + '-' + data_array[6:] + ' ' + time_array1[0:2]+ ':' + time_array1[2:] + ':' + time_array2[0:2]
         return time_info
-        
+    
+    
     all_files = os.listdir(data_path) 
-    file_list = []      # 需要备份的电压数据
-    file_delete = []    # 需要删除的系统记录数据
+    file_list = []
+    file_delete = []
+    file_copy = []
     for file in all_files:
-        if 'QJ_OMMB' in file: # 找出当前采集的所有记录文件
-            file_list.append(file)  
+        if 'QJ_OMMB' in file: # 找出今天采集的所有记录文件
+            if get_data_info(file).split(' ')[0] == today or get_data_info(file).split(' ')[0] == yestoday:
+                file_list.append(file)  
         elif '-系统命令-' in file:      #  找出不需要系统命令记录
             file_delete.append(file) 
-
+    
+    vo_file_list = []
+    for file in all_files:
+        if 'QJ_OMMB' in file :
+            vo_file_list.append(file)        
+    file_copy = list(set(vo_file_list) - set(file_list))    
+    for copyfile in file_copy:
+        shutil.copy(data_path + copyfile, bak_path)     #将文件备份到bakpath    
+    print(today + ' '+ '数据入库完成：本次入库 %d 个文件!' % len(file_copy))
+    
+    for deletefile in file_copy: 
+        os.remove(data_path + deletefile)   # 备份完成后，删除源文件
+        
     for file_del in file_delete:    #  删除不需要系统命令记录文件
         os.remove(data_path + file_del)
     
-    for copyfile in file_list:
-        shutil.copy(data_path + copyfile, bak_path)     #将文件备份到bakpath 
-    current_time =str(datetime.now()).split('.')[0]
-    print(current_time + ' '+ '数据入库完成：本次入库 %d 个文件!' % len(file_list))
-    
-    for deletefile in file_list: 
-        os.remove(data_path + deletefile)   # 备份完成后，删除源文件
-     
-    calc_file = []
-    bak_files = os.listdir(bak_path) 
-    for file in bak_files :
-        if (get_data_info(file).split(' ')[0] == today or 
-            get_data_info(file).split(' ')[0] == yestoday):
-            calc_file.append(file)
-    
-    if len(calc_file) > 1:
+    if len(file_list) > 1:
         df_state=pd.DataFrame(columns=('eNodeB','基站名称','状态','更新时间')) # 新建表格用于存放基站状态汇总数据
         df_result=pd.DataFrame(columns=('eNodeB','基站名称','状态','发生时间','持续时间（分钟）','恢复时间','数据更新时间')) #创建表格用于存放断站数据    
-        for file_name in calc_file:
+        for file_name in file_list:
             updata_time = get_data_info(file_name)  # 通过原始文件名获取数据采集的时间
-            file_tmp = open(bak_path + file_name,'r',encoding='gbk')  # 用零时文件读取原始记录文件
+            file_tmp = open(data_path + file_name,'r',encoding='gbk')  # 用零时文件读取原始记录文件
             content = file_tmp.readlines() 
             df_state_tmp=pd.DataFrame(columns=('eNodeB','基站名称','状态','更新时间')) # 新建零时表格用于存放打开的原始记录
             for i in range(0,len(content)-2,1) :
@@ -342,10 +340,10 @@ def task():
     df_power_down = pd.DataFrame(columns=['基站名称','区县','eNodeB','当前电压',
             '市电状态','停电时间','持续时间','恢复时间','数据更新时间'])  # 停电基站表，用于装停电基站
     
-    if len(calc_file) > 0:
-        for vofile_name in calc_file:        
+    if len(file_list) > 0:
+        for vofile_name in file_list:        
             collect_time = get_data_info(vofile_name)  # 通过文件名提取时间信息
-            file_tmp1 = open(bak_path + vofile_name,'r',encoding='gbk')  # 用零时文件读取原始记录文件
+            file_tmp1 = open(data_path + vofile_name,'r',encoding='gbk')  # 用零时文件读取原始记录文件
             content = file_tmp1.readlines() 
             df_tmp1=pd.DataFrame(columns=['基站名称','区县','eNodeB','直流电压','采集时间'])
             for i in range(0,len(content)-5,1):
