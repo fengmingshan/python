@@ -111,9 +111,8 @@ if len(file_ommb2) > 0:
             df_OMMB2['电压_%s' %str(i+1)] = df_tmp2['直流电压']
             
 df_result = df_result.append(df_OMMB1,ignore_index=True)
-df_result = df_result.append(df_OMMB2,ignore_index=True)        
-df_result = df_result.fillna('-')     
-
+df_result = df_result.append(df_OMMB2,ignore_index=True)  
+      
 current_time = str(datetime.now()).split(' ')[0]    
 writer = pd.ExcelWriter(out_path + current_time+'_LTE基站电压.xls')
 df_result.to_excel(writer,current_time+'_LTE基站电压') 

@@ -63,7 +63,6 @@ for i in range(0,len(vo_file_list),1):
     df_bsc2['时间_%s' %str(i+1)] = df_tmp['更新时间']
     df_bsc2['电压_%s' %str(i+1)] = df_tmp['输入电压(V)']
 
-
 current_time = str(datetime.now()).split(' ')[0]
 df_bsc2.to_excel(out_path + current_time+'_BSC2基站电压.xls',current_time+'_3G电压') # 写入到excel
 
