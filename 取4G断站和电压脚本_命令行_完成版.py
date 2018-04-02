@@ -40,7 +40,7 @@ def task():
     pyautogui.typewrite('Fms1234567!',0.7)  # 输入密码
 
     pyautogui.moveTo(809,557, duration=0.5)   # 找到登录按钮
-    pyautogui.click()     # 登录BSC客户端
+    pyautogui.click()     # 点击登录按钮，登录BSC客户端
     time.sleep(5)
     pyautogui.hotkey('altleft', 'y')
     
@@ -55,10 +55,10 @@ def task():
     pyautogui.hotkey('altleft', 'o')
     time.sleep(2)
     pyautogui.hotkey('altleft', 'm')
-    time.sleep(3)
+    time.sleep(2)
 
        
-    pyautogui.moveTo(484,101, duration=20)   # 找到批处理标签
+    pyautogui.moveTo(484,101, duration=15)   # 找到批处理标签
     pyautogui.click()     # 点击
     
     pyautogui.moveTo(705,145, duration=0.5)   # 找到选择网元
@@ -73,11 +73,13 @@ def task():
     pyautogui.moveTo(835,146, duration=0.5)   # 找到导入脚本按钮
     pyautogui.click()     # 点击
     
-    pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名框
+    pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名输入框
     pyautogui.click()     # 点击
     
-    pyautogui.typewrite('SCTP_ommb1.txt',0.4)  # 输入文件名
+    pyautogui.typewrite('CMD1.txt',0.4)  # 输入文件名
     pyautogui.press('enter')
+    pyautogui.hotkey('altleft', 'O') # 打开文件
+
     
     pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
     pyautogui.click()     # 点击
@@ -85,16 +87,51 @@ def task():
     pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
     pyautogui.click()     # 点击
 
-    
     pyautogui.moveTo(700,300, duration=0.5)   # 移动到中间，画框，等待任务结束
-    for i in range(0,38,1):                   # 画6次，时间30秒左右
-        pyautogui.moveTo(850,300, duration=2)   # 画框
-        pyautogui.moveTo(850,450, duration=2)   # 画框
-        pyautogui.moveTo(700,450, duration=2)   # 画框
-        pyautogui.moveTo(700,300, duration=2)   # 画框
-        time.sleep(1)   # 等待任务执行
+    time.sleep(160)   # 等待任务执行
+    
+    pyautogui.moveTo(835,146, duration=20)   # 找到导入脚本按钮
+    pyautogui.click()     # 点击
+    
+    pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名输入框
+    pyautogui.click()     # 点击
+    
+    pyautogui.typewrite('CMD2.txt',0.4)  # 输入文件名
+    pyautogui.press('enter')
+    pyautogui.hotkey('altleft', 'O') # 打开文件
+
+    
+    pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
+    pyautogui.click()     # 点击
+    
+    pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
+    pyautogui.click()     # 点击
+
+    pyautogui.moveTo(700,300, duration=0.5)   # 移动到中间，画框，等待任务结束
+    time.sleep(160)   # 等待任务执行
+    
+    pyautogui.moveTo(835,146, duration=20)   # 找到导入脚本按钮
+    pyautogui.click()     # 点击
+    
+    pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名输入框
+    pyautogui.click()     # 点击
+    
+    pyautogui.typewrite('CMD3.txt',0.4)  # 输入文件名
+    pyautogui.press('enter')
+    pyautogui.hotkey('altleft', 'O') # 打开文件
+
+    
+    pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
+    pyautogui.click()     # 点击
+    
+    pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
+    pyautogui.click()     # 点击
+
+    pyautogui.moveTo(700,300, duration=0.5)   # 移动到中间，画框，等待任务结束
+    time.sleep(160)   # 等待任务执行
+
             
-    pyautogui.moveTo(705,145, duration=0.5)   # 找到选择网元
+    pyautogui.moveTo(705,145, duration=10)   # 找到选择网元
     pyautogui.click()     # 点击
     
     pyautogui.moveTo(506,217, duration=0.5)   # 取消选择OMMB1
@@ -112,9 +149,10 @@ def task():
     pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名框
     pyautogui.click()     # 点击
     
-    pyautogui.typewrite('SCTP_ommb2.txt',0.4)  # 输入文件
+    pyautogui.typewrite('CMD4.txt',0.4)  # 输入文件
     pyautogui.press('enter')
-    
+    pyautogui.hotkey('altleft', 'O') # 打开文件
+
     pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
     pyautogui.click()     # 点击
     
@@ -123,12 +161,28 @@ def task():
 
     
     pyautogui.moveTo(700,300, duration=0.5)   # 移动到中间，画框，等待任务结束
-    for i in range(0,33,1):                   # 画6次，时间30秒左右
-        pyautogui.moveTo(850,300, duration=2)   # 画框
-        pyautogui.moveTo(850,450, duration=2)   # 画框
-        pyautogui.moveTo(700,450, duration=2)   # 画框
-        pyautogui.moveTo(700,300, duration=2)   # 画框
-        time.sleep(1)   # 等待任务执行
+    time.sleep(160)   # 等待任务执行
+    
+    pyautogui.moveTo(835,146, duration=20)   # 找到导入脚本按钮
+    pyautogui.click()     # 点击
+    
+    pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名框
+    pyautogui.click()     # 点击
+    
+    pyautogui.typewrite('CMD5.txt',0.4)  # 输入文件
+    pyautogui.press('enter')
+    pyautogui.hotkey('altleft', 'O') # 打开文件
+
+    pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
+    pyautogui.click()     # 点击
+    
+    pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
+    pyautogui.click()     # 点击
+
+    
+    pyautogui.moveTo(700,300, duration=0.5)   # 移动到中间，画框，等待任务结束
+    time.sleep(160)   # 等待任务执行
+
     
     pyautogui.hotkey('altleft', 's') # 系统
     
