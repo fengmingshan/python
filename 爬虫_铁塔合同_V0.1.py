@@ -14,13 +14,13 @@ from selenium.webdriver.support.wait import WebDriverWait #等待页面加载某
 browser = webdriver.Ie()
 
 #登录页面
-url = r'http://123.126.34.146:20000/uac/web3/jsp/login/login.jsp'
+url = r'http://4a.chinatowercom.cn:20000/uac/web3/jsp/login/login.jsp'
 
 # 访问登录页面
 browser.get(url)
 
 # 等待一定时间，让js脚本加载完毕
-browser.implicitly_wait(3)
+browser.implicitly_wait(5)
 
 #输入用户名
 username = browser.find_element_by_name('loginName')
@@ -29,17 +29,16 @@ username.send_keys('yn-qujdxwh')
 
 #输入密码
 password = browser.find_element_by_id('passwd_input_placeholder')
-password.clear()
 password.send_keys('1234@dxWX')
 
 
 #点击“登录”按钮
 login_button = browser.find_element_by_id('login_btn')
-login_button.submit()
+login_button.click()
 browser.implicitly_wait(3)
 
 #打印网页源代码
 x=browser.page_source
 y=browser.page_source.encode('utf-8').decode()
-
-browser.quit()
+print(y)
+#browser.quit()

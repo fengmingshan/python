@@ -9,6 +9,7 @@ import pandas as pd
 from datetime import datetime
 from datetime import timedelta
 
+
 # =============================================================================
 # 设置环境变量
 # =============================================================================
@@ -26,11 +27,11 @@ def get_data_info(vofile):
     time_info = data_array[0:4] + '-' + data_array[4:6] + '-' + data_array[6:] + ' ' + time_array[0:2] + ':' + time_array[2:4] + ':' + time_array[4:]
     return time_info
 
-#today = datetime.today()
-#yestoday = today - timedelta(days=1)
-#today = str(today).split(' ')[0]
-#yestoday = str(yestoday).split(' ')[0]
-yestoday = '2018-04-02'
+today = datetime.today()
+yestoday = today - timedelta(days=1)
+today = str(today).split(' ')[0]
+yestoday = str(yestoday).split(' ')[0]
+#yestoday = '2018-04-02'
 
 all_files = os.listdir(data_path)
 file_ommb1=[]
@@ -72,57 +73,64 @@ for i in range(0,48,1):
     df_OMMB2['电压_%s'% str(i+1)] =''
     df_result['时间_%s'% str(i+1)] =''
     df_result['电压_%s'% str(i+1)] =''
-    
+
+def collect_voinfo(file):
+    collect_time = get_data_info(file)  # 通过文件名提取时间信息
+    with open(data_path + file,'r',encoding='gbk') as file_tmp:
+        content = file_tmp.readlines() 
+        df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
+        for i in range(0,len(content)-5,1):            
+            if 'NE=' in  content[i] and 'PM单板诊断测试' in  content[i+5]:
+                df_tmp.loc[i,'eNodeB']= content[i].split(',')[1][3:]
+                df_tmp.loc[i,'采集时间']= collect_time
+                df_tmp.loc[i,'直流电压']= float(content[i+5].split('    ')[3].split(' ')[4][:-1])
+    return df_tmp
     
 if len(file_ommb1) > 0:
-    for i in range(0,len(file_ommb1),1):        
-        collect_time = get_data_info(file_ommb1[i])  # 通过文件名提取时间信息
-        with open(data_path + file_ommb1[i],'r',encoding='gbk') as file_tmp:
-            content = file_tmp.readlines() 
-            df_tmp1 = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
-            for j in range(0,len(content)-5,1):            
-                if 'NE=' in  content[j] and 'PM单板诊断测试' in  content[j+5]:
-                    df_tmp1.loc[j,'eNodeB']= content[j].split(',')[1][3:]
-                    df_tmp1.loc[j,'采集时间']= collect_time
-                    df_tmp1.loc[j,'直流电压']= float(content[j+5].split('    ')[3].split(' ')[4][:-1])
-            if len(df_tmp1) > 0 :
-                df_tmp1 = df_tmp1.groupby(by='eNodeB',as_index=False)[['直流电压','采集时间']].max()
-                df_tmp1['eNodeB'] =  df_tmp1['eNodeB'].astype(int) 
-                df_tmp1 = pd.merge(df_ommb1_name,df_tmp1,how='left',on = 'eNodeB')              
-                df_OMMB1['时间_%s' %str(i+1)] = df_tmp1['采集时间']
-                df_OMMB1['电压_%s' %str(i+1)] = df_tmp1['直流电压']
+    n=0     # 编号表示当天的第几次采集
+    df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])   #零时表格用来汇总每次采集的几个数据
+    for i in range(0,len(file_ommb1)-2,1):        
+        df_tmp = df_tmp.append(collect_voinfo(file_ommb1[i]),ignore_index=True)
+        # 计算两个采集文件的时间差
+        time_interval = (datetime.strptime(get_data_info(file_ommb1[i+1]),"%Y-%m-%d %H:%M:%S") 
+                        - datetime.strptime(get_data_info(file_ommb1[i]),"%Y-%m-%d %H:%M:%S")).seconds 
+        if time_interval < 360: # 如果采集时间差小于360秒，则是同一次采集，把数据追加在一起
+            df_tmp = df_tmp.append(collect_voinfo(file_ommb1[i+1]),ignore_index=True)
+        elif time_interval > 360: # 如果采集时间差大于360秒，本次采集结束，则数据汇总到最终结果中
+            n += 1
+            df_tmp = df_tmp.groupby(by='eNodeB',as_index=False)[['直流电压','采集时间']].max()
+            df_tmp['eNodeB'] = df_tmp['eNodeB'].astype(int) 
+            df_tmp = pd.merge(df_ommb1_name,df_tmp,how='left',on = 'eNodeB')              
+            df_OMMB1['时间_%s' %str(n)] = df_tmp['采集时间']
+            df_OMMB1['电压_%s' %str(n)] = df_tmp['直流电压']
+            df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
+
 
 if len(file_ommb2) > 0:
-    for i in range(0,len(file_ommb2),1):
-        if get_data_info(file_ommb2[i])        
-        collect_time = get_data_info(file_ommb2[i])  # 通过文件名提取时间信息
-        with open(data_path + file_ommb1[i],'r',encoding='gbk') as file_tmp:
-            content = file_tmp.readlines() 
-            df_tmp2 = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
-            for j in range(0,len(content)-5,1):            
-                if 'NE=' in  content[j] and 'PM单板诊断测试' in  content[j+5]:
-                    df_tmp2.loc[j,'eNodeB']= content[j].split(',')[1][3:]
-                    df_tmp2.loc[j,'采集时间']= collect_time
-                    df_tmp2.loc[j,'直流电压']= float(content[j+5].split('    ')[3].split(' ')[4][:-1])                
-            if len(df_tmp2) > 0 :
-                df_tmp2 = df_tmp2.groupby(by='eNodeB',as_index=False)[['直流电压','采集时间']].max()
-                df_tmp2['eNodeB'] =  df_tmp2['eNodeB'].astype(int)
-                df_tmp2 = pd.merge(df_ommb2_name,df_tmp2,how='left',on = 'eNodeB')              
-                df_OMMB2['时间_%s' %str(i+1)] = df_tmp2['采集时间']
-                df_OMMB2['电压_%s' %str(i+1)] = df_tmp2['直流电压']
+    n = 0
+    df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
+    for i in range(0,len(file_ommb2)-1,1):
+        df_tmp = df_tmp.append(collect_voinfo(file_ommb2[i]),ignore_index=True)
+        # 计算两个采集文件的时间差
+        time_interval = (datetime.strptime(get_data_info(file_ommb2[i+1]),"%Y-%m-%d %H:%M:%S") 
+                        - datetime.strptime(get_data_info(file_ommb2[i]),"%Y-%m-%d %H:%M:%S")).seconds 
+        if time_interval < 360: # 如果采集时间差小于360秒，则是同一次采集，把数据追加在一起
+            df_tmp = df_tmp.append(collect_voinfo(file_ommb2[i+1]),ignore_index=True)
+        elif time_interval > 360: # 如果采集时间差大于360秒，本次采集结束，则数据汇总到最终结果中
+            n += 1
+            df_tmp = df_tmp.groupby(by='eNodeB',as_index=False)[['直流电压','采集时间']].max()
+            df_tmp['eNodeB'] = df_tmp['eNodeB'].astype(int) 
+            df_tmp = pd.merge(df_ommb2_name,df_tmp,how='left',on = 'eNodeB')              
+            df_OMMB2['时间_%s' %str(n)] = df_tmp['采集时间']
+            df_OMMB2['电压_%s' %str(n)] = df_tmp['直流电压']
+            df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
             
 df_result = df_result.append(df_OMMB1,ignore_index=True)
 df_result = df_result.append(df_OMMB2,ignore_index=True)  
+df_result = df_result.fillna('-')
       
 current_time = str(datetime.now()).split(' ')[0]    
 writer = pd.ExcelWriter(out_path + current_time + '_LTE基站电压.xls')
 df_result.to_excel(writer,current_time+'_LTE基站电压') 
 writer.save()
         
-df_result = pd.read_excel(out_path +current_time + '_LTE基站电压.xls' ,encoding='utf-8') 
-df_result = df_result.fillna('-')
-writer = pd.ExcelWriter(out_path + current_time + '_LTE基站电压.xls')
-df_result.to_excel(writer,current_time+'_LTE基站电压') 
-writer.save()
-
-
