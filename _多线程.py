@@ -54,3 +54,52 @@ t1.join()
 t2.join()
 print(balance)
 
+# =============================================================================
+# 如果我们要确保balance计算正确，就要给change_it()上一把锁，当某个线程开始执行change_it()时，
+# 我们说，该线程因为获得了锁，因此其他线程不能同时执行change_it()，只能等待，
+# 直到锁被释放后，获得该锁以后才能改。由于锁只有一个，无论多少线程，
+# 同一时刻最多只有一个线程持有该锁，所以，不会造成修改的冲突。
+# 创建一个锁就是通过threading.Lock()来实现：
+# =============================================================================
+balance = 0
+lock = threading.Lock()
+def run_thread(n):
+    for i in range(100000):
+        # 先要获取锁:
+        lock.acquire()
+        try:
+            # 放心地改吧:
+            change_it(n)
+        finally:
+            # 改完了一定要释放锁:
+            lock.release()
+
+# =============================================================================
+# ThreadLocal :全局对象，同时能给每个线程设定不同的属性，避免每个线程都要查字典获取自己的属性名
+# =============================================================================
+import threading
+
+# 创建全局ThreadLocal对象:
+local_school = threading.local()    # 实力化全局对象 threading.local()
+def process_student():
+    # 获取当前线程关联的student:
+    std = local_school.student      # 对学生姓名std赋值
+    print('Hello, %s (in %s)' % (std, threading.current_thread().name))
+
+def process_thread(name):
+    # 绑定ThreadLocal的student:
+    local_school.student = name     # 对全局对象赋值
+    process_student()
+
+t1 = threading.Thread(target= process_thread, args=('Alice',), name='Thread-A')
+t2 = threading.Thread(target= process_thread, args=('Bob',), name='Thread-B')
+t1.start()
+t2.start()
+t1.join()
+t2.join()
+# =============================================================================
+# 全局变量 local_school就是一个ThreadLocal对象，每个Thread对它都可以读写student属性，
+# 但互不影响。你可以把local_school看成全局变量，但每个属性如local_school.student都是线程的局部变量，
+# 可以任意读写而互不干扰，也不用管理锁的问题，ThreadLocal内部会处理。
+# =============================================================================
+
