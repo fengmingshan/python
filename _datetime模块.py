@@ -42,6 +42,15 @@ now - timedelta(days=1)
 
 now + timedelta(days=2, hours=12)
 
+# 计算时间差
+t1 = '2015-04-06 23:30:03'  
+t2 = '2015-04-07 04:28:03' 
+time_interval = datetime.strptime(t2,"%Y-%m-%d %H:%M:%S") - datetime.strptime(t1,"%Y-%m-%d %H:%M:%S") 
+t3 = str(time_interval)
+t4 = time_interval.seconds  # 表示为秒数
+t5 = time_interval.days  # 表示为天数
+
+
 # 时区转换
 from datetime import timezone
 
