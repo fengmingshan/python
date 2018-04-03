@@ -114,11 +114,14 @@ df_result = df_result.append(df_OMMB1,ignore_index=True)
 df_result = df_result.append(df_OMMB2,ignore_index=True)  
       
 current_time = str(datetime.now()).split(' ')[0]    
-writer = pd.ExcelWriter(out_path + current_time+'_LTE基站电压.xls')
+writer = pd.ExcelWriter(out_path + current_time + '_LTE基站电压.xls')
 df_result.to_excel(writer,current_time+'_LTE基站电压') 
 writer.save()
         
-
-
+df_result = pd.read_excel(out_path +current_time + '_LTE基站电压.xls' ,encoding='utf-8') 
+df_result = df_result.fillna('-')
+writer = pd.ExcelWriter(out_path + current_time + '_LTE基站电压.xls')
+df_result.to_excel(writer,current_time+'_LTE基站电压') 
+writer.save()
 
 

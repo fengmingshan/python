@@ -420,7 +420,7 @@ def task():
             if len(break_time) > 1 and  len(resume_time) > 0:
                 break_time_copy = break_time[:]
                 resume_time_copy = resume_time[:]
-                #对停电时间去重
+                #对第一次停电时间去重
                 for k in range(1,len(break_time_copy),1):
                     if  break_time_copy[k] < resume_time_copy[0]:  #找出所有时间早于第一次恢复时间的停电，除第一条
                         break_time.remove(break_time_copy[k])    # 全部删除。因为都是同一次停电，        

@@ -24,10 +24,12 @@ def get_time_info(vofile):
     time_info = date_array + ' '+ time_array[0:2] + ':' + time_array[2:4] + ':' + time_array[4:6]
     return time_info
 
-today = datetime.today()
-yestoday = today - timedelta(days=1)
-today =str(today).split(' ')[0]
-yestoday = str(yestoday).split(' ')[0]
+#today = datetime.today()
+#yestoday = today - timedelta(days=1)
+#today =str(today).split(' ')[0]
+#yestoday = str(yestoday).split(' ')[0]
+today = '2018-03-26'
+yestoday = '2018-03-27' 
 
 all_files = os.listdir(data_path)
 vo_file_list = []
@@ -100,28 +102,59 @@ for i in range(0,len(low_power_bts),1):
     elif len(break_time) > 1 and  len(resume_time) == 0:
         break_time = [break_time[0]]    #如果有多条停电时间没有恢复时间，则说明停电一直没有恢复，则只需保留第一条停电记录就行了
     elif len(break_time) > 0 and  len(resume_time) > 0:
-        if len(break_time) > len(resume_time):
-            for l in reversed(range(len(resume_time)+1,len(break_time),1)):
-                if time.strptime(break_time[l],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
-                    break_time.pop(l)
+        lis_tmp=[] 
+        break_time_copy = break_time[:]
+        for k in range(0,len(break_time_copy),1) :
+            if time.strptime(break_time_copy[k],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[len(resume_time)-1],'%Y-%m-%d %H:%M:%S'):
+                lis_tmp.append(break_time_copy[k])  # 找出时间晚于最后一次恢复时间的所有停电，可以视为都是一次停电
+        if len(lis_tmp) > 1:
+            for m in range(1,len(lis_tmp),1):
+                break_time.remove(lis_tmp[m]) # 保留最早的一条，其余可视为重复记录删除                        
         if time.strptime(break_time[0],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time[0],'%Y-%m-%d %H:%M:%S'):
-            resume_time.pop(0)  #如果第一次停电时间比第一次恢复时间还早，则说明停电时间发生在更早，则第一次恢复时间无意思，删除
-        if len(break_time) > len(resume_time):
-            resume_time_copy = resume_time[:]
-            for m in range(0,len(resume_time_copy),1):
-                if time.strptime(break_time[m],'%Y-%m-%d %H:%M:%S') > time.strptime(resume_time_copy[m],'%Y-%m-%d %H:%M:%S'):
-                    resume_time.remove(resume_time_copy[m])
+            resume_time.pop(0)  #如果第一次停电时间比第一次恢复时间还晚，则说明停电时间发生在更早，则第一次恢复时间无意思，删除        
+    if len(break_time) > 1 and  len(resume_time) > 0:
+        break_time_copy = break_time[:]
+        resume_time_copy = resume_time[:]
+        #对第一次停电时间去重
+        for k in range(1,len(break_time_copy),1):
+            if  break_time_copy[k] < resume_time_copy[0]:  #找出所有时间早于第一次恢复时间的停电，除第一条
+                break_time.remove(break_time_copy[k])    # 全部删除。因为都是同一次停电，        
+
 # =============================================================================
 #   注意这里有个大坑，如果通过循环遍历删除list：break_time中的元素，list后面的元素会自动向上补位，导致循环报错
 #   所有需要复制一份list的副本作为循环的条件，然后删除原list中的值。或者倒序删除                    
 # =============================================================================
+    if len(break_time) > 1 and  len(resume_time) > 1:
+        for k in range(1,len(resume_time),1):
+            lis_tmp=[] 
+            for l in range(1,len(break_time),1):
+                if ( time.strptime(resume_time[k-1] ,'%Y-%m-%d %H:%M:%S')<
+                    time.strptime(break_time[l] ,'%Y-%m-%d %H:%M:%S') < 
+                    time.strptime(resume_time[k] ,'%Y-%m-%d %H:%M:%S')):
+                    lis_tmp.append(break_time[l]) 
+            for m in range(1,len(lis_tmp),1):
+                if  lis_tmp[m] in break_time:
+                    break_time.remove(lis_tmp[m])
+    
+        #对恢复时间去重
+        for k in range(1,len(break_time),1):
+            lis_tmp=[] 
+            for l in range(0,len(resume_time),1):
+                if ( time.strptime(break_time[k-1] ,'%Y-%m-%d %H:%M:%S')<
+                    time.strptime(resume_time[l] ,'%Y-%m-%d %H:%M:%S') < 
+                    time.strptime(break_time[k] ,'%Y-%m-%d %H:%M:%S')):
+                    lis_tmp.append(resume_time[l]) 
+            for m in range(1,len(lis_tmp),1):
+                if  lis_tmp[m] in resume_time:
+                    resume_time.remove(lis_tmp[m])
+    
     for n in range(0,len(break_time),1):
         df_down_tmp.loc[n,'名称'] = df_btsvol.loc[0,'名称']
         df_down_tmp.loc[n,'区县'] = df_btsvol.loc[0,'名称'].split('QJ')[1][0:2]
         df_down_tmp.loc[n,'系统号'] = df_btsvol.loc[0,'系统号']
         df_down_tmp.loc[n,'当前电压'] = df_btsvol.loc[len(df_btsvol)-1,'输入电压(V)']
         df_down_tmp.loc[n,'数据更新时间'] = end_time
-
+    
         if len(break_time)-1 >= n:
             df_down_tmp.loc[n,'市电状态'] = '停电'
             df_down_tmp.loc[n,'停电时间'] = break_time[n]
@@ -139,7 +172,7 @@ current_time = current_time.replace(':','.')
 
 writer = pd.ExcelWriter(out_path + current_time + '_3G基站停电.xls')
 df_power_down.to_excel(writer,current_time + '_停电') 
-df_vol.to_excel(writer,'原始记录') 
+#df_vol.to_excel(writer,'原始记录') 
 writer.save()
 
 
