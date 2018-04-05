@@ -185,15 +185,12 @@ result_task = queue.Queue()
 class QueueManager(BaseManager):
     pass
 
-
 # 定义的函数解决下面的坑
 def posttq():
     return post_task
 
-
 def resulttq():
     return result_task
-
 
 def start():
     # 注册任务

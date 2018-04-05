@@ -477,14 +477,11 @@ def task():
         print('---------------------------------')
         current_time = current_time.replace(':','.')
         
-        writer = pd.ExcelWriter(out_path + current_time + '_基站断站及停电.xls')
-        df_result.to_excel(writer,current_time + '_断站') 
-        df_power_down.to_excel(writer,current_time +'_停电') 
-        #df_vol.to_excel(writer,current_time +'_电压原始数据') 
-        writer.save()
+        with pd.ExcelWriter(out_path + current_time + '_基站断站及停电.xls') as writer:
+            df_result.to_excel(writer,current_time + '_断站') 
+            df_power_down.to_excel(writer,current_time +'_停电') 
+            #df_vol.to_excel(writer,current_time +'_电压原始数据') 
         
-
-
 sche.enter(12,1,task)  # 调用sche实力的enter方法创建一个定时任务，12秒之后执行，任务内容执行task()函数
 
 print('task will run in 10 second') # 提示信息 10秒计时

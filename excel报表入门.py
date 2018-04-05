@@ -52,10 +52,9 @@ df3.to_excel(r'f:\test\2.xls')    #将df4导出一张xls表格
 #以下是今天的内容：
 #直接输出到表格：df3.to_excel(r'f:\test\2.xls')，这种方法的缺点是每次写入数据都会将原表覆盖掉
 #如果需要写入多页，最终只能保留一页。所以需要换一种方法写：
-writer = pd.ExcelWriter(r'f:\test\2.xls')        #定义一个对象writer，用于写入excel
-df1.to_excel(writer, 'sheet1')                       #将df1写入到sheet1
-df2.to_excel(writer, 'sheet2')                       #将df2写入到sheet2
-writer.save()                                                     #保存writer对象
+with pd.ExcelWriter(r'f:\test\2.xls') as writer:       #定义一个对象writer，用于写入excel
+    df1.to_excel(writer, 'sheet1')                       #将df1写入到sheet1
+    df2.to_excel(writer, 'sheet2')                       #将df2写入到sheet2
 
 #选取DataFrame中的行、列
 df1 = pd.read_excel(r'f:\test\A.xls',encoding='utf-8')    #导入一张excel97,2003表格赋值给df1

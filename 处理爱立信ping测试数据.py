@@ -53,15 +53,15 @@ for file in all_files:
         file_list.append(file)
         
 for record_file in file_list:
-    F= open(data_path + record_file,'r',encoding='utf-8')
-    lines = F.readlines()
-    success_record=[]
-    break_record=[]
-    for line in lines:
-        if 'is alive' in line:
-            success_record.append(line)
-        elif 'no answer from' in line:
-            break_record.append(line)
+    with open(data_path + record_file,'r',encoding='utf-8') as F:
+        lines = F.readlines()
+        success_record=[]
+        break_record=[]
+        for line in lines:
+            if 'is alive' in line:
+                success_record.append(line)
+            elif 'no answer from' in line:
+                break_record.append(line)
             
     success_record = list(x.replace(' is alive','') for x in success_record)
     break_record = list(x.replace('no answer from ','') for x in break_record)    

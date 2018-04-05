@@ -139,10 +139,9 @@ df1.to_excel(r'd:\2018年工作\2018年铁塔租费核对\核查结果\核查结
 df2.to_excel(r'd:\2018年工作\2018年铁塔租费核对\核查结果\核查结果.xls', sheet_name='本月新增订单')
 
 #在同一张表格中多次写入不同的页
-writer = pd.ExcelWriter(r'd:\2018年工作\2018年铁塔租费核对\核查结果\核查结果.xls')
-df1.to_excel(writer, '本月变化订单')
-df2.to_excel(writer, '本月新增订单')
-writer.save()
+with pd.ExcelWriter(r'd:\2018年工作\2018年铁塔租费核对\核查结果\核查结果.xls') as writer:
+    df1.to_excel(writer, '本月变化订单')
+    df2.to_excel(writer, '本月新增订单')
 
 # 数据透视表
 df_sum=pd.pivot_table(df_data,values='退服时长(分钟)',index=['区县','基站等级'],aggfunc='sum')

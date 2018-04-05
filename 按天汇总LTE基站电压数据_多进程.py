@@ -8,7 +8,9 @@ import os
 import pandas as pd 
 from datetime import datetime
 from datetime import timedelta
-
+from multiprocessing import Process
+from multiprocessing import Pool
+from multiprocessing import freeze_support
 
 # =============================================================================
 # 设置环境变量
@@ -64,14 +66,6 @@ del df_OMMB2['index']
 
 df_ommb1_name = df_OMMB1[['eNodeB']]    # 注意这里一定是双括号，如果是单括号，
 df_ommb2_name = df_OMMB2[['eNodeB']]    # 取到的只是一列，而不是一个表，就不能进行merge等操作
-df_result = pd.DataFrame(columns=['eNodeB','网元名称','区县'])
-for i in range(0,48,1):
-    df_OMMB1['时间_%s'% str(i+1)] =''
-    df_OMMB1['电压_%s'% str(i+1)] =''
-    df_OMMB2['时间_%s'% str(i+1)] =''
-    df_OMMB2['电压_%s'% str(i+1)] =''
-    df_result['时间_%s'% str(i+1)] =''
-    df_result['电压_%s'% str(i+1)] =''
 
 def collect_voinfo(file):
     collect_time = get_data_info(file)  # 通过文件名提取时间信息
@@ -84,51 +78,49 @@ def collect_voinfo(file):
                 df_tmp.loc[i,'采集时间']= collect_time
                 df_tmp.loc[i,'直流电压']= float(content[i+5].split('    ')[3].split(' ')[4][:-1])
     return df_tmp
-    
-if len(file_ommb1) > 0:
+
+def handle_files(file_list,df_ommb_name,):  
     n=0     # 编号表示当天的第几次采集
     df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])   #零时表格用来汇总每次采集的几个数据
-    for i in range(0,len(file_ommb1)-2,1):        
-        df_tmp = df_tmp.append(collect_voinfo(file_ommb1[i]),ignore_index=True)
+    df_OMMB = pd.DataFrame(columns=['eNodeB'])
+    df_OMMB['eNodeB'] = df_ommb_name['eNodeB']
+    for i in range(0,len(file_list)-2,1):        
+        df_tmp = df_tmp.append(collect_voinfo(file_list[i]),ignore_index=True)
         # 计算两个采集文件的时间差
-        time_interval = (datetime.strptime(get_data_info(file_ommb1[i+1]),"%Y-%m-%d %H:%M:%S") 
-                        - datetime.strptime(get_data_info(file_ommb1[i]),"%Y-%m-%d %H:%M:%S")).seconds 
+        time_interval = (datetime.strptime(get_data_info(file_list[i+1]),"%Y-%m-%d %H:%M:%S") 
+                        - datetime.strptime(get_data_info(file_list[i]),"%Y-%m-%d %H:%M:%S")).seconds 
         if time_interval < 360: # 如果采集时间差小于360秒，则是同一次采集，把数据追加在一起
-            df_tmp = df_tmp.append(collect_voinfo(file_ommb1[i+1]),ignore_index=True)
+            df_tmp = df_tmp.append(collect_voinfo(file_list[i+1]),ignore_index=True)
         elif time_interval > 360: # 如果采集时间差大于360秒，本次采集结束，则数据汇总到最终结果中
             n += 1
             df_tmp = df_tmp.groupby(by='eNodeB',as_index=False)[['直流电压','采集时间']].max()
             df_tmp['eNodeB'] = df_tmp['eNodeB'].astype(int) 
-            df_tmp = pd.merge(df_ommb1_name,df_tmp,how='left',on = 'eNodeB')              
-            df_OMMB1['时间_%s' %str(n)] = df_tmp['采集时间']
-            df_OMMB1['电压_%s' %str(n)] = df_tmp['直流电压']
+            df_tmp = pd.merge(df_ommb_name,df_tmp,how='left',on = 'eNodeB') 
+            df_OMMB['时间_%s' %str(n)] = df_tmp['采集时间']
+            df_OMMB['电压_%s' %str(n)] = df_tmp['直流电压']
             df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
+    return df_OMMB
+         
 
-if len(file_ommb2) > 0:
-    n = 0
-    df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
-    for i in range(0,len(file_ommb2)-1,1):
-        df_tmp = df_tmp.append(collect_voinfo(file_ommb2[i]),ignore_index=True)
-        # 计算两个采集文件的时间差
-        time_interval = (datetime.strptime(get_data_info(file_ommb2[i+1]),"%Y-%m-%d %H:%M:%S") 
-                        - datetime.strptime(get_data_info(file_ommb2[i]),"%Y-%m-%d %H:%M:%S")).seconds 
-        if time_interval < 360: # 如果采集时间差小于360秒，则是同一次采集，把数据追加在一起
-            df_tmp = df_tmp.append(collect_voinfo(file_ommb2[i+1]),ignore_index=True)
-        elif time_interval > 360: # 如果采集时间差大于360秒，本次采集结束，则数据汇总到最终结果中
-            n += 1
-            df_tmp = df_tmp.groupby(by='eNodeB',as_index=False)[['直流电压','采集时间']].max()
-            df_tmp['eNodeB'] = df_tmp['eNodeB'].astype(int) 
-            df_tmp = pd.merge(df_ommb2_name,df_tmp,how='left',on = 'eNodeB')              
-            df_OMMB2['时间_%s' %str(n)] = df_tmp['采集时间']
-            df_OMMB2['电压_%s' %str(n)] = df_tmp['直流电压']
-            df_tmp = pd.DataFrame(columns=['eNodeB','直流电压','采集时间'])
-            
-df_result = df_result.append(df_OMMB1,ignore_index=True)
-df_result = df_result.append(df_OMMB2,ignore_index=True)  
-df_result = df_result.fillna('-')
-      
-current_time = str(datetime.now()).split(' ')[0]    
-writer = pd.ExcelWriter(out_path + current_time + '_LTE基站电压.xls')
-df_result.to_excel(writer,current_time+'_LTE基站电压') 
-writer.save()
-        
+if __name__ == '__main__':
+    freeze_support()
+    p = Pool(2)     # 创建进程池
+    omm1 = p.apply_async(handle_files, args=(file_ommb1,df_ommb1_name))  # 添加一个进程处理ommb1
+    omm2 = p.apply_async(handle_files, args=(file_ommb2,df_ommb2_name))  # 添加一个进程处理ommb2
+    p.close()   # 关闭进程池，之后就不能添加新的进程了
+    p.join()    # 如果有进程Pool，调用join前必须调用close
+
+    df1 = omm1.get()    # 使用get()函数获取进程函数返回的结果
+    df2 = omm2.get()    # 使用get()函数获取进程函数返回的结果
+
+    df_merge = df1.append(df2,ignore_index=True)
+    df_merge = df_merge.fillna('-')
+    df_merge = pd.merge(df_eNodeB_name,df_merge,how='left',on ='eNodeB')     
+    col_list = ['eNodeB','网元名称','区县'] 
+    for i in range(0,48,1):
+        col_list.extend(['时间_'+str(i+1),'电压_'+str(i+1)])
+    df_merge = df_merge.reindex(columns=col_list)   # 下面再简单处理一下列的顺序就可以了
+    current_time = str(datetime.now()).split(' ')[0]    
+
+    with pd.ExcelWriter(out_path + current_time + '_LTE基站电压.xls') as writer:
+        df_merge.to_excel(writer,current_time+'_LTE基站电压') 

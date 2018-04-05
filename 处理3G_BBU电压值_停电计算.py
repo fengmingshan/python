@@ -170,9 +170,8 @@ for i in range(0,len(low_power_bts),1):
 current_time = str(datetime.now()).split('.')[0]
 current_time = current_time.replace(':','.')
 
-writer = pd.ExcelWriter(out_path + current_time + '_3G基站停电.xls')
-df_power_down.to_excel(writer,current_time + '_停电') 
-#df_vol.to_excel(writer,'原始记录') 
-writer.save()
+with pd.ExcelWriter(out_path + current_time + '_3G基站停电.xls') as writer:
+    df_power_down.to_excel(writer,current_time + '_停电') 
+    #df_vol.to_excel(writer,'原始记录') 
 
 
