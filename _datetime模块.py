@@ -53,6 +53,7 @@ t5 = time_interval.days  # 表示为天数
 
 # 时区转换
 from datetime import timezone
+from datetime import timedelta
 
 tz_utc_8 = timezone(timedelta(hours=8))  # 创建时区UTC+8:00
 
