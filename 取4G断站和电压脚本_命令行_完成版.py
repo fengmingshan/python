@@ -14,6 +14,17 @@ import os
 import shutil
 import pandas as pd
 
+#==============================================================================
+# 设置环境变量
+#==============================================================================
+data_path = r'D:\4G_voltage'+'\\'
+out_path = r'D:\4G_voltage'+'\\'
+bak_path = r'D:\4G_voltage\原始数据' + '\\'
+eNodeB_name='eNode_name.xls'
+df_eNodeB_name = pd.read_excel(data_path + eNodeB_name ,dtype =str,encoding='utf-8') 
+df_eNodeB_name['eNodeB'] =df_eNodeB_name['eNodeB'].astype(int)
+
+
 sche=sched.scheduler(time.time,time.sleep)  # 实例化sched.scheduler类
 
 pyautogui.FAILSAFE = False
@@ -202,17 +213,6 @@ def task():
     current_time = str(datetime.datetime.today()).split('.')[0]
     print('任务结束时间:',current_time)
     
-
-    
-    #==============================================================================
-    # 设置环境变量
-    #==============================================================================
-    data_path = r'D:\4G_voltage'+'\\'
-    out_path = r'D:\4G_voltage'+'\\'
-    bak_path = r'D:\4G_voltage\原始数据' + '\\'
-    eNodeB_name='eNode_name.xls'
-    df_eNodeB_name = pd.read_excel(data_path + eNodeB_name ,dtype =str,encoding='utf-8') 
-    df_eNodeB_name['eNodeB'] =df_eNodeB_name['eNodeB'].astype(int)
     # =============================================================================
     # 处理SCTP状态数据
     # =============================================================================
