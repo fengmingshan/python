@@ -8,11 +8,8 @@ Created on Wed Mar  7 00:10:52 2018
 import pyautogui
 # 屏幕分辨率，坐标
 pyautogui.size() # 显示屏幕分辨率
-
 screenWidth, screenHeight = pyautogui.size() # 获取屏幕分辨率
-
 currentMouseX, currentMouseY = pyautogui.position() # 获取鼠标当前坐标 
-
 x, y = pyautogui.position() # 获得鼠标所在坐标
 print(x,y)
 

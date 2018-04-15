@@ -38,6 +38,9 @@ df_result['优良率'] =  1-(df_result['CQI1-6求和']/df_result['12.2 CQI上报
 df_eric = df_result[(df_result['厂家']=='爱立信')&(df_result['优良率']>0.88)]    
 df_eric = df_eric.groupby(by='小区名称',as_index=False)[['基站名称','12.2 CQI上报总数量(次)','CQI1-6求和']].mean()  
 
+# =============================================================================
+# 质优小区
+# =============================================================================
 df_zte_good = df_result[(df_result['厂家']=='中兴')&(df_result['优良率']>0.88)]    
 df_zte_good = df_zte_good.groupby(by='小区名称',as_index=False)[['基站名称','12.2 CQI上报总数量(次)','CQI1-6求和']].mean()  
 df_zte_good['优良率'] = 1 - df_zte_good['CQI1-6求和']/ df_zte_good['12.2 CQI上报总数量(次)']
@@ -56,6 +59,9 @@ df_zte_good = df_zte_good.drop('合计')
 df_zte_good['cell_id'] = df_zte_good['小区名称'].map(lambda x: x.split('_')[0] +'_'+ x.split('_')[1])
 df_zte_good = pd.merge(df_zte_good,df_chan,how = 'left',on = 'cell_id'  )
 
+# =============================================================================
+# 质差小区
+# =============================================================================
 df_zte_worse = df_result[(df_result['厂家']=='中兴')&(df_result['优良率']<0.88)]    
 df_zte_worse = df_zte_worse.groupby(by='小区名称',as_index=False)[['基站名称','12.2 CQI上报总数量(次)','CQI1-6求和']].mean()  
 df_zte_worse['优良率'] = 1 - df_zte_worse['CQI1-6求和']/ df_zte_worse['12.2 CQI上报总数量(次)']
@@ -80,7 +86,7 @@ df_zte_worse = pd.merge(df_zte_worse,df_chan,how = 'left',on = 'cell_id'  )
 with pd.ExcelWriter(outpath + '全网.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_result.to_excel(writer,'全网指标') 
 with pd.ExcelWriter(outpath + '中兴质差.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_zte_worse.to_excel(writer,'中兴质差') 
+    df_zte_worse.to_excel(writer,'中兴质差扇区') 
     df_zte_good.to_excel(writer,'中兴优良扇区') 
 
 
