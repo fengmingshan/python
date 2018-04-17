@@ -7,13 +7,12 @@ Created on Fri Apr  6 13:21:05 2018
 import pandas as pd 
 import os
 
-
 path = r'd:\2018年工作\2018年4月CQI专项\原始数据' + '\\'
 outpath = r'd:\2018年工作\2018年4月CQI专项' + '\\'
-PhyChannel1 = 'PhyChannel_20180413_180003418.xlsx' 
-PhyChannel2 = 'PhyChannel_20180413_180126442.xlsx'
-df_chan1 =  pd.read_excel(outpath + PhyChannel1 ,encoding='utf-8')
-df_chan2 =  pd.read_excel(outpath + PhyChannel2 ,encoding='utf-8')
+PhyChannel1 = 'PhyChannel_20180416_163140689.xlsx' 
+PhyChannel2 = 'PhyChannel_20180416_163444520.xlsx'
+df_chan1 =  pd.read_excel(outpath + PhyChannel1 ,encoding='utf-8',skiprows=1)
+df_chan2 =  pd.read_excel(outpath + PhyChannel2 ,encoding='utf-8',skiprows=1)
 df_chan1 = df_chan1.drop([0,1])
 df_chan2 = df_chan2.drop([0,1])
 df_chan = df_chan1.append(df_chan1)

@@ -83,7 +83,6 @@ def write_to_file(content):       #定义输出到文件的程序
 #==============================================================================
     with open(r'D:\python\movielist.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8，'a'表示追加写入
         f.write(content+'\n')      #打开写入文件编码方式：utf-8    
-        f.close()
 
 
 
