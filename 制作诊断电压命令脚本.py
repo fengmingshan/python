@@ -6,9 +6,9 @@ Created on Tue Mar 13 09:08:06 2018
 """
 import pandas as pd
 
-path = r'D:\诊断电压脚本'+'\\'
-PM = 'PmDevice_20180415_160732343.xlsx'
-CMD = 'CMD.txt' 
+path = r'D:\制作诊断脚本'+'\\'
+PM = 'PmDevice_20180422_095603250.xlsx'
+CMD = 'CMD_OMMB1.txt' 
 
 df_PM = pd.read_excel(path + PM,skiprows=1,encoding='utf-8') 
 df_PM = df_PM.drop([0,1])

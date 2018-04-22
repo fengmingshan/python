@@ -16,6 +16,5 @@ for file in all_files:
         cols.append('时间_' + str(i))
         cols.append('电压_' + str(i))
     df_report = df_report[cols]
-
-with pd.ExcelWriter(report_path + file) as writer:
-    df_report.to_excel(writer,file.split('.')[0])
+    with pd.ExcelWriter(report_path + file) as writer:
+        df_report.to_excel(writer,file.split('.')[0])

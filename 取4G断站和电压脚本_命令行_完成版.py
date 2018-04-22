@@ -216,12 +216,12 @@ def task():
     # =============================================================================
     # 处理SCTP状态数据
     # =============================================================================
-    #today = datetime.today()
-    #yestoday = today - timedelta(days = 1)
-    #today = str(today).split(' ')[0]
-    #yestoday = str(yestoday).split(' ')[0]
-    today = '2018-04-13'
-    yestoday = '2018-04-12'
+    today = datetime.today()
+    yestoday = today - timedelta(days = 1)
+    today = str(today).split(' ')[0]
+    yestoday = str(yestoday).split(' ')[0]
+    #today = '2018-04-13'
+    #yestoday = '2018-04-12'
 
     def get_data_info(file):    # 定义从文件中获取日期信息的函数
         data_array = file.split('-')[3]
@@ -396,13 +396,13 @@ def task():
             if df_btsvol.loc[0,'市电状态'] =='停电':
                 break_time.append(start_time)
             for k in range(0,len(df_btsvol)-1,1):
-                if df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'直流电压'] < 55 :
+                if df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'直流电压'] <= 53.5 :
                     break_time.append(df_btsvol.loc[k+1,'采集时间'])
-                elif df_btsvol.loc[k,'市电状态'] =='来电' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'直流电压'] < 55 :
+                elif df_btsvol.loc[k,'市电状态'] =='来电' and df_btsvol.loc[k+1,'市电状态'] =='停电' and df_btsvol.loc[k+1,'直流电压'] <= 53.5 :
                     break_time.append(df_btsvol.loc[k+1,'采集时间'])
-                elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <54:
+                elif df_btsvol.loc[k,'市电状态'] =='' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <=53.5:
                     resume_time.append(df_btsvol.loc[k+1,'采集时间'])
-                elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <54:
+                elif df_btsvol.loc[k,'市电状态'] =='停电' and df_btsvol.loc[k+1,'市电状态'] =='来电' and df_btsvol.loc[k+1,'直流电压'] <=53.5:
                     resume_time.append(df_btsvol.loc[k+1,'采集时间'])
             
             if len(break_time) == 0 and  len(resume_time) > 0:
@@ -427,10 +427,6 @@ def task():
                 for k in range(1,len(break_time_copy),1):
                     if  break_time_copy[k] < resume_time_copy[0]:  #找出所有时间早于第一次恢复时间的停电，除第一条
                         break_time.remove(break_time_copy[k])    # 全部删除。因为都是同一次停电，        
-            # =============================================================================
-            #   注意这里有个大坑，如果通过循环遍历删除list：break_time中的元素，list后面的元素会自动向上补位，导致循环报错
-            #   所有需要复制一份list的副本作为循环的条件，然后删除原list中的值。或者倒序删除                    
-            # =============================================================================
 
             if len(break_time) > 1 and  len(resume_time) > 1:
                 for k in range(1,len(resume_time),1):
@@ -482,7 +478,7 @@ def task():
         
         with pd.ExcelWriter(out_path + current_time + '_基站断站及停电.xlsx') as writer:
             #df_state.to_excel(writer,current_time + '原始数据') 
-            df_result.to_excel(writer,current_time + '_断站') 
+            #df_result.to_excel(writer,current_time + '_断站') 
             df_power_down.to_excel(writer,current_time +'_停电') 
             #df_vol.to_excel(writer,current_time +'_电压原始数据') 
         
