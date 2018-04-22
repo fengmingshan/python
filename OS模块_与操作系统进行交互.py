@@ -95,5 +95,5 @@ os.removedirs(r'D:\Game')  #删除整个目录,目录必须是空的，否则会
 os.rmdir('dir')     #只能删除空目录 
 shutil.rmtree('dir')    #空目录、有内容的目录都可以删 
 
-os.chdir(“path”)    #转换目录
+os.chdir('path')    #转换目录
 

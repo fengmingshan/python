@@ -108,11 +108,15 @@ book = xlsxwriter.Workbook(path + 'pict.xlsx')      # 将图片插入到excel表
 sheet = book.add_worksheet('paint')
 sheet.insert_image(2,0 , path + "123.png")
 sheet.insert_image(23,0, path + "456.png")
+sheet.insert_image(2,10, path + "890.png")
+sheet.insert_image(23,10, path + "111.png")
 book.close()
 
 book = xlsxwriter.Workbook(path + 'pict2.xlsx')     # 将图片插入到excel表格中 
 sheet = book.add_worksheet('paint')
 sheet.insert_image('A2' , path + "123.png")
 sheet.insert_image('A23', path + "456.png")
+sheet.insert_image('L2', path + "890.png")
+sheet.insert_image('L23', path + "111.png")
 book.close()
 

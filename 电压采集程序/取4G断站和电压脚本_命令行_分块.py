@@ -125,66 +125,66 @@ def task():
         # =============================================================================
         # 诊断OMMB2
         # =============================================================================
-        for i in range(0,3,1):
-        bsc = os.popen(r'E:\netnumen\ems\ums-client\client.exe')
-        bsc.close()
-        time.sleep(3)
-    
-        pyautogui.moveTo(649,480, duration=0.5)   # 找到密码窗
-        pyautogui.click()     # 点击
+        for i in range(0,2,1):
+            bsc = os.popen(r'E:\netnumen\ems\ums-client\client.exe')
+            bsc.close()
+            time.sleep(3)
         
-        pyautogui.typewrite('Fms1234567!',0.7)  # 输入密码
-    
-        pyautogui.moveTo(809,557, duration=0.5)   # 找到登录按钮
-        pyautogui.click()     # 登录BSC客户端
-        time.sleep(5)
-        pyautogui.hotkey('altleft', 'y')
-        
-        pyautogui.moveTo(700,300, duration=5)   # 慢慢移动到屏幕中间等待网管加载
-    
-        pyautogui.hotkey('altleft', 'c')
-        time.sleep(1)
-        pyautogui.hotkey('altleft', 'o')
-        time.sleep(1)
-        pyautogui.hotkey('altleft', 'm')
-        time.sleep(1)
-       
-        pyautogui.moveTo(484,101, duration=5)   # 找到批处理标签
-        pyautogui.click()     # 点击
-        
-        pyautogui.moveTo(705,145, duration=0.5)   # 找到选择网元
-        pyautogui.click()     # 点击
-        
-        pyautogui.moveTo(507,240, duration=0.5)   # 选择OMMB2
-        pyautogui.click()     # 点击
-        
-        pyautogui.moveTo(678,402, duration=0.5)   # 找到确定
-        pyautogui.click()     # 点击
-        
-        for j in range (0,2,1):            
-            pyautogui.moveTo(835,146, duration=0.5)   # 找到导入脚本按钮
+            pyautogui.moveTo(649,480, duration=0.5)   # 找到密码窗
             pyautogui.click()     # 点击
             
-            pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名框
-            pyautogui.click()     # 点击
-            
-            pyautogui.typewrite(ommb2_cmd[i*4+j],0.4)  # 输入文件名
-            pyautogui.press('enter')
-            pyautogui.hotkey('altleft', 'O') # 打开文件
-            
-            pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
-            pyautogui.click()     # 点击
-            
-            pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
-            pyautogui.click()     # 点击
+            pyautogui.typewrite('Fms1234567!',0.7)  # 输入密码
         
-            pyautogui.moveTo(700,300, duration=0.5)   # 移动到中间，画框，等待任务结束
-            time.sleep(45)   # 
+            pyautogui.moveTo(809,557, duration=0.5)   # 找到登录按钮
+            pyautogui.click()     # 登录BSC客户端
+            time.sleep(5)
+            pyautogui.hotkey('altleft', 'y')
+            
+            pyautogui.moveTo(700,300, duration=5)   # 慢慢移动到屏幕中间等待网管加载
         
-        pyautogui.moveTo(1412,8, duration=0.5)   # 找到关闭BSC客户端按钮
-        pyautogui.click()     # 点击
-        time.sleep(3)   # 
-        pyautogui.hotkey('altleft', 'y')
+            pyautogui.hotkey('altleft', 'c')
+            time.sleep(1)
+            pyautogui.hotkey('altleft', 'o')
+            time.sleep(1)
+            pyautogui.hotkey('altleft', 'm')
+            time.sleep(1)
+           
+            pyautogui.moveTo(484,101, duration=5)   # 找到批处理标签
+            pyautogui.click()     # 点击
+            
+            pyautogui.moveTo(705,145, duration=0.5)   # 找到选择网元
+            pyautogui.click()     # 点击
+            
+            pyautogui.moveTo(507,240, duration=0.5)   # 选择OMMB2
+            pyautogui.click()     # 点击
+            
+            pyautogui.moveTo(678,402, duration=0.5)   # 找到确定
+            pyautogui.click()     # 点击
+            
+            for j in range (0,2,1):            
+                pyautogui.moveTo(835,146, duration=0.5)   # 找到导入脚本按钮
+                pyautogui.click()     # 点击
+                
+                pyautogui.moveTo(626,513, duration=0.5)   # 找到文件名框
+                pyautogui.click()     # 点击
+                
+                pyautogui.typewrite(ommb2_cmd[i*4+j],0.4)  # 输入文件名
+                pyautogui.press('enter')
+                pyautogui.hotkey('altleft', 'O') # 打开文件
+                
+                pyautogui.moveTo(731,145, duration=0.5)   # 找到运行按钮
+                pyautogui.click()     # 点击
+                
+                pyautogui.moveTo(685,495, duration=0.5)   # 找到确认执行按钮
+                pyautogui.click()     # 点击
+            
+                pyautogui.moveTo(700,300, duration=0.5)   # 移动到中间，画框，等待任务结束
+                time.sleep(45)   # 
+            
+            pyautogui.moveTo(1412,8, duration=0.5)   # 找到关闭BSC客户端按钮
+            pyautogui.click()     # 点击
+            time.sleep(3)   # 
+            pyautogui.hotkey('altleft', 'y')
     
     current_time = str(datetime.now()).split('.')[0]
     print('任务结束时间:',current_time)
