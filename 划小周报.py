@@ -20,5 +20,9 @@ for file in all_files:
     df_rrc_num = df_rrc_num.groupby(by='网元',as_index=False)['最大RRC连接用户数_1'].median()
     df_rrc_num['最大RRC连接用户数_1'] = df_rrc_num['最大RRC连接用户数_1'].map(lambda x:int(round(x)))    
     df_throughput =  df_tmp[['网元','空口上行用户面流量（MByte）_1','空口下行用户面流量（MByte）_1477070755617-11']]
-    df_df_throughput
+    df_throughput[['空口上行用户面流量（MByte）_1','空口下行用户面流量（MByte）_1477070755617-11']] = \
+    df_throughput[['空口上行用户面流量（MByte）_1','空口下行用户面流量（MByte）_1477070755617-11']].astype(float) 
+    df_throughput =  df_throughput.groupby(by='网元',as_index=False)[['空口上行用户面流量（MByte）_1'\
+                                       ,'空口下行用户面流量（MByte）_1477070755617-11']].sum()
+
     
