@@ -7,7 +7,7 @@ Created on Thu Apr 19 14:28:13 2018
 import pandas as pd
 import os 
 
-report_path = r'd:\test' + '\\'
+report_path = r'C:\Users\Administrator\Desktop\rename' + '\\'
 all_files = os.listdir(report_path)
 for file in all_files:
     df_report = pd.read_excel(report_path + file,encoding='utf-8') 

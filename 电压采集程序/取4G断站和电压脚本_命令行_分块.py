@@ -30,7 +30,7 @@ bak_path = r'F:\SCTP_Voltage_data_备份' + '\\'
 cmd_path = r'C:\Users\Administrator' + '\\'
 eNodeB_name='eNode_name.xls'
 df_eNodeB_name = pd.read_excel(data_path + eNodeB_name ,dtype =str,encoding='utf-8') 
-df_eNodeB_name['eNodeB'] =df_eNodeB_name['eNodeB'].astype(int)
+df_eNodeB_name['eNodeB'] = df_eNodeB_name['eNodeB'].astype(int)
 
 # =============================================================================
 # 定义数据采集和汇算任务
@@ -43,8 +43,63 @@ def task():
     pyautogui.hotkey('winleft', 'd')    # 返回桌面
     time.sleep(1)
     
+            
     # =============================================================================
-    #  获取诊断测试脚本   
+    # 拆分诊断测试命令
+    # =============================================================================
+    vol_cmd_ommb1 = 'CMD_OMMB1.txt'
+    SCTP_cmd_ommb1 = '查询SCTP脚本_ommb1.txt'
+    
+    vol_cmd_ommb2 = 'CMD_OMMB2.txt'
+    SCTP_cmd_ommb2 = '查询SCTP脚本_ommb2.txt'
+    
+    # 拆分OMMB2的诊断测试脚本                    
+    vol_file = open(cmd_path + vol_cmd_ommb1,encoding ='utf-8' ) 
+    vol_lines = vol_file.readlines()
+    random.shuffle(vol_lines)   # 对电压诊断命令洗牌
+
+    
+    sctp_file = open(cmd_path + SCTP_cmd_ommb1,encoding ='utf-8' )
+    sctp_lines = sctp_file.readlines()
+    random.shuffle(sctp_lines)  # 对电压诊断命令洗牌
+
+    
+    for i in range(0,int(len(sctp_lines)/105) + 1,1):
+        with open(cmd_path + 'B1CMD' + str(i+1) + '.txt','w',encoding ='utf-8' ) as f:
+            if i <  int(len(sctp_lines)/105) :
+                for j in range(i*105,(i+1)*105,1):
+                    f.write(vol_lines[j]) 
+                    f.write(sctp_lines[j]) 
+            else:
+                for j in range(i*105,len(vol_lines),1):
+                    f.write(vol_lines[j]) 
+                for k in range(i*105,len(sctp_lines),1):
+                    f.write(sctp_lines[k]) 
+
+    # 拆分OMMB2的诊断测试脚本                    
+    vol_file = open(cmd_path + vol_cmd_ommb2,encoding ='utf-8' ) 
+    vol_lines = vol_file.readlines()
+    random.shuffle(vol_lines)   # 对电压诊断命令洗牌
+
+    
+    sctp_file = open(cmd_path + SCTP_cmd_ommb2,encoding ='utf-8' )
+    sctp_lines = sctp_file.readlines()
+    random.shuffle(sctp_lines)  # 对电压诊断命令洗牌
+
+    for i in range(0,int(len(sctp_lines)/114) + 1,1):
+        with open(cmd_path + 'B2CMD' + str(i+1) + '.txt','w',encoding ='utf-8' ) as f:
+            if i <  int(len(sctp_lines)/114) :
+                for j in range(i*114,(i+1)*114,1):
+                    f.write(vol_lines[j]) 
+                    f.write(sctp_lines[j]) 
+            else:
+                for j in range(i*114,len(vol_lines),1):
+                    f.write(vol_lines[j]) 
+                for k in range(i*114,len(sctp_lines),1):
+                    f.write(sctp_lines[k]) 
+                    
+    # =============================================================================
+    #  获取诊断测试脚本列表   
     # =============================================================================
     cmd_files = os.listdir(cmd_path) 
     ommb1_cmd = []
@@ -54,8 +109,6 @@ def task():
             ommb1_cmd.append(file)
         elif  'B2CMD' in file:   
             ommb2_cmd.append(file)
-    random.shuffle(ommb1_cmd)
-    random.shuffle(ommb2_cmd)
     
     # =============================================================================
     # 诊断OMMB1

@@ -15,8 +15,8 @@ from multiprocessing import freeze_support
 # =============================================================================
 # 设置环境变量
 # =============================================================================
-data_path = r'D:\4G_voltage'+'\\'
-out_path = r'D:\4G_voltage'+'\\'
+data_path = r'C:\Users\Administrator\Desktop\3月发电核对\2018-03'+'\\'
+out_path = r'C:\Users\Administrator\Desktop\3月发电核对'+'\\'
 eNodeB_name = 'eNode_name.xls'
 
 #==============================================================================
@@ -32,7 +32,7 @@ def get_data_info(vofile):
 #yestoday = today - timedelta(days=1)
 #today = str(today).split(' ')[0]
 #yestoday = str(yestoday).split(' ')[0]
-yestoday = '2018-04-02'
+yestoday = '2018-03-27'
 
 all_files = os.listdir(data_path)
 file_ommb1=[]
@@ -103,24 +103,27 @@ def handle_files(file_list,df_ommb_name,):
          
 
 if __name__ == '__main__':
+    
+    current_time = str(datetime.now()).split('.')[0]
+    print('任务开始时间:',current_time)
+    
     freeze_support()
     p = Pool(2)     # 创建进程池
     omm1 = p.apply_async(handle_files, args=(file_ommb1,df_ommb1_name))  # 添加一个进程处理ommb1
     omm2 = p.apply_async(handle_files, args=(file_ommb2,df_ommb2_name))  # 添加一个进程处理ommb2
     p.close()   # 关闭进程池，之后就不能添加新的进程了
-    p.join()    # 如果有进程Pool，调用join前必须调用close
+    p.join()    # 如果有进程Pool，调用join前必须先调用close
 
     df1 = omm1.get()    # 使用get()函数获取进程函数返回的结果
     df2 = omm2.get()    # 使用get()函数获取进程函数返回的结果
-
+    df_merge = pd.DataFrame()
     df_merge = df1.append(df2,ignore_index=True)
     df_merge = df_merge.fillna('-')
     df_merge = pd.merge(df_eNodeB_name,df_merge,how='left',on ='eNodeB')     
-    col_list = ['eNodeB','网元名称','区县'] 
-    for i in range(0,48,1):
-        col_list.extend(['时间_'+str(i+1),'电压_'+str(i+1)])
-    df_merge = df_merge.reindex(columns=col_list)   # 下面再简单处理一下列的顺序就可以了
     current_time = str(datetime.now()).split(' ')[0]    
 
-    with pd.ExcelWriter(out_path + current_time + '_LTE基站电压.xls') as writer:
-        df_merge.to_excel(writer,current_time+'_LTE基站电压') 
+    with pd.ExcelWriter(out_path + yestoday + '_LTE基站电压.xls') as writer:
+        df_merge.to_excel(writer,yestoday+'_LTE基站电压') 
+    current_time = str(datetime.now()).split('.')[0]
+    print('任务结束时间:',current_time)
+

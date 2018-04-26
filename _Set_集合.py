@@ -8,4 +8,3 @@ Created on Tue Dec 19 16:32:39 2017
 basket = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
 print(basket) # 删除重复的
 
-list1=
