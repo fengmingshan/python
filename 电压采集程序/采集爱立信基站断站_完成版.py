@@ -35,19 +35,19 @@ command_list = list('ping '+ x for x in ip_list)   # 生成ping命令列表
 # 通过telnet ping测试基站
 # =============================================================================
 def ping_test(init_list,sleeptime):
-    fault_list = []
+    fault_set = set()
     for i in range(0,len(init_list),1):        
-        tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=10)     # 连接telnet服务器    
-        tn.read_until(b'login:',timeout=5)   # 登录
+        tn = telnetlib.Telnet(host='6.48.255.24',port=23, timeout=5)     # 连接telnet服务器    
+        tn.read_until(b'login:',timeout=3)   # 登录
         tn.write(b'qujing\n')      
-        tn.read_until(b'password:',timeout=5)  # 登录
+        tn.read_until(b'password:',timeout=3)  # 登录
         tn.write(b'qjjk@2017\n' )
-        if (init_list[i]+1)*100<len(command_list):
-            for j in range(init_list[i]*100,(init_list[i]+1)*100,1):
+        if (init_list[i]+1)*92<len(command_list):
+            for j in range(init_list[i]*92,(init_list[i]+1)*92,1):
                 tn.write(command_list[j].encode('ascii') + b'\n')       # 输入ping命令 
-        elif (i+1)*100 > len(command_list):
-            for j in range(init_list[i]*100,len(command_list),1):
-                tn.write(command_list[j].encode('ascii') + b'\n')       # 输入ping命令 
+        elif (i+1)*92 > len(command_list):
+            for j in range(init_list[i]*92,len(command_list),1):
+                tn.write(command_list[j].encode('ascii') + b'\n')       # 输入ping命令                 
         tn.write(b'exit'+b'\n')     # 退出telnet服务器 
         time.sleep(sleeptime)    
         #content = tn.set_debuglevel(10000)
@@ -57,16 +57,11 @@ def ping_test(init_list,sleeptime):
             tn.close()   
             current_time = str(datetime.now()).split('.')[0]
             current_time = current_time.replace(':','.')
-            output= open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')    # 将结果输出到文件夹
-            output.write(content)
-            output.close()
+            with open(data_path + current_time + '_测试结果.txt','a',encoding='utf-8')  as output:  # 将结果输出到文件夹
+                output.write(content)
         except socket.timeout:
-            fault_list.append(init_list[i])
-            if i < 9:
-                ping_test(init_list[i+1:],sleeptime)
-            else:
-                pass
-    return fault_list
+            fault_set.add(init_list[i])
+    return fault_set
 
     
 def task():
@@ -76,8 +71,9 @@ def task():
     t0 = datetime.now()
     global command_list
     random.shuffle(command_list)
-    init_list = list(range(0,10,1))
-    return_list = ping_test(init_list,sleeptime)    #以list[0,1,2..9]启动测试，如果失败，返回一个失败列表
+    init_list = list(range(0,11,1))
+    return_set = ping_test(init_list,sleeptime)    #以list[0,1,2..9]启动测试，如果失败，返回一个失败列表
+    return_list = list(return_set)
     t1 = datetime.now()
     if len(return_list) > 0:
         new_sleeptime = sleeptime + 90
@@ -193,18 +189,16 @@ def task():
         del df_break['eNBId']
         del df_break['Site Name(Chinese)']
         del df_break['Site Name']
-        
+        df_break = df_break[['eNodeB','基站名称','网管名称','IP','状态','断站时间','持续时长(分)','恢复时间','数据更新时间']]
+    
         current_time = str(datetime.now()).split('.')[0]
         current_time = current_time.replace(':','.')       
-        writer = pd.ExcelWriter(out_path + current_time + '_断站.xls')
-        df_break.to_excel(writer,current_time + '_断站') 
-        #df_total.to_excel(writer,'原始数据') 
-        writer.save()
+        with pd.ExcelWriter(out_path + current_time + '_断站.xls') as writer:
+            df_break.to_excel(writer,current_time + '_断站') 
+            #df_total.to_excel(writer,'原始数据') 
         
         print('报表生成时间：',current_time)
         print('-----------------------------')
-
-
 
 # =============================================================================
 # 延时10秒后启动任务
