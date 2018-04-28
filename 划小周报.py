@@ -9,13 +9,20 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import xlsxwriter
-from datetime import date
+
+from datetime import datetime
+from datetime import timedelta
+
+
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 
 # =============================================================================
 # 环境变量
 # =============================================================================
 data_path = r'd:\_话务量划小报表\LTE话务数据' + '\\'
 out_path = r'd:\_话务量划小报表' + '\\'
+pic_path = r'd:\_话务量划小报表\pic' + '\\'
 eNode_name = 'eNode_name.xls'
 
 os.chdir(data_path) 
@@ -32,7 +39,7 @@ df_list = list(range(0,9))
 
 df_combine = pd.DataFrame()
 for file in all_files:    
-    df_tmp = pd.read_csv(file,engine = 'python',skiprows = 5,encoding = 'gbk')
+    df_tmp = pd.read_csv(file,skiprows = 5,engine = 'python', encoding = 'gbk')
     df_tmp['空口上行用户面流量（MByte）_1'] = df_tmp['空口上行用户面流量（MByte）_1'].map(lambda x:float(x.replace(',','')))
     df_tmp['空口下行用户面流量（MByte）_1477070755617-11'] = df_tmp['空口下行用户面流量（MByte）_1477070755617-11'].map(lambda x:float(x.replace(',','')))
     df_tmp['上行PRB平均占用率_1'] = df_tmp['上行PRB平均占用率_1'].map(lambda x:float(x.replace('%',''))/100)
@@ -75,51 +82,133 @@ df_all = df_all.rename(columns={'最大RRC连接用户数_1':'开机用户数','
 df_all['总流量'] =  df_all['总流量']/1024
 df_all = df_all.reset_index()
 
+
+
 y = df_all['开机用户数'].T.values
 x = list(df_all['日期'])
 plt.figure(figsize=(6, 4))
-plt.plot(x,y,label='开机用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=12) 
+plt.plot(x,y,label='开机用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+for a,b in zip(x,y):
+    plt.text(a, b+50, '%d' % b, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('日期')
 plt.ylabel('开机用户数')
 plt.title('日开机用户数变化情况')
-plt.savefig(out_path + "全市开机用户数.png",format='png', dpi=200)  
-plt.show()
-plt.close()
-
-y = df_all['联网用户数'].T.values
-x = list(df_all['日期'])
-plt.figure(figsize=(6, 4))
-plt.plot(x,y,label='联网用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=12) 
-plt.xlabel('日期')
-plt.ylabel('联网用户数')
-plt.title('日联网用户数变化情况')
-plt.savefig(out_path + "全市联网用户数.png",format='png', dpi=200)  
+plt.savefig(pic_path + "全市开机用户数.png",format='png', dpi=200)  
 plt.show()
 plt.close()
 
 y = df_all['总流量'].T.values
 x = list(df_all['日期'])
 plt.figure(figsize=(6, 4))
-plt.plot(x,y,label='总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=12) 
+plt.plot(x,y,label='总流量(GB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+for a,b in zip(x,y):
+    plt.text(a, b+500, '%d' % b, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('日期')
-plt.ylabel('总流量')
+plt.ylabel('总流量(GB)')
 plt.title('日总流量变化情况')
-plt.savefig(out_path + "全市总流量.png",format='png', dpi=200)  
+plt.savefig(pic_path + "全市总流量.png",format='png', dpi=200)  
 plt.show()
 plt.close()
 
-book = xlsxwriter.Workbook(out_path + '全市用户数及流量.xlsx')     # 将图片插入到excel表格中 
-sheet = book.add_worksheet('全市用户数及流量')
-sheet.insert_image('A2' , out_path + "全市开机用户数.png")
-sheet.insert_image('J2', out_path + "全市联网用户数.png")
-sheet.insert_image('A23', out_path + "全市总流量.png")
-book.close()
-                                 
+#按区县和日期透视
 df_city = pd.pivot_table(df_combine, index=['区县','日期'],values=['最大RRC连接用户数_1','最大激活用户数_1','总流量'],
                          aggfunc = {'最大RRC连接用户数_1':np.sum,'最大激活用户数_1':np.sum,'总流量':np.sum})                                
 
+yestoday = str(datetime.now() - timedelta(days=1)).split(' ')[0]
+before_yestoday = str(datetime.now() - timedelta(days=2)).split(' ')[0]
+
+yestoday_new_user = []
+for country in country_list:
+    yestoday_new_user.append(df_city.loc[country , yestoday]['最大RRC连接用户数_1'] -\
+                             df_city.loc[country , before_yestoday]['最大RRC连接用户数_1'])
+plt.figure(figsize=(6, 4))
+plt.bar(country_list,yestoday_new_user,color='g',width = 0.3,alpha=0.6,label='2015年')
+for x,y in zip(country_list,yestoday_new_user):
+    plt.text(x, y+10, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+plt.xlabel('昨日新增用户数')
+plt.ylabel('区县')
+plt.title('各县昨日新增用户数')
+plt.savefig(pic_path + "各县昨日新增用户数.png",format='png', dpi=200)  
+plt.show()
+plt.close()
+
+
+book = xlsxwriter.Workbook(out_path + '全市用户数及流量.xlsx')     # 将图片插入到excel表格中 
+sheet = book.add_worksheet('全市用户数及流量')
+sheet.insert_image('A2' , pic_path + "全市开机用户数.png")
+sheet.insert_image('J2', pic_path +  "全市总流量.png")
+sheet.insert_image('A23', pic_path + "各县昨日新增用户数.png")
+book.close()
+                            
 for i in range(0,len(country_list),1):
     df_list[i] = df_combine[df_combine['区县'] == country_list[i]] 
 
-                                  
+for df_country in df_list:
+    df_country = df_country.reset_index() 
+    country_name = df_country.loc[0,'区县']
+    df_country_pivot = df_country.groupby(by = '日期',as_index=False)[['最大RRC连接用户数_1','总流量']].sum()
+    # =============================================================================
+    # 画各县开机用户数图   
+    # =============================================================================
+    x = list(df_country_pivot['日期'])
+    y = df_country_pivot['最大RRC连接用户数_1'].T.values
+    plt.figure(figsize=(6, 4))
+    plt.plot(x,y,label='开机用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+    for a,b in zip(x,y):
+        plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+    plt.xlabel('日期')
+    plt.ylabel(country_name + '开机用户数')
+    plt.title(country_name + '开机用户数')
+    plt.savefig(pic_path + country_name + "开机用户数.png",format='png', dpi=200)  
+    plt.show()
+    plt.close()                                   
+    # =============================================================================
+    # 画各县流量
+    # =============================================================================
+    x = list(df_country_pivot['日期'])
+    y = df_country_pivot['总流量'].T.values
+    plt.figure(figsize=(6, 4))
+    plt.plot(x,y,label='总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+    for a,b in zip(x,y):
+        plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+    plt.xlabel('日期')
+    plt.ylabel(country_name + '总流量')
+    plt.title(country_name + '总流量')
+    plt.savefig(pic_path + country_name + "总流量.png",format='png', dpi=200)  
+    plt.show()
+    plt.close()
+    # =============================================================================
+    # 画各支局流量图   
+    # =============================================================================
+    font1 = {'family' : 'Times New Roman', 'weight' : 'normal', 'size': 5 }  
+    substation_list = list(set(df_country['支局']))
+    df_substation_pivot = pd.pivot_table(df_country, index=['支局','日期'],values='最大RRC连接用户数_1',
+                                   aggfunc = np.sum) 
+    substation_new_user = []
+    for substation in substation_list:
+        substation_new_user.append(df_substation_pivot.loc[substation ,yestoday]['最大RRC连接用户数_1'] -\
+                                 df_substation_pivot.loc[substation,before_yestoday]['最大RRC连接用户数_1'])
+        
+    plt.figure(figsize=(6,4))
+    plt.bar(substation_list,substation_new_user,color='g',width = 0.3,alpha=0.6,label='昨日新增用户数')
+    for x,y in zip(substation_list,substation_new_user):
+        plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+    plt.xlabel('支局')
+    plt.ylabel('昨日新增用户数')
+    plt.title(country_name + '各支局昨日新增用户数')
+    plt.savefig(pic_path + country_name +"各支局昨日新增用户数.png",format='png', dpi=200)  
+    plt.show()
+    plt.close()
+
+        
+# =============================================================================
+# 生成区县汇总表格
+# =============================================================================
+book = xlsxwriter.Workbook(out_path + '各区县用户数及流量.xlsx')     # 将图片插入到excel表格中 
+for country in country_list:
+    sheet = book.add_worksheet(country + '用户数及流量')
+    sheet.insert_image('A2' , pic_path + country + "开机用户数.png")
+    sheet.insert_image('J2', pic_path + country + "总流量.png")
+book.close()
+
 
