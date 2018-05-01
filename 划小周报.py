@@ -84,7 +84,7 @@ df_combine['最大激活用户数_1'] = df_combine['最大激活用户数_1'].ma
 df_all = pd.pivot_table(df_combine, index=['日期'],values=['最大RRC连接用户数_1','最大激活用户数_1','总流量'],
                          aggfunc = {'最大RRC连接用户数_1':np.sum,'最大激活用户数_1':np.sum,'总流量':np.sum})  
 df_all = df_all.rename(columns={'最大RRC连接用户数_1':'开机用户数','最大激活用户数_1':'联网用户数'})
-df_all['总流量'] =  df_all['总流量']/1024
+df_all['总流量'] =  df_all['总流量']/(1024*1024)
 df_all = df_all.reset_index()
 
 
@@ -99,20 +99,18 @@ plt.xlabel('日期')
 plt.ylabel('开机用户数')
 plt.title('日开机用户数变化情况')
 plt.savefig(pic_path + "全市开机用户数.png",format='png', dpi=200)  
-plt.show()
 plt.close()
 
 y = df_all['总流量'].T.values
 x = list(df_all['日期'])
 plt.figure(figsize=(6, 4))
-plt.plot(x,y,label='总流量(GB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+plt.plot(x,y,label='总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
 for a,b in zip(x,y):
     plt.text(a, b+500, '%d' % b, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('日期')
-plt.ylabel('总流量(GB)')
+plt.ylabel('总流量(TB)')
 plt.title('日总流量变化情况')
 plt.savefig(pic_path + "全市总流量.png",format='png', dpi=200)  
-plt.show()
 plt.close()
 
 #按区县和日期透视
@@ -131,17 +129,12 @@ plt.xlabel('昨日新增用户数')
 plt.ylabel('区县')
 plt.title('各县昨日新增用户数')
 plt.savefig(pic_path + "各县昨日新增用户数.png",format='png', dpi=200)  
-plt.show()
 plt.close()
 
 
-book = xlsxwriter.Workbook(out_path + '全市用户数及流量.xlsx')     # 将图片插入到excel表格中 
-sheet = book.add_worksheet('全市用户数及流量')
-sheet.insert_image('A2' , pic_path + "全市开机用户数.png")
-sheet.insert_image('J2', pic_path +  "全市总流量.png")
-sheet.insert_image('A23', pic_path + "各县昨日新增用户数.png")
-book.close()
-                            
+# =============================================================================
+# 生成各区县数据
+# =============================================================================                           
 for i in range(0,len(country_list),1):
     df_list[i] = df_combine[df_combine['区县'] == country_list[i]] 
 
@@ -162,7 +155,6 @@ for df_country in df_list:
     plt.ylabel(country_name + '开机用户数')
     plt.title(country_name + '开机用户数')
     plt.savefig(pic_path + country_name + "开机用户数.png",format='png', dpi=200)  
-    plt.show()
     plt.close()                                   
     # =============================================================================
     # 画各县流量
@@ -170,14 +162,13 @@ for df_country in df_list:
     x = list(df_country_pivot['日期'])
     y = df_country_pivot['总流量'].T.values
     plt.figure(figsize=(6, 4))
-    plt.plot(x,y,label='总流量(GB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+    plt.plot(x,y,label='总流量(TB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
     for a,b in zip(x,y):
         plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
     plt.xlabel('日期')
-    plt.ylabel(country_name + '总流量(GB)')
-    plt.title(country_name + '总流量(GB)')
+    plt.ylabel(country_name + '总流量(TB)')
+    plt.title(country_name + '总流量(TB)')
     plt.savefig(pic_path + country_name + "总流量.png",format='png', dpi=200)  
-    plt.show()
     plt.close()
     # =============================================================================
     # 按支局透视 
@@ -202,7 +193,6 @@ for df_country in df_list:
     plt.ylabel('昨日新增用户数')
     plt.title(country_name + '各支局昨日新增用户数')
     plt.savefig(pic_path + country_name + "各支局昨日新增用户数.png",format='png', dpi=200)  
-    plt.show()
     plt.close()
 
     # =============================================================================
@@ -219,27 +209,29 @@ for df_country in df_list:
         plt.xlabel('日期')
         plt.ylabel(substation +'支局_开机用户数')
         plt.title(country_name + '_' +substation +'支局_开机用户数')
-        plt.savefig(pic_path + country_name + substation + "开机用户数.png",format='png', dpi=200)  
-        plt.show()
+        plt.savefig(pic_path + country_name + substation + '支局_开机用户数.png',format='png', dpi=200)  
         plt.close()                                   
 
         x = list(df_substation['日期'])
         y = df_substation['总流量'].T.values
         plt.figure(figsize=(6, 4))
-        plt.plot(x,y,label='总流量(GB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+        plt.plot(x,y,label='总流量(TB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
         for a,b in zip(x,y):
             plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
         plt.xlabel('日期')
-        plt.ylabel(substation+ '支局_总流量(GB)')
-        plt.title(country_name + '_' +substation+ '支局_总流量(GB)')
+        plt.ylabel(substation+ '支局_总流量(TB)')
+        plt.title(country_name + '_' +substation+ '支局_总流量(TB)')
         plt.savefig(pic_path + country_name + substation + "支局_总流量.png",format='png', dpi=200)  
-        plt.show()
         plt.close()                                   
         
 # =============================================================================
-# 生成区县汇总表格
+# 生成全市汇总表格
 # =============================================================================
-book = xlsxwriter.Workbook(out_path + '各区县用户数及流量.xlsx')     # 将图片插入到excel表格中 
+book = xlsxwriter.Workbook(out_path + '_全市各区县用户数及流量.xlsx')     # 将图片插入到excel表格中 
+sheet = book.add_worksheet('全市用户数及流量')
+sheet.insert_image('A2' , pic_path + "全市开机用户数.png")
+sheet.insert_image('J2', pic_path +  "全市总流量.png")
+sheet.insert_image('A23', pic_path + "各县昨日新增用户数.png")
 for country in country_list:
     sheet = book.add_worksheet(country)
     sheet.insert_image('A2' , pic_path + country + "开机用户数.png")
@@ -250,5 +242,12 @@ book.close()
 # =============================================================================
 # 生成各县表格
 # =============================================================================
-for country in country_list:
-
+for i in range(0,len(df_list),1):
+    substation_list = list(set(df_list[i]['支局']))
+    book = xlsxwriter.Workbook(out_path + country_list[i] + '各支局用户数及流量.xlsx')     # 将图片插入到excel表格中         
+    for substation in substation_list:
+        sheet = book.add_worksheet(substation)
+        sheet.insert_image('A2' , pic_path +country_list[i]+ substation + '支局_开机用户数.png')
+        sheet.insert_image('J2', pic_path + country_list[i]+ substation + "支局_总流量.png")
+    book.close()
+        
