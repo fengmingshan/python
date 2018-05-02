@@ -25,10 +25,8 @@ out_path = r'd:\_话务量划小报表' + '\\'
 pic_path = r'd:\_话务量划小报表\pic' + '\\'
 eNode_name = 'eNode_name.xls'
 
-#yestoday = str(datetime.now() - timedelta(days=1)).split(' ')[0]
-#before_yestoday = str(datetime.now() - timedelta(days=2)).split(' ')[0]
-yestoday = '2018-04-28'
-before_yestoday = '2018-04-27'
+yestoday = str(datetime.now() - timedelta(days=1)).split(' ')[0]
+before_yestoday = str(datetime.now() - timedelta(days=2)).split(' ')[0]
 
 os.chdir(data_path) 
 all_files = os.listdir() 
@@ -84,9 +82,9 @@ df_combine['最大激活用户数_1'] = df_combine['最大激活用户数_1'].ma
 df_all = pd.pivot_table(df_combine, index=['日期'],values=['最大RRC连接用户数_1','最大激活用户数_1','总流量'],
                          aggfunc = {'最大RRC连接用户数_1':np.sum,'最大激活用户数_1':np.sum,'总流量':np.sum})  
 df_all = df_all.rename(columns={'最大RRC连接用户数_1':'开机用户数','最大激活用户数_1':'联网用户数'})
-df_all['总流量'] =  df_all['总流量']/(1024*1024)
+df_all['总流量'] =  df_all['总流量'].map(lambda x:round(float(x/(1024*1024)),1))
 df_all = df_all.reset_index()
-
+df_all['日期'] =  df_all['日期'].map(lambda x:x[5:10])
 
 
 y = df_all['开机用户数'].T.values
@@ -94,7 +92,7 @@ x = list(df_all['日期'])
 plt.figure(figsize=(6, 4))
 plt.plot(x,y,label='开机用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
 for a,b in zip(x,y):
-    plt.text(a, b+50, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+    plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('日期')
 plt.ylabel('开机用户数')
 plt.title('日开机用户数变化情况')
@@ -106,7 +104,7 @@ x = list(df_all['日期'])
 plt.figure(figsize=(6, 4))
 plt.plot(x,y,label='总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
 for a,b in zip(x,y):
-    plt.text(a, b+500, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+    plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('日期')
 plt.ylabel('总流量(TB)')
 plt.title('日总流量变化情况')
@@ -116,11 +114,16 @@ plt.close()
 #按区县和日期透视
 df_city = pd.pivot_table(df_combine, index=['区县','日期'],values=['最大RRC连接用户数_1','最大激活用户数_1','总流量'],
                          aggfunc = {'最大RRC连接用户数_1':np.sum,'最大激活用户数_1':np.sum,'总流量':np.sum})                                
+df_city = df_city.reset_index()
 
 yestoday_new_user = []
+total_new_user = []
 for country in country_list:
-    yestoday_new_user.append(df_city.loc[country , yestoday]['最大RRC连接用户数_1'] -\
-                             df_city.loc[country , before_yestoday]['最大RRC连接用户数_1'])
+    df_country = df_city[df_city['区县'] == country]
+    yestoday_new_user.append(df_country.iloc[-1 , 3] - df_country.iloc[-2 , 3])
+    total_new_user.append(df_country.iloc[-1 , 3] - df_country.iloc[0 , 3])
+
+
 plt.figure(figsize=(6, 4))
 plt.bar(country_list,yestoday_new_user,color='g',width = 0.3,alpha=0.6,label='新增用户数')
 for x,y in zip(country_list,yestoday_new_user):
@@ -130,6 +133,17 @@ plt.ylabel('区县')
 plt.title('各县昨日新增用户数')
 plt.savefig(pic_path + "各县昨日新增用户数.png",format='png', dpi=200)  
 plt.close()
+
+plt.figure(figsize=(6, 4))
+plt.bar(country_list,total_new_user,color='g',width = 0.3,alpha=0.6,label='累计新增用户数')
+for x,y in zip(country_list,yestoday_new_user):
+    plt.text(x, y+10, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+plt.xlabel('累计新增用户数')
+plt.ylabel('区县')
+plt.title('各县累计新增用户数')
+plt.savefig(pic_path + "各县累计新增用户数.png",format='png', dpi=200)  
+plt.close()
+
 
 
 # =============================================================================
@@ -142,6 +156,7 @@ for df_country in df_list:
     df_country = df_country.reset_index() 
     country_name = df_country.loc[0,'区县']
     df_country_pivot = df_country.groupby(by = '日期',as_index=False)[['最大RRC连接用户数_1','总流量']].sum()
+    df_country_pivot['总流量'] = df_country_pivot['总流量'].map(lambda x:round(float(x/(1024*1024)),1))
     # =============================================================================
     # 画各县开机用户数图   
     # =============================================================================
@@ -164,7 +179,7 @@ for df_country in df_list:
     plt.figure(figsize=(6, 4))
     plt.plot(x,y,label='总流量(TB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
     for a,b in zip(x,y):
-        plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+        plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=12)
     plt.xlabel('日期')
     plt.ylabel(country_name + '总流量(TB)')
     plt.title(country_name + '总流量(TB)')
@@ -181,10 +196,13 @@ for df_country in df_list:
     # 画各支局用户数增长图  
     # =============================================================================  
     substation_new_user = []
+    substation_total_user = []
     for substation in substation_list:
         df_substation = df_substation_pivot[df_substation_pivot['支局'] == substation]
         substation_new_user.append(df_substation.iloc[-1,3]-df_substation.iloc[-2,3]) 
-        
+        substation_total_user.append(df_substation.iloc[-1,3]-df_substation.iloc[0,3]) 
+   
+     
     plt.figure(figsize=(6,4))
     plt.bar(substation_list,substation_new_user,color='g',width = 0.3,alpha=0.6,label='昨日新增用户数')
     for x,y in zip(substation_list,substation_new_user):
@@ -194,12 +212,25 @@ for df_country in df_list:
     plt.title(country_name + '各支局昨日新增用户数')
     plt.savefig(pic_path + country_name + "各支局昨日新增用户数.png",format='png', dpi=200)  
     plt.close()
+    
+    plt.figure(figsize=(6,4))
+    plt.bar(substation_list,substation_total_user,color='g',width = 0.3,alpha=0.6,label='昨日新增用户数')
+    for x,y in zip(substation_list,substation_total_user):
+        plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+    plt.xlabel('支局')
+    plt.ylabel('累计新增用户数')
+    plt.title(country_name + '各支局累计新增用户数')
+    plt.savefig(pic_path + country_name + "各支局累计新增用户数.png",format='png', dpi=200)  
+    plt.close()
+
 
     # =============================================================================
     # 画各支局日用户数、日流量
     # =============================================================================
     for substation in substation_list:
         df_substation = df_substation_pivot[df_substation_pivot['支局'] == substation]
+        df_substation['总流量'] =  df_substation['总流量'].map(lambda x:round(float(x/(1024*1024)),1))
+        
         x = list(df_substation['日期'])
         y = df_substation['最大RRC连接用户数_1'].T.values
         plt.figure(figsize=(6, 4))
@@ -217,7 +248,7 @@ for df_country in df_list:
         plt.figure(figsize=(6, 4))
         plt.plot(x,y,label='总流量(TB)',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
         for a,b in zip(x,y):
-            plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+            plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=12)
         plt.xlabel('日期')
         plt.ylabel(substation+ '支局_总流量(TB)')
         plt.title(country_name + '_' +substation+ '支局_总流量(TB)')
@@ -232,11 +263,15 @@ sheet = book.add_worksheet('全市用户数及流量')
 sheet.insert_image('A2' , pic_path + "全市开机用户数.png")
 sheet.insert_image('J2', pic_path +  "全市总流量.png")
 sheet.insert_image('A23', pic_path + "各县昨日新增用户数.png")
+sheet.insert_image('J23', pic_path + "各县累计新增用户数.png")
+
 for country in country_list:
     sheet = book.add_worksheet(country)
     sheet.insert_image('A2' , pic_path + country + "开机用户数.png")
     sheet.insert_image('J2', pic_path + country + "总流量.png")
     sheet.insert_image('A23', pic_path + country + "各支局昨日新增用户数.png")
+    sheet.insert_image('J23', pic_path + country + "各支局累计新增用户数.png")
+
 book.close()
 
 # =============================================================================
