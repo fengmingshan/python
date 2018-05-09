@@ -136,7 +136,7 @@ plt.close()
 
 plt.figure(figsize=(6, 4))
 plt.bar(country_list,total_new_user,color='g',width = 0.3,alpha=0.6,label='累计新增用户数')
-for x,y in zip(country_list,yestoday_new_user):
+for x,y in zip(country_list,total_new_user):
     plt.text(x, y+10, '%d' % y, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('累计新增用户数')
 plt.ylabel('区县')
@@ -157,6 +157,7 @@ for df_country in df_list:
     country_name = df_country.loc[0,'区县']
     df_country_pivot = df_country.groupby(by = '日期',as_index=False)[['最大RRC连接用户数_1','总流量']].sum()
     df_country_pivot['总流量'] = df_country_pivot['总流量'].map(lambda x:round(float(x/(1024*1024)),1))
+    df_country_pivot['日期'] = df_country_pivot['日期'].map(lambda x:x[5:10])
     # =============================================================================
     # 画各县开机用户数图   
     # =============================================================================
@@ -230,7 +231,7 @@ for df_country in df_list:
     for substation in substation_list:
         df_substation = df_substation_pivot[df_substation_pivot['支局'] == substation]
         df_substation['总流量'] =  df_substation['总流量'].map(lambda x:round(float(x/(1024*1024)),1))
-        
+        df_substation['日期'] = df_substation['日期'].map(lambda x:x[5:10])
         x = list(df_substation['日期'])
         y = df_substation['最大RRC连接用户数_1'].T.values
         plt.figure(figsize=(6, 4))
