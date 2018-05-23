@@ -54,10 +54,10 @@ for file in zte_files:
     df_pivot = pd.pivot_table(df_tmp, index=['网元'],
                               values = ['最大RRC连接用户数_1',                        
                                         '空口上行用户面流量（MByte）_1',
-                                        '空口下行用户面流量（MByte）_1477070755617-11'],                            
+                                        '空口下行用户面流量（MByte）_1477070755617-11'],
                               aggfunc = {'最大RRC连接用户数_1':np.median,
                                          '空口上行用户面流量（MByte）_1':np.sum,
-                                         '空口下行用户面流量（MByte）_1477070755617-11':np.sum})   
+                                         '空口下行用户面流量（MByte）_1477070755617-11':np.sum})
     df_pivot['总流量'] = df_pivot['空口上行用户面流量（MByte）_1'] + df_pivot['空口下行用户面流量（MByte）_1477070755617-11']
     df_pivot['日期'] = date
     df_pivot = df_pivot.reset_index()
@@ -88,12 +88,9 @@ for file in eric_files:
                              'Air Interface_Traffic_Volume_DL_MBytes':'下行流量(MB)'},inplace =True)
     df_combine = df_combine.append(df_pivot)  
 
-
-
 df_combine = pd.merge(df_combine,df_eNodeB,how='left',on = '网元')
 df_combine['RRC连接用户数'] = df_combine['RRC连接用户数'].map(lambda x:round(x,0))
-
-
+df_combine = df_combine.fillna(0)
 
 # =============================================================================
 # 全市用户数和流量
@@ -140,9 +137,9 @@ total_new_user = []
 total_user = []
 for country in country_list:
     df_country = df_city[df_city['区县'] == country]
-    yestoday_new_user.append(df_country.iloc[-1 , 3] - df_country.iloc[-2 , 3])
-    total_new_user.append(df_country.iloc[-1 , 3] - df_country.iloc[0 , 3])
-    total_user.append(df_country.iloc[-1 , 3])
+    yestoday_new_user.append(df_country.iloc[-1 , 2] - df_country.iloc[-2 , 2])
+    total_new_user.append(df_country.iloc[-1 , 2] - df_country.iloc[0 , 2])
+    total_user.append(df_country.iloc[-1 , 2])
 
 plt.figure(figsize=(6, 4))
 plt.bar(country_list,yestoday_new_user,color='g',width = 0.3,alpha=0.6,label='新增用户数')
@@ -229,9 +226,9 @@ for df_country in df_list:
     substation_total_user = []
     for substation in substation_list:
         df_substation = df_substation_pivot[df_substation_pivot['支局'] == substation]
-        substation_new_user.append(df_substation.iloc[-1,3]-df_substation.iloc[-2,3]) 
-        substation_total_add_user.append(df_substation.iloc[-1,3]-df_substation.iloc[0,3]) 
-        substation_total_user.append(df_substation.iloc[-1,3])
+        substation_new_user.append(df_substation.iloc[-1,2]-df_substation.iloc[-2,2]) 
+        substation_total_add_user.append(df_substation.iloc[-1,2]-df_substation.iloc[0,2]) 
+        substation_total_user.append(df_substation.iloc[-1,2])
 
      
     plt.figure(figsize=(6,4))
@@ -246,7 +243,7 @@ for df_country in df_list:
     
     plt.figure(figsize=(6,4))
     plt.bar(substation_list,substation_total_add_user,color='g',width = 0.3,alpha=0.6,label='累计新增用户数')
-    for x,y in zip(substation_list,substation_total_user):
+    for x,y in zip(substation_list,substation_total_add_user):
         plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=12)
     plt.xlabel('支局')
     plt.ylabel('累计新增用户数')
