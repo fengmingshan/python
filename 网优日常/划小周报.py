@@ -9,10 +9,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import xlsxwriter
-
 from datetime import datetime
-from datetime import timedelta
-
 
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
@@ -58,8 +55,9 @@ for file in traffic_file_3g:
     df_tmp['DO: 小区RLP信息对象.前向MacIndex最大忙数'] = df_tmp['DO: 小区RLP信息对象.前向MacIndex最大忙数'].replace('-',0)
     df_tmp['DO: 小区RLP信息对象.RLP层前向传送字节数(KB)'] =  df_tmp['DO: 小区RLP信息对象.RLP层前向传送字节数(KB)'].replace('-',0)
     df_tmp['DO: 小区RLP信息对象.前向MacIndex最大忙数'] = df_tmp['DO: 小区RLP信息对象.前向MacIndex最大忙数'].map(lambda x:int(x))
-    df_tmp['DO: 小区RLP信息对象.RLP层前向传送字节数(KB)'] =  df_tmp['DO: 小区RLP信息对象.RLP层前向传送字节数(KB)'].map(lambda x:int(x))
-    
+    df_tmp['DO: 小区RLP信息对象.RLP层前向传送字节数(KB)'] =  df_tmp['DO: 小区RLP信息对象.RLP层前向传送字节数(KB)'].map(lambda x:int(x))    
+    df_tmp['开始时间'] =  df_tmp['开始时间'].map(lambda x:x.replace('-','/')) 
+    df_tmp['开始时间'] =  df_tmp['开始时间'].map(lambda x:x.replace('/0','/'))  
     date_list = list(set(df_tmp['开始时间'].map(lambda x:x.split(' ')[0])))
     # =============================================================================
     # 计算每日实际忙时确定RRC连接用户数
@@ -77,6 +75,7 @@ for file in traffic_file_3g:
         df_pivot_traffic = df_pivot_traffic.reset_index()
         df_pivot_traffic.rename(columns={'DO: 小区RLP信息对象.RLP层前向传送字节数(KB)':'3G流量',                                 
                                           '1X: 小区CS呼叫话务量(Erl)':'语音话务量'},inplace =True)
+                                        
 
         df_pivot_rrc = pd.pivot_table(df_date, index=['开始时间'],
                                       values ='DO: 小区RLP信息对象.前向MacIndex最大忙数',
@@ -85,10 +84,15 @@ for file in traffic_file_3g:
         df_pivot_rrc = df_pivot_rrc.reset_index()
         busy_hour =  df_pivot_rrc.loc[0,'开始时间']
         df_max_rrc =  df_date[['BTS','DO: 小区RLP信息对象.前向MacIndex最大忙数']][df_tmp['开始时间'] == busy_hour] 
-       
+        df_max_rrc.rename(columns={'DO: 小区RLP信息对象.前向MacIndex最大忙数':'3G联网用户数'},inplace =True)                                
+
         df_pivot_traffic = pd.merge(df_pivot_traffic,df_max_rrc,how = 'left', on ='BTS')
-        df_pivot_traffic['日期'] = date 
-        df_3g_traffic = df_3g_traffic.append(df_pivot_traffic)  
+        df_pivot_traffic['日期'] = date
+        df_3g_traffic = df_3g_traffic.append(df_pivot_traffic)
+        df_3g_traffic['日期'] = pd.to_datetime(df_3g_traffic['日期'])
+        df_3g_traffic = df_3g_traffic.sort_values(by='日期',ascending = True)
+        df_3g_traffic['日期'] =  df_3g_traffic['日期'].map(lambda x:str(x))
+        df_3g_traffic['日期'] =  df_3g_traffic['日期'].map(lambda x:x.split(' ')[0])
 
 # 汇总1X登记用户数
 df_1x_user = pd.DataFrame()        
@@ -111,7 +115,7 @@ for file in user_file_1x:
         df_pivot_user = df_pivot_user.reset_index()
         busy_hour =  df_pivot_user.loc[0,'开始时间']
         df_max_user =  df_date[['BTS','1X: Sector基本性能测量对象.定时登记成功次数']][df_date['开始时间'] == busy_hour]        
-        df_max_user['日期'] = date 
+        df_max_user['日期'] = date
         df_1x_user = df_1x_user.append(df_max_user)  
 
 # 汇总中兴数据
@@ -141,7 +145,7 @@ for file in zte_files:
     df_pivot['总流量'] = df_pivot['空口上行用户面流量（MByte）_1'] + df_pivot['空口下行用户面流量（MByte）_1477070755617-11']
     df_pivot = df_pivot.reset_index()
     df_pivot = pd.merge(df_pivot,df_max_rrc,on = '网元',how = 'left')  
-    df_pivot['日期'] = date
+    df_pivot['日期'] = date.replace('-','/')
     df_pivot.rename(columns={'最大RRC连接用户数_1':'RRC连接用户数',
                              '空口上行用户面流量（MByte）_1':'上行流量(MB)',
                              '空口下行用户面流量（MByte）_1477070755617-11':'下行流量(MB)'},inplace =True)
@@ -171,7 +175,7 @@ for file in eric_files:
     df_pivot['总流量'] = df_pivot['Air Interface_Traffic_Volume_UL_MBytes'] + df_pivot['Air Interface_Traffic_Volume_DL_MBytes']
     df_pivot = df_pivot.reset_index()
     df_pivot = pd.merge(df_pivot,df_max_rrc,on = 'eNodeB',how = 'left')  
-    df_pivot['日期'] = date
+    df_pivot['日期'] = date.replace('-','/')
     df_pivot.rename(columns={'eNodeB':'网元',
                              'Max number of UE in RRc' : 'RRC连接用户数',
                              'Air Interface_Traffic_Volume_UL_MBytes':'上行流量(MB)',
@@ -191,23 +195,43 @@ df_all = pd.pivot_table(df_combine, index=['日期'],values=['RRC连接用户数
 df_all = df_all.rename(columns={'RRC连接用户数':'联网用户数'})
 df_all['总流量'] =  df_all['总流量'].map(lambda x:round(float(x/(1024*1024)),1))
 df_all = df_all.reset_index()
-df_all['日期'] =  df_all['日期'].map(lambda x:x[5:10])
+df_all['日期'] =  df_all['日期'].map(lambda x:x.replace('/0','/'))
+df_all['日期'] =  df_all['日期'].map(lambda x:x[5:])
+
+df_all_3g = pd.pivot_table(df_3g_traffic, index=['日期'],values=['3G联网用户数','3G流量','语音话务量'],
+                           aggfunc = {'3G联网用户数':np.sum,'3G流量':np.sum,'语音话务量':np.sum})  
+df_all_3g['3G流量'] =  df_all_3g['3G流量'].map(lambda x:round(float(x/(1024*1024)),1))
+df_all_3g = df_all_3g.reset_index()
+df_all_3g['日期'] =  df_all_3g['日期'].map(lambda x:x.replace('-','/'))
+df_all_3g['日期'] =  df_all_3g['日期'].map(lambda x:x.replace('/0','/'))
+df_all_3g['日期'] =  df_all_3g['日期'].map(lambda x:x[5:])
 
 
-y = df_all['联网用户数'].T.values
-x = list(df_all['日期'])
+y1 = df_all['联网用户数'].T.values
+x1 = df_all['日期'].T.values
+y2 = df_all_3g['3G联网用户数'].T.values
+x2 = df_all_3g['日期'].T.values
+
 plt.figure(figsize=(14, 4))
-plt.plot(x,y,label='联网用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
-for a,b in zip(x,y):
+plt.plot(x1,y1,label='4G联网用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
+plt.plot(x2,y2,label='3G联网用户数',linewidth=3,color='b',marker='o',markerfacecolor='yellow',markersize=8)
+for a,b in zip(x1,y1):
+    plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+for a,b in zip(x2,y2):
     plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('日期')
 plt.ylabel('联网用户数')
-plt.title('4G日联网用户数变化情况')
+plt.title('日联网用户数变化情况')
+plt.legend(loc='upper right')
 plt.savefig(pic_path + "全市4G联网用户数.png",format='png', dpi=200)  
+plt.show()
 plt.close()
 
-y = df_all['总流量'].T.values
-x = list(df_all['日期'])
+y1 = list(df_all['总流量'].T)
+x1 = list(df_all['日期'])
+y2 = df_all['总流量'].T.values
+x2 = list(df_all['日期'])
+
 plt.figure(figsize=(14, 4))
 plt.plot(x,y,label='总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
 for a,b in zip(x,y):
@@ -286,7 +310,7 @@ for df_country in df_list:
     plt.xlabel('日期')
     plt.ylabel(country_name + '4G联网用户数')
     plt.title(country_name + '4G联网用户数')
-    plt.savefig(pic_path + country_name + "4G联网用户数.png",format='png', dpi=200)  
+    plt.savefig(pic_path + country_name + "4G联网用户数.png",format='png', dpi=200) 
     plt.close()                                   
     # =============================================================================
     # 画各县流量
