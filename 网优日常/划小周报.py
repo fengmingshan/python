@@ -198,49 +198,81 @@ df_all = df_all.reset_index()
 df_all['日期'] =  df_all['日期'].map(lambda x:x.replace('/0','/'))
 df_all['日期'] =  df_all['日期'].map(lambda x:x[5:])
 
-df_all_3g = pd.pivot_table(df_3g_traffic, index=['日期'],values=['3G联网用户数','3G流量','语音话务量'],
-                           aggfunc = {'3G联网用户数':np.sum,'3G流量':np.sum,'语音话务量':np.sum})  
-df_all_3g['3G流量'] =  df_all_3g['3G流量'].map(lambda x:round(float(x/(1024*1024)),1))
+
+df_all_1x = pd.pivot_table(df_1x_user, index=['日期'],values='1X: Sector基本性能测量对象.定时登记成功次数',
+                           aggfunc = {'1X: Sector基本性能测量对象.定时登记成功次数':np.sum})  
+df_all_1x['1X: Sector基本性能测量对象.定时登记成功次数'] = \
+df_all_1x['1X: Sector基本性能测量对象.定时登记成功次数'].map(lambda x:round(x/2,0))
+df_all_1x = df_all_1x.reset_index()
+df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('-','/'))
+df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('/0','/'))
+df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x[5:])
+df_all_1x.rename(columns={'1X: Sector基本性能测量对象.定时登记成功次数':'1X用户数'},inplace =True)                                
+
+df_all_3g = pd.pivot_table(df_3g_traffic, index=['日期'],values='3G流量',aggfunc = {'3G流量':np.sum})  
 df_all_3g = df_all_3g.reset_index()
+df_all_3g['3G流量'] =  df_all_3g['3G流量'].map(lambda x:round(float(x/(1024*1024*1024)),1))
 df_all_3g['日期'] =  df_all_3g['日期'].map(lambda x:x.replace('-','/'))
 df_all_3g['日期'] =  df_all_3g['日期'].map(lambda x:x.replace('/0','/'))
 df_all_3g['日期'] =  df_all_3g['日期'].map(lambda x:x[5:])
 
-
 y1 = df_all['联网用户数'].T.values
 x1 = df_all['日期'].T.values
-y2 = df_all_3g['3G联网用户数'].T.values
-x2 = df_all_3g['日期'].T.values
-
 plt.figure(figsize=(14, 4))
-plt.plot(x1,y1,label='4G联网用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
-plt.plot(x2,y2,label='3G联网用户数',linewidth=3,color='b',marker='o',markerfacecolor='yellow',markersize=8)
-for a,b in zip(x1,y1):
-    plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
-for a,b in zip(x2,y2):
-    plt.text(a, b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=12)
+plt.xticks(range(len(x1)), x1)
+plt.plot(range(len(x1)),y1,label='4G联网用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
+for a,b in zip(range(len(x1)),y1):
+    plt.text(a,b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=10)
 plt.xlabel('日期')
-plt.ylabel('联网用户数')
-plt.title('日联网用户数变化情况')
-plt.legend(loc='upper right')
-plt.savefig(pic_path + "全市4G联网用户数.png",format='png', dpi=200)  
-plt.show()
+plt.ylabel('4G联网用户数')
+plt.title('4G日联网用户数变化情况')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "全市4G用户数.png",format='png', dpi=400)  
 plt.close()
 
-y1 = list(df_all['总流量'].T)
-x1 = list(df_all['日期'])
-y2 = df_all['总流量'].T.values
-x2 = list(df_all['日期'])
-
+y2 = df_all_1x['1X用户数'].T.values
+x2 = df_all_1x['日期'].T.values
 plt.figure(figsize=(14, 4))
-plt.plot(x,y,label='总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=8) 
-for a,b in zip(x,y):
-    plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=12)
+plt.xticks(range(len(x2)), x2)
+plt.plot(range(len(x2)),y2,label='1X用户数',linewidth=3,color='b',marker='o',markerfacecolor='yellow',markersize=6)
+for a,b in zip(range(len(x2)),y2):
+    plt.text(a,b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=10)
 plt.xlabel('日期')
-plt.ylabel('总流量(TB)')
+plt.ylabel('1X用户数')
+plt.title('1X注册用户数变化情况')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "全市1X用户数.png",format='png', dpi=400)  
+plt.close()
+
+y3 = list(df_all['总流量'])
+x3 = list(df_all['日期'])
+plt.figure(figsize=(14, 4))
+plt.xticks(range(len(x3)), x3)
+plt.plot(range(len(x3)),y3,label='4G总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
+for a,b in zip(range(len(x3)),y3):
+    plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=10)
+plt.xlabel('日期')
+plt.ylabel('4G总流量(TB)')
+plt.legend(loc='center right')
 plt.title('4G日总流量变化情况')
-plt.savefig(pic_path + "全市4G总流量.png",format='png', dpi=200)  
+plt.savefig(pic_path + "全市4G总流量.png",format='png', dpi=400) 
 plt.close()
+
+y4 = list(df_all_3g['3G流量'])
+x4 = list(df_all_3g['日期'])
+plt.figure(figsize=(14, 4))
+plt.xticks(range(len(x4)), x4)
+plt.plot(range(len(x4)),y4,label='3G总流量',linewidth=3,color='b',marker='o',markerfacecolor='yellow',markersize=6) 
+for a,b in zip(range(len(x4)),y4):
+    plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=10)
+plt.xlabel('日期')
+plt.ylabel('3G总流量(TB)')
+plt.legend(loc='center right')
+plt.title('3G日总流量变化情况')
+plt.savefig(pic_path + "全市3G总流量.png",format='png', dpi=400) 
+plt.close()
+
+
 
 #按区县和日期透视
 df_city = pd.pivot_table(df_combine, index=['区县','日期'],values=['RRC连接用户数','总流量'],
@@ -344,7 +376,6 @@ for df_country in df_list:
         substation_new_user.append(df_substation.iloc[-1,2]-df_substation.iloc[-2,2]) 
         substation_total_add_user.append(df_substation.iloc[-1,2]-df_substation.iloc[0,2]) 
         substation_total_user.append(df_substation.iloc[-1,2])
-
      
     plt.figure(figsize=(6,4))
     plt.bar(substation_list,substation_new_user,color='g',width = 0.3,alpha=0.6,label='昨日新增用户数')
@@ -375,8 +406,6 @@ for df_country in df_list:
     plt.title(country_name + '各支局到达用户数')
     plt.savefig(pic_path + country_name + "各支局到达用户数.png",format='png', dpi=200)  
     plt.close()
-
-
 
     # =============================================================================
     # 画各支局日用户数、日流量
@@ -414,12 +443,13 @@ for df_country in df_list:
 # =============================================================================
 book = xlsxwriter.Workbook(out_path + '_全市各区县用户数及流量.xlsx')     # 将图片插入到excel表格中 
 sheet = book.add_worksheet('全市用户数及流量')
-sheet.insert_image('A2' , pic_path + "全市4G联网用户数.png")
-sheet.insert_image('A23', pic_path +  "全市4G总流量.png")
-sheet.insert_image('A44', pic_path + "各县昨日新增用户数.png")
-sheet.insert_image('J44', pic_path + "各县累计新增用户数.png")
-sheet.insert_image('A65', pic_path + "各县到达用户数.png")
-
+sheet.insert_image('A2' , pic_path + "全市4G用户数.png")
+sheet.insert_image('A23' , pic_path + "全市1X用户数.png")
+sheet.insert_image('A44', pic_path +  "全市4G总流量.png")
+sheet.insert_image('A65', pic_path +  "全市3G总流量.png")
+sheet.insert_image('A86', pic_path + "各县昨日新增用户数.png")
+sheet.insert_image('J86', pic_path + "各县累计新增用户数.png")
+sheet.insert_image('A107', pic_path + "各县到达用户数.png")
 
 for country in country_list:
     sheet = book.add_worksheet(country)
@@ -428,7 +458,6 @@ for country in country_list:
     sheet.insert_image('A44', pic_path + country + "各支局昨日新增用户数.png")
     sheet.insert_image('J44', pic_path + country + "各支局累计新增用户数.png")
     sheet.insert_image('A65', pic_path + country + "各支局到达用户数.png")
-
 book.close()
 
 # =============================================================================
@@ -442,10 +471,6 @@ for i in range(0,len(df_list),1):
         sheet.insert_image('A2' , pic_path +country_list[i]+ substation + '支局_4G联网用户数.png')
         sheet.insert_image('A23', pic_path + country_list[i]+ substation + "支局_4G总流量.png")
     book.close()
-
-
-with  pd.ExcelWriter(out_path + '透视结果.xlsx')  as writer:#输出到excel
-    df_pivot.to_excel(writer,'透视结果')
 
 with  pd.ExcelWriter(out_path + '按日汇总.xlsx')  as writer:#输出到excel
     df_combine.to_excel(writer,'按日汇总')
