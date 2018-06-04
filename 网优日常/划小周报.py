@@ -17,6 +17,7 @@ plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 # =============================================================================
 # 环境变量
 # =============================================================================
+data_path = r'd:\_话务量划小报表' + '\\'
 zte_data_path = r'd:\_话务量划小报表\zte' + '\\'
 eric_data_path = r'd:\_话务量划小报表\eric' + '\\'
 traffic_path_3g = r'd:\_话务量划小报表\3g话务量' + '\\'
@@ -117,6 +118,9 @@ for file in user_file_1x:
         df_max_user =  df_date[['BTS','1X: Sector基本性能测量对象.定时登记成功次数']][df_date['开始时间'] == busy_hour]        
         df_max_user['日期'] = date
         df_1x_user = df_1x_user.append(df_max_user)  
+        df_1x_user['日期'] =  df_1x_user['日期'].map(lambda x:x.replace('-','/'))
+        df_1x_user['日期'] =  df_1x_user['日期'].map(lambda x:x.replace('/0','/'))
+
 
 # 汇总中兴数据
 for file in zte_files:  
@@ -204,11 +208,25 @@ df_all_1x = pd.pivot_table(df_1x_user, index=['日期'],values='1X: Sector基本
 df_all_1x['1X: Sector基本性能测量对象.定时登记成功次数'] = \
 df_all_1x['1X: Sector基本性能测量对象.定时登记成功次数'].map(lambda x:round(x/2,0))
 df_all_1x = df_all_1x.reset_index()
+df_all_1x.rename(columns={'1X: Sector基本性能测量对象.定时登记成功次数':'1X用户数'},inplace =True) 
+df_all_1x['日期'] = pd.to_datetime(df_all_1x['日期'])
+df_all_1x = df_all_1x.sort_values(by='日期',ascending = True)
+df_all_1x['日期'] = df_all_1x['日期'].map(lambda x:str(x))
+df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.split(' ')[0])        
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('-','/'))
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('/0','/'))
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x[5:])
-df_all_1x.rename(columns={'1X: Sector基本性能测量对象.定时登记成功次数':'1X用户数'},inplace =True)                                
-
+msc_file =  os.listdir(data_path + 'MSC登记' + '\\')
+df_msc = pd.read_excel(data_path + 'MSC登记' + '\\' + msc_file[0], skiprows = 1,encoding = 'utf-8')
+df_msc = df_msc[['时间','漫游用户数']]
+df_msc['时间'] = df_msc['时间'].map(lambda x:x.split(' ')[0])                                     
+df_msc['时间'] =  df_msc['时间'].map(lambda x:x.replace('-','/'))
+df_msc['时间'] =  df_msc['时间'].map(lambda x:x.replace('/0','/'))
+df_msc = df_msc.rename(columns={'时间':'日期'})
+df_msc['日期'] =  df_msc['日期'].map(lambda x:x[5:])
+df_all_1x =  pd.merge(df_all_1x,df_msc,how='left',on = '日期')
+df_all_1x['本地用户数'] =  df_all_1x['1X用户数'] - df_all_1x['漫游用户数']
+                              
 df_all_3g = pd.pivot_table(df_3g_traffic, index=['日期'],values='3G流量',aggfunc = {'3G流量':np.sum})  
 df_all_3g = df_all_3g.reset_index()
 df_all_3g['3G流量'] =  df_all_3g['3G流量'].map(lambda x:round(float(x/(1024*1024*1024)),1))
@@ -219,7 +237,7 @@ df_all_3g['日期'] =  df_all_3g['日期'].map(lambda x:x[5:])
 y1 = df_all['联网用户数'].T.values
 x1 = df_all['日期'].T.values
 plt.figure(figsize=(14, 4))
-plt.xticks(range(len(x1)), x1)
+plt.xticks(range(len(x1)), x1,fontsize=8)
 plt.plot(range(len(x1)),y1,label='4G联网用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
 for a,b in zip(range(len(x1)),y1):
     plt.text(a,b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=10)
@@ -230,10 +248,10 @@ plt.legend(loc='center right')
 plt.savefig(pic_path + "全市4G用户数.png",format='png', dpi=400)  
 plt.close()
 
-y2 = df_all_1x['1X用户数'].T.values
+y2 = df_all_1x['本地用户数'].T.values
 x2 = df_all_1x['日期'].T.values
 plt.figure(figsize=(14, 4))
-plt.xticks(range(len(x2)), x2)
+plt.xticks(range(len(x2)), x2,fontsize=8)
 plt.plot(range(len(x2)),y2,label='1X用户数',linewidth=3,color='b',marker='o',markerfacecolor='yellow',markersize=6)
 for a,b in zip(range(len(x2)),y2):
     plt.text(a,b*1.001, '%d' % b, ha='center', va= 'bottom',fontsize=10)
@@ -247,7 +265,7 @@ plt.close()
 y3 = list(df_all['总流量'])
 x3 = list(df_all['日期'])
 plt.figure(figsize=(14, 4))
-plt.xticks(range(len(x3)), x3)
+plt.xticks(range(len(x3)), x3,fontsize=8)
 plt.plot(range(len(x3)),y3,label='4G总流量',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
 for a,b in zip(range(len(x3)),y3):
     plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=10)
@@ -261,7 +279,7 @@ plt.close()
 y4 = list(df_all_3g['3G流量'])
 x4 = list(df_all_3g['日期'])
 plt.figure(figsize=(14, 4))
-plt.xticks(range(len(x4)), x4)
+plt.xticks(range(len(x4)), x4,fontsize=8)
 plt.plot(range(len(x4)),y4,label='3G总流量',linewidth=3,color='b',marker='o',markerfacecolor='yellow',markersize=6) 
 for a,b in zip(range(len(x4)),y4):
     plt.text(a, b*1.001, '%.1f' % b, ha='center', va= 'bottom',fontsize=10)
