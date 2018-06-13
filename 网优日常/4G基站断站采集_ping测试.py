@@ -41,8 +41,7 @@ def ping_test(df_bts):
 def task():
     sche.enter(1800,1,task)  # 调用sche实例的enter方法创建一个定时任务，1800秒之后执行，任务内容执行task()函数
     current_time = str(datetime.now()).split('.')[0]
-    print('任务开始时间:',current_time)   # print任务开始时间
-    ping_test(return_list,new_sleeptime)   # 调用ping_test 函数再测一遍测试失败的部分 
+    print('task start time:',current_time)   # print任务开始时间
     
     current_time = str(datetime.now()).split('.')[0]
     current_time = current_time.replace(':','-')
@@ -62,7 +61,7 @@ def task():
             f.write('\n')
     
     current_time = str(datetime.now()).split('.')[0]
-    print('任务结束时间：',current_time)
+    print('task end time：',current_time)
     
 # =============================================================================
 # 汇总处理ping测试数据
@@ -159,11 +158,11 @@ def task():
             df_result = df_result.append(df_result_tmp,ignore_index=True)
         
         current_time = str(datetime.now()).split('.')[0]
-        print('报表完成时间:',current_time)
+        print('report finished:',current_time)
         print('---------------------------------')
         current_time = current_time.replace(':','.')
 
-        with  pd.ExcelWriter(data_path + current_time + '_基站断站及停电.xls') as writer :
+        with  pd.ExcelWriter(data_path + current_time + '_4G基站断站.xls') as writer :
             df_result.to_excel(writer,current_time + '_断站') 
 
 # =============================================================================

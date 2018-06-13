@@ -32,7 +32,6 @@ eric_files = os.listdir(eric_data_path)
 traffic_file_3g = os.listdir(traffic_path_3g) 
 user_file_1x = os.listdir(user_path_1x) 
 
-
 df_eric_titles  = pd.read_excel(out_path + 'title.xlsx',encoding = 'utf-8')
 titles = list(df_eric_titles.columns)
 
@@ -41,6 +40,16 @@ country_list = list(set(df_eNodeB['区县']))
 list_tmp =[]
 for i in range(0,len(country_list),1):
     list_tmp.append((country_list[i],i))
+    
+msc_file =  os.listdir(data_path + 'MSC登记' + '\\')
+df_msc = pd.read_excel(data_path + 'MSC登记' + '\\' + msc_file[0], skiprows = 1,encoding = 'utf-8')
+df_msc = df_msc[['时间','漫游用户数']]
+df_msc['时间'] = df_msc['时间'].map(lambda x:x.split(' ')[0])                                     
+df_msc['时间'] =  df_msc['时间'].map(lambda x:x.replace('-','/'))
+df_msc['时间'] =  df_msc['时间'].map(lambda x:x.replace('/0','/'))
+df_msc = df_msc.rename(columns={'时间':'日期'})
+df_msc['日期'] =  df_msc['日期'].map(lambda x:x[5:])
+
 
 country_dict = dict(list_tmp)
 
@@ -77,7 +86,6 @@ for file in traffic_file_3g:
         df_pivot_traffic.rename(columns={'DO: 小区RLP信息对象.RLP层前向传送字节数(KB)':'3G流量',                                 
                                           '1X: 小区CS呼叫话务量(Erl)':'语音话务量'},inplace =True)
                                         
-
         df_pivot_rrc = pd.pivot_table(df_date, index=['开始时间'],
                                       values ='DO: 小区RLP信息对象.前向MacIndex最大忙数',
                                       aggfunc = {'DO: 小区RLP信息对象.前向MacIndex最大忙数':np.sum})                                                  
@@ -120,7 +128,8 @@ for file in user_file_1x:
         df_1x_user = df_1x_user.append(df_max_user)  
         df_1x_user['日期'] =  df_1x_user['日期'].map(lambda x:x.replace('-','/'))
         df_1x_user['日期'] =  df_1x_user['日期'].map(lambda x:x.replace('/0','/'))
-
+df_1x_user = df_1x_user.rename(columns={'1X: Sector基本性能测量对象.定时登记成功次数':'1X用户数','BTS':'网元'})
+df_1x_user =  pd.merge(df_1x_user,df_eNodeB,on = '网元',how = 'left')  
 
 # 汇总中兴数据
 for file in zte_files:  
@@ -202,30 +211,26 @@ df_all = df_all.reset_index()
 df_all['日期'] =  df_all['日期'].map(lambda x:x.replace('/0','/'))
 df_all['日期'] =  df_all['日期'].map(lambda x:x[5:])
 
-
-df_all_1x = pd.pivot_table(df_1x_user, index=['日期'],values='1X: Sector基本性能测量对象.定时登记成功次数',
-                           aggfunc = {'1X: Sector基本性能测量对象.定时登记成功次数':np.sum})  
-df_all_1x['1X: Sector基本性能测量对象.定时登记成功次数'] = \
-df_all_1x['1X: Sector基本性能测量对象.定时登记成功次数'].map(lambda x:round(x/2,0))
+df_all_1x = pd.pivot_table(df_1x_user, index=['日期'],values='1X用户数',
+                           aggfunc = {'1X用户数':np.sum})  
+df_all_1x['1X用户数'] = df_all_1x['1X用户数'].map(lambda x:round(x/2,0))
 df_all_1x = df_all_1x.reset_index()
-df_all_1x.rename(columns={'1X: Sector基本性能测量对象.定时登记成功次数':'1X用户数'},inplace =True) 
-df_all_1x['日期'] = pd.to_datetime(df_all_1x['日期'])
+Ddf_all_1x['日期'] = pd.to_datetime(df_all_1x['日期'])
 df_all_1x = df_all_1x.sort_values(by='日期',ascending = True)
 df_all_1x['日期'] = df_all_1x['日期'].map(lambda x:str(x))
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.split(' ')[0])        
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('-','/'))
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('/0','/'))
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x[5:])
-msc_file =  os.listdir(data_path + 'MSC登记' + '\\')
-df_msc = pd.read_excel(data_path + 'MSC登记' + '\\' + msc_file[0], skiprows = 1,encoding = 'utf-8')
-df_msc = df_msc[['时间','漫游用户数']]
-df_msc['时间'] = df_msc['时间'].map(lambda x:x.split(' ')[0])                                     
-df_msc['时间'] =  df_msc['时间'].map(lambda x:x.replace('-','/'))
-df_msc['时间'] =  df_msc['时间'].map(lambda x:x.replace('/0','/'))
-df_msc = df_msc.rename(columns={'时间':'日期'})
-df_msc['日期'] =  df_msc['日期'].map(lambda x:x[5:])
 df_all_1x =  pd.merge(df_all_1x,df_msc,how='left',on = '日期')
 df_all_1x['本地用户数'] =  df_all_1x['1X用户数'] - df_all_1x['漫游用户数']
+
+df_4g_ratio = pd.DataFrame()      
+df_4g_ratio['日期'] =  df_all_1x['日期']
+df_4g_ratio['1x用户数'] =  df_all_1x['1X用户数']
+df_4g_ratio['4G用户数'] =  df_all['联网用户数']
+df_4g_ratio['4G渗透率'] =  df_4g_ratio['4G用户数']/df_4g_ratio['1x用户数']*100
+
                               
 df_all_3g = pd.pivot_table(df_3g_traffic, index=['日期'],values='3G流量',aggfunc = {'3G流量':np.sum})  
 df_all_3g = df_all_3g.reset_index()
@@ -262,6 +267,21 @@ plt.legend(loc='center right')
 plt.savefig(pic_path + "全市1X用户数.png",format='png', dpi=400)  
 plt.close()
 
+y5 = list(df_4g_ratio['4G渗透率'])
+x5 = list(df_4g_ratio['日期'])
+plt.figure(figsize=(14, 4))
+plt.xticks(range(len(x5)), x5,fontsize=8)
+plt.plot(range(len(x5)),y5,label='4G渗透率',linewidth=3,color='b',marker='o',markerfacecolor='yellow',markersize=6) 
+for a,b in zip(range(len(x5)),y5):
+    plt.text(a, b*1.001, '%.2f%%' % b, ha='center', va= 'bottom',fontsize=10)
+plt.xlabel('日期')
+plt.ylabel('4G渗透率(%)')
+plt.legend(loc='center right')
+plt.title('4G渗透率')
+plt.savefig(pic_path + "4G渗透率.png",format='png', dpi=400) 
+plt.close()
+
+
 y3 = list(df_all['总流量'])
 x3 = list(df_all['日期'])
 plt.figure(figsize=(14, 4))
@@ -290,13 +310,10 @@ plt.title('3G日总流量变化情况')
 plt.savefig(pic_path + "全市3G总流量.png",format='png', dpi=400) 
 plt.close()
 
-
-
 #按区县和日期透视
 df_city = pd.pivot_table(df_combine, index=['区县','日期'],values=['RRC连接用户数','总流量'],
                          aggfunc = {'RRC连接用户数':np.sum,'总流量':np.sum})                                
 df_city = df_city.reset_index()
-
 yestoday_new_user = []
 total_new_user = []
 total_user = []
@@ -306,35 +323,77 @@ for country in country_list:
     total_new_user.append(df_country.iloc[-1 , 2] - df_country.iloc[0 , 2])
     total_user.append(df_country.iloc[-1 , 2])
 
+df_city_1x = pd.pivot_table(df_1x_user, index=['区县','日期'],values='1X用户数',
+                         aggfunc = {'1X用户数':np.sum})                                
+df_city_1x = df_city_1x.reset_index()
+yestoday_new_1x = []
+total_new_1x = []
+total_user_1x = []
+for country in country_list:
+    df_country_1x = df_city_1x[df_city_1x['区县'] == country]
+    yestoday_new_1x.append(df_country_1x.iloc[-1 , 2] - df_country_1x.iloc[-2 , 2])
+    total_new_1x.append(df_country_1x.iloc[-1 , 2] - df_country_1x.iloc[0 , 2])
+    total_user_1x.append(df_country_1x.iloc[-1 , 2])
+
+#计算出漫游用户占比，从而计算本地用户数
+roaming_rate = df_all_1x.iloc[-1,2]/df_all_1x.iloc[-1,1]
+
+yestoday_new_1x = [round((x/2*(1-roaming_rate)),0) for x in yestoday_new_1x]
+total_new_1x = [round((x/2*(1-roaming_rate)),0) for x in total_new_1x]
+total_user_1x = [round((x/2*(1-roaming_rate)),0) for x in total_user_1x]
+
+
 plt.figure(figsize=(6, 4))
-plt.bar(country_list,yestoday_new_user,color='g',width = 0.3,alpha=0.6,label='新增用户数')
-for x,y in zip(country_list,yestoday_new_user):
-    plt.text(x, y+10, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+x_country = range(0,len(country_list)) 
+x_country1 = [i+0.3 for i in x_country] 
+plt.bar(x_country,yestoday_new_user,color='g',width = 0.3,alpha=0.6,label='昨日新增4G用户数')
+plt.bar(x_country1,yestoday_new_1x,color='b',width = 0.3,alpha=0.6,label='昨日新增1X用户数')
+for x,y in zip(x_country,yestoday_new_user):
+    plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+for x,y in zip(x_country1,yestoday_new_1x):
+    plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('昨日新增用户数')
+plt.xticks(range(0,len(country_list)),country_list)
 plt.ylabel('区县')
+plt.legend(loc='upper middle')
 plt.title('各县昨日新增用户数')
 plt.savefig(pic_path + "各县昨日新增用户数.png",format='png', dpi=200)  
 plt.close()
 
 plt.figure(figsize=(6, 4))
-plt.bar(country_list,total_new_user,color='g',width = 0.3,alpha=0.6,label='累计新增用户数')
-for x,y in zip(country_list,total_new_user):
-    plt.text(x, y+10, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+x_country = range(0,len(country_list)) 
+x_country1 = [i+0.3 for i in x_country] 
+plt.bar(x_country,total_new_user,color='g',width = 0.3,alpha=0.6,label='4G累计新增用户数')
+plt.bar(x_country1,total_new_1x,color='b',width = 0.3,alpha=0.6,label='3G累计新增用户数')
+for x,y in zip(x_country,total_new_user):
+    plt.text(x,y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+for x,y in zip(x_country1,total_new_1x):
+    plt.text(x,y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('累计新增用户数')
+plt.xticks(range(0,len(country_list)),country_list)
 plt.ylabel('区县')
+plt.legend(loc='upper middle')
 plt.title('各县累计新增用户数')
 plt.savefig(pic_path + "各县累计新增用户数.png",format='png', dpi=200)  
 plt.close()
 
 plt.figure(figsize=(6, 4))
-plt.bar(country_list,total_user,color='g',width = 0.3,alpha=0.6,label='到达用户数')
-for x,y in zip(country_list,total_user):
+x_country = range(0,len(country_list)) 
+x_country1 = [i+0.3 for i in x_country] 
+plt.bar(x_country,total_user,color='g',width = 0.3,alpha=0.6,label='4G到达用户数')
+plt.bar(x_country1,total_user_1x,color='b',width = 0.3,alpha=0.6,label='3G到达用户数')
+for x,y in zip(x_country,total_user):
+    plt.text(x, y+10, '%d' % y, ha='center', va= 'bottom',fontsize=12)
+for x,y in zip(x_country1,total_user_1x):
     plt.text(x, y+10, '%d' % y, ha='center', va= 'bottom',fontsize=12)
 plt.xlabel('到达用户数')
+plt.xticks(range(0,len(country_list)),country_list)
 plt.ylabel('区县')
 plt.title('各县到达用户数')
 plt.savefig(pic_path + "各县到达用户数.png",format='png', dpi=200)  
 plt.close()
+
+country_4G_ratio = [a/b for a,b in zip(total_user,total_user_1x)]
 
 # =============================================================================
 # 生成各区县数据
@@ -461,13 +520,14 @@ for df_country in df_list:
 # =============================================================================
 book = xlsxwriter.Workbook(out_path + '_全市各区县用户数及流量.xlsx')     # 将图片插入到excel表格中 
 sheet = book.add_worksheet('全市用户数及流量')
-sheet.insert_image('A2' , pic_path + "全市4G用户数.png")
-sheet.insert_image('A23' , pic_path + "全市1X用户数.png")
-sheet.insert_image('A44', pic_path +  "全市4G总流量.png")
-sheet.insert_image('A65', pic_path +  "全市3G总流量.png")
-sheet.insert_image('A86', pic_path + "各县昨日新增用户数.png")
-sheet.insert_image('J86', pic_path + "各县累计新增用户数.png")
-sheet.insert_image('A107', pic_path + "各县到达用户数.png")
+sheet.insert_image('A2' , pic_path + "全市1X用户数.png")
+sheet.insert_image('A23', pic_path + "全市4G用户数.png")
+sheet.insert_image('A44', pic_path +  "4G渗透率.png")
+sheet.insert_image('A65', pic_path +  "全市4G总流量.png")
+sheet.insert_image('A86', pic_path +  "全市3G总流量.png")
+sheet.insert_image('A107', pic_path + "各县昨日新增用户数.png")
+sheet.insert_image('J107', pic_path + "各县累计新增用户数.png")
+sheet.insert_image('A128', pic_path + "各县到达用户数.png")
 
 for country in country_list:
     sheet = book.add_worksheet(country)
@@ -490,6 +550,8 @@ for i in range(0,len(df_list),1):
         sheet.insert_image('A23', pic_path + country_list[i]+ substation + "支局_4G总流量.png")
     book.close()
 
-with  pd.ExcelWriter(out_path + '按日汇总.xlsx')  as writer:#输出到excel
-    df_combine.to_excel(writer,'按日汇总')
+with  pd.ExcelWriter(out_path + '1x用户数.xlsx')  as writer:  #输出到excel
+    df_1x_user.to_excel(writer,'1x用户数')
 
+with  pd.ExcelWriter(out_path + '4G汇总.xlsx')  as writer:  #输出到excel
+    df_combine.to_excel(writer,'4G汇总')
