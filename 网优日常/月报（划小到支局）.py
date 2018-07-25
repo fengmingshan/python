@@ -239,5 +239,10 @@ for country in country_list :
             df_merge = pd.concat([df_traffic_top,df_user_top,df_traffic_top_3G,df_user_top_3G],axis=1)
             df_merge.to_excel(writer, substation) 
 
-#with  pd.ExcelWriter(out_path + '3G.xlsx')  as writer:  #输出到excel
-#    df_3G_ALL.to_excel(writer, '3G') 
+
+with  pd.ExcelWriter(out_path + '3G.xlsx')  as writer:  #输出到excel
+    df_3G_ALL.to_excel(writer, '3G') 
+
+
+with  pd.ExcelWriter(out_path + '4G.xlsx')  as writer:  #输出到excel
+    df_4G_ALL.to_excel(writer, '4G') 
