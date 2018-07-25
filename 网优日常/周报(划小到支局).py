@@ -142,6 +142,7 @@ df_4G_ALL['week-eNodeB'] = df_4G_ALL['week'] + '_' + df_4G_ALL['网元'].map(str
 df_4G_ALL = pd.merge(df_4G_ALL,df_4Guser_ALL,how ='left',on = 'week-eNodeB' )
 
 df_4G_ALL['总流量(MB)'] = df_4G_ALL['总流量(MB)']/1024
+df_4G_ALL['总流量(MB)'] = df_4G_ALL['总流量(MB)'].map(lambda x:round(x,1))
 df_4G_ALL.rename(columns={'总流量(MB)':'总流量(GB)'},inplace =True)
 
 # =============================================================================
@@ -269,7 +270,6 @@ y3 =  [(b-a)/a for a, b in zip(y1,y2)]
 country_list = df_4G_country['区县'][df_4G_country['week'] == week1 ].T.values
 plt.figure(figsize=(6, 4))
 x_country = range(0,len(country_list)) 
-x_country1 = [i+0.35 for i in x_country] 
 plt.bar(x_country,y3,color='b',width = 0.3,alpha=0.6,label='各县4G用户数环比')
 for x,y in zip(x_country,y3):
     plt.text(x, y*1.001, '%.2f%%' % (y*100), ha='center', va= 'bottom',fontsize=12)
@@ -344,14 +344,13 @@ df_country_compare = df_country_compare[['区县','上周基站数量','本周�
                                         '上周4G用户数','本周4G用户数',
                                         '上周4G流量','本周4G流量',]]
 
-df_zero_traffic_list = df_4G_ALL[(df_4G_ALL['week'] == week2)&([df_4G_ALL['总流量(GB)'] == 0])]
+df_zero_traffic_list = df_4G_ALL[(df_4G_ALL['week'] == week2)&(df_4G_ALL['总流量(GB)'] == 0)]
 df_zero_traffic_list = df_zero_traffic_list[['week','网元名称','总流量(GB)','区县','支局','乡镇_街道','厂家']]
 
 df_4G_this_week = df_4G_ALL[df_4G_ALL['week'] == week2]
 df_4G_this_week = df_4G_this_week[['week','网元名称','RRC连接用户数','总流量(GB)','区县','支局','乡镇_街道','厂家']]
 
-
-with  pd.ExcelWriter(out_path + '4G基站话务周报' + week2 +'.xlsx', engine='xlsxwriter') as writer:
+with  pd.ExcelWriter(out_path + '4G话务周报_' + week2 +'.xlsx', engine='xlsxwriter') as writer:
     book = writer.book     # 将图片插入到excel表格中 
     sheet = book.add_worksheet('各区县用户数及流量')
     sheet.insert_image('A2' , pic_path + "各县基站数量.png")
@@ -364,10 +363,187 @@ with  pd.ExcelWriter(out_path + '4G基站话务周报' + week2 +'.xlsx', engine=
     df_zero_traffic_list.to_excel(writer,'零流量基站清单')
     df_4G_this_week.to_excel(writer,'基站详单')
 
+# =============================================================================
+# 按县划小到支局
+# =============================================================================
+country_list = list(set(df_4G_ALL['区县']))
+with  pd.ExcelWriter(out_path + '4G话务周报_' + week2 + '_按支局.xlsx',engine='xlsxwriter')  as writer:  #输出到excel
+    for country in country_list :
+        df_country = df_4G_ALL[df_4G_ALL['区县'] == country]
+        df_country_pivot = pd.pivot_table(df_country, index=['week','支局'],
+                                      values = ['网元', '总流量(GB)','RRC连接用户数'],                                        
+                                      aggfunc = {'网元':len,
+                                                 '总流量(GB)':np.sum,
+                                                 'RRC连接用户数':np.sum})
+        df_country_pivot = df_country_pivot.reset_index()
+        df_country_pivot.rename(columns={'网元':'基站数量',
+                                         'RRC连接用户数':'4G用户数',
+                                         '总流量(GB)':'4G流量'},inplace =True)
+        book = writer.book     # 将图片插入到excel表格中 
+        sheet = book.add_worksheet(country)
+        
+        # =============================================================================
+        # 画各支局基站数量图
+        # =============================================================================
+        y1 = df_country_pivot['基站数量'][df_country_pivot['week'] == week1 ].T.values
+        y2 = df_country_pivot['基站数量'][df_country_pivot['week'] == week2 ].T.values
+        substation_list = df_country_pivot['支局'][df_country_pivot['week'] == week1 ].T.values
+        plt.figure(figsize=(6, 4))
+        x_substation = range(0,len(substation_list)) 
+        x_substation1 = [i+0.35 for i in x_substation] 
+        plt.bar(x_substation,y1,color='g',width = 0.3,alpha=0.6,label='上周4G基站数量')
+        plt.bar(x_substation1,y2,color='b',width = 0.3,alpha=0.6,label='本周4G基站数量')
+        for x,y in zip(x_substation,y1):
+            plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=8)
+        for x,y in zip(x_substation1,y2 ):
+            plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=8)
+        plt.xlabel('各支局4G基站数量')
+        plt.xticks(range(0,len(substation_list)),substation_list)
+        plt.ylabel('支局')
+        plt.legend(loc='upper middle')
+        plt.title('各支局4G基站数量')
+        plt.savefig(pic_path + country  + "各支局4G基站数量.png",format='png', dpi=200)  
+        plt.close()
+        
+        # =============================================================================
+        # 画各支局4G用户数图
+        # =============================================================================
+        y1 = df_country_pivot['4G用户数'][df_country_pivot['week'] == week1 ].T.values
+        y2 = df_country_pivot['4G用户数'][df_country_pivot['week'] == week2 ].T.values
+        substation_list = df_country_pivot['支局'][df_country_pivot['week'] == week1 ].T.values
+        plt.figure(figsize=(6, 4))
+        x_substation = range(0,len(substation_list)) 
+        x_substation1 = [i+0.35 for i in x_substation] 
+        plt.bar(x_substation,y1,color='g',width = 0.3,alpha=0.6,label='上周4G用户数')
+        plt.bar(x_substation1,y2,color='b',width = 0.3,alpha=0.6,label='本周4G用户数')
+        for x,y in zip(x_substation,y1):
+            plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=8)
+        for x,y in zip(x_substation1,y2 ):
+            plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=8)
+        plt.xlabel('各支局4G用户数')
+        plt.xticks(range(0,len(substation_list)),substation_list)
+        plt.ylabel('支局')
+        plt.legend(loc='upper middle')
+        plt.title('各支局4G用户数')
+        plt.savefig(pic_path + country  + "各支局4G用户数.png",format='png', dpi=200)  
+        plt.close()
 
+        # =============================================================================
+        # 各支局4G用户数环比变化图
+        # =============================================================================
+        y1 = df_country_pivot['4G用户数'][df_country_pivot['week'] == week1 ].T.values
+        y2 = df_country_pivot['4G用户数'][df_country_pivot['week'] == week2 ].T.values
+        y3 =  [(b-a)/a for a, b in zip(y1,y2)]
+        substation_list = df_country_pivot['支局'][df_country_pivot['week'] == week1 ].T.values
+        plt.figure(figsize=(6, 4))
+        x_substation = range(0,len(substation_list)) 
+        plt.bar(x_substation,y3,color='b',width = 0.3,alpha=0.6,label='各支局4G用户数环比')
+        for x,y in zip(x_substation,y3):
+            plt.text(x, y*1.001, '%.2f%%' % (y*100), ha='center', va= 'bottom',fontsize=10)
+        plt.xlabel('4G用户数')
+        plt.xticks(range(0,len(substation_list)),substation_list)
+        plt.ylabel('区县')
+        plt.legend(loc='upper middle')
+        plt.title('4G用户数')
+        plt.savefig(pic_path + country  +"各支局4G用户数环比变化.png",format='png', dpi=200)  
+        plt.close()
+        
+        # =============================================================================
+        # 画各支局4G流量图
+        # =============================================================================
+        y1 = df_country_pivot['4G流量'][df_country_pivot['week'] == week1 ].T.values
+        y2 = df_country_pivot['4G流量'][df_country_pivot['week'] == week2 ].T.values
+        substation_list = df_country_pivot['支局'][df_country_pivot['week'] == week1 ].T.values
+        plt.figure(figsize=(6, 4))
+        x_substation = range(0,len(substation_list)) 
+        x_substation1 = [i+0.35 for i in x_substation] 
+        plt.bar(x_substation,y1,color='g',width = 0.3,alpha=0.6,label='上周4G流量')
+        plt.bar(x_substation1,y2,color='b',width = 0.3,alpha=0.6,label='本周4G流量')
+        for x,y in zip(x_substation,y1):
+            plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=8)
+        for x,y in zip(x_substation1,y2 ):
+            plt.text(x, y*1.001, '%d' % y, ha='center', va= 'bottom',fontsize=8)
+        plt.xlabel('各支局4G流量')
+        plt.xticks(range(0,len(substation_list)),substation_list)
+        plt.ylabel('支局')
+        plt.legend(loc='upper middle')
+        plt.title('各支局4G流量')
+        plt.savefig(pic_path + country  + "各支局4G流量.png",format='png', dpi=200)  
+        plt.close()
 
+        # =============================================================================
+        # 各支局支局4G流量环比变化图
+        # =============================================================================
+        y1 = df_country_pivot['4G流量'][df_country_pivot['week'] == week1 ].T.values
+        y2 = df_country_pivot['4G流量'][df_country_pivot['week'] == week2 ].T.values
+        y3 =  [(b-a)/a for a, b in zip(y1,y2)]
+        substation_list = df_country_pivot['支局'][df_country_pivot['week'] == week1 ].T.values
+        plt.figure(figsize=(6, 4))
+        x_substation = range(0,len(substation_list)) 
+        plt.bar(x_substation,y3,color='b',width = 0.3,alpha=0.6,label='各支局4G流量环比变化')
+        for x,y in zip(x_substation,y3):
+            plt.text(x, y*1.001, '%.2f%%' % (y*100), ha='center', va= 'bottom',fontsize=10)
+        plt.xlabel('4G流量环比')
+        plt.xticks(range(0,len(substation_list)),substation_list)
+        plt.ylabel('区县')
+        plt.legend(loc='upper middle')
+        plt.title('4G流量环比')
+        plt.savefig(pic_path + country  +"各支局4G流量环比变化.png",format='png', dpi=200)  
+        plt.close()
 
+        sheet.insert_image('A2' , pic_path + country  + "各支局4G基站数量.png")
+        sheet.insert_image('A23', pic_path + country  + "各支局4G用户数.png")
+        sheet.insert_image('K23', pic_path  + country + "各支局4G用户数环比变化.png")
+        sheet.insert_image('A44', pic_path + country  + "各支局4G流量.png")
+        sheet.insert_image('K44', pic_path + country  + "各支局4G流量环比变化.png")
 
+# =============================================================================
+# 按县划小到支局基站清单
+# =============================================================================
+for country in country_list :
+    df_country = df_4G_ALL[(df_4G_ALL['区县'] == country)&(df_4G_ALL['week'] == week2)]
+    substation_list = list(set(df_country['支局']))
+    with  pd.ExcelWriter(out_path + country + '.xlsx')  as writer:  #输出到excel
+        df_country = df_country.sort_values(by='总流量(GB)',ascending = True)
+        df_country = df_country.reset_index()
+        del df_country['index']
+        df_traffic_low = df_country.loc[0:20,['网元名称', '厂家','总流量(GB)']]
+        df_traffic_low['TOP类型'] ='4G低流量基站'
+        df_traffic_low.to_excel(writer, '4G低流量')
+        
+        df_country = df_country.sort_values(by='总流量(GB)',ascending = False)
+        df_country = df_country.reset_index()
+        del df_country['index']
+        df_traffic_high = df_country.loc[0:20,['网元名称', '厂家','总流量(GB)']]
+        df_traffic_high['TOP类型'] ='4G高流量基站'
+        df_traffic_high.to_excel(writer, '4G高流量')
+        
+        df_country = df_country.sort_values(by='RRC连接用户数',ascending = True)            
+        df_country = df_country.reset_index()
+        del df_country['index']
+        df_user_low = df_country.loc[0:20,['网元名称', '厂家','RRC连接用户数']]
+        df_user_low['TOP类型'] = '4G低用户数基站'
+        df_user_low.to_excel(writer, '4G低用户数')
+        
+        df_country = df_country.sort_values(by='RRC连接用户数',ascending = True)            
+        df_country = df_country.reset_index()
+        del df_country['index']
+        df_user_high = df_country.loc[0:20,['网元名称', '厂家','RRC连接用户数']]
+        df_user_high['TOP类型'] = '4G高用户数基站'
+        df_traffic_low.to_excel(writer, '4G高用户数')
+        
+        for substation in substation_list :
+            df_substation = df_country[(df_country['支局'] == substation)&(df_country['week'] == week2)]
+            df_substation = df_substation[['week','网元名称', '厂家','RRC连接用户数','总流量(GB)']]
+            df_substation.rename(columns={'week':'周',
+                                          'RRC连接用户数':'4G用户数',
+                                          '总流量(GB)':'4G流量(GB)'},inplace =True)
+            df_substation.to_excel(writer, substation)             
+            
+
+        
+        
+        
 
 
 
