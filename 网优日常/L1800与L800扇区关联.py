@@ -7,8 +7,9 @@ Created on Wed May  9 14:48:21 2018
 import pandas as pd
 
 data_path = r'd:\test' +'\\'
-L1800 = 'L1800与L800匹配_筛选.xlsx'
-L800 = 'L800.xlsx'
+files = os.listdir(data_path)
+A = files[0]
+B = files[1]
 
 df_L1800 = pd.read_excel(data_path + L1800, encoding='utf-8') 
 df_L1800 =  df_L1800[['CELLNAME','CELLID','计算距离(米)','方位角','匹配基站']]

@@ -1,7 +1,11 @@
 pyinstaller -F *.py
 
-pyinstaller -F calc_breaktime.py
-import sqlalchemy.sql
-import sqlalchemy.sql.functions
-import Mysql-python.MySQLdb
-C:\ProgramData\Anaconda3\Scripts\pyinstaller.exe -F F:\Git\python\calc_breaktime.py
+#含有pandas库的容易报错，需要加以下参数
+pyinstaller --clean --win-private-assemblies -F -w MR.py  
+
+hiddenimports = ['pandas._libs.tslibs.timedeltas',
+'pandas._libs.tslibs.nattype',
+'pandas._libs.tslibs.np_datetime',
+'pandas._libs.skiplist']
+cd D:\test\
+pyinstaller -F MR.py

@@ -15,6 +15,7 @@ import random
 from sklearn.ensemble import RandomForestClassifier 
 
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_curve
 
 data_path = r'D:\试题宽带预测' + '\\'
 train = pd.read_csv(data_path + 'broadband_train.csv', engine = 'python', encoding = 'gbk')
@@ -23,6 +24,16 @@ test = pd.read_csv(data_path +  'broadband_test.csv', engine = 'python', encodin
 test['BROADBAND'] = '' 
 train['Type']= 'Train'
 test['Type']= 'Test'
+train['GENDER'] = train['GENDER'].map(lambda x:x.replace('男','1'))
+train['GENDER'] = train['GENDER'].map(lambda x:x.replace('女','0'))
+test['GENDER'] = test['GENDER'].map(lambda x:x.replace('男','1'))
+test['GENDER'] = test['GENDER'].map(lambda x:x.replace('女','0'))
+train['AUTOPAY'] = train['AUTOPAY'].map(lambda x:x.replace('是','1'))
+train['AUTOPAY'] = train['AUTOPAY'].map(lambda x:x.replace('否','0'))
+test['AUTOPAY'] = test['AUTOPAY'].map(lambda x:x.replace('是','1'))
+test['AUTOPAY'] = test['AUTOPAY'].map(lambda x:x.replace('否','0'))
+
+
 
 fullData =pd.concat([train,test],axis=0) #联合训练、测试数据集
 
@@ -54,7 +65,7 @@ train['is_train'] = np.random.uniform(0, 1, len(train)) <= .75
 Train, Validate = train[train['is_train']==True], train[train['is_train']==False]
 
 other_col = ['Type','is_train'] 
-features=list(set(list(fullData.columns))-set(ID_col)-set(target_col)-set(cat_cols)-set(other_col))
+features=list(set(list(fullData.columns))-set(ID_col)-set(target_col)-set(other_col))
 x_train = Train[list(features)].values
 y_train = Train["BROADBAND"].values
 x_validate = Validate[list(features)].values
@@ -65,11 +76,9 @@ random.seed(100)
 rf = RandomForestClassifier(n_estimators=1000)
 rf.fit(x_train, y_train)
 
-status = rf.predict_proba(x_validate)
-#fpr, tpr, _ = roc_curve(y_validate, status[:,1])
-
+#status = rf.predict_proba(x_validate)
+#fpr, tpr,_ = roc_curve(y_validate, status[:,1])
 #roc_auc = auc(fpr, tpr)
-
 #print(roc_auc)
 
 final_status = rf.predict_proba(x_test)

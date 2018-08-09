@@ -8,7 +8,7 @@ Created on Tue Jul 17 12:50:42 2018
 import pandas as pd
 import os
 
-data_path = r'd:\_新开站统计' + '\\'
+data_path = r'd:\_3G配置数据汇总' + '\\'
 dirs = os.listdir(data_path)
 for file_dir in dirs:
     files =  os.listdir(data_path + file_dir)
