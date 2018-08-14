@@ -86,7 +86,7 @@ for file in zte_files:
     df_pivot = pd.merge(df_pivot,df_zte_eNodeB,on = '网元',how = 'left')  
     df_4G_traffic = df_4G_traffic.append(df_pivot) #用来汇总4G话务量
 
-df_3G_traffic = pd.DataFrame() #用来汇总4G话务量
+df_3G_traffic = pd.DataFrame() #用来汇总3G话务量
 
 for file in zte3g_file:    
     df_tmp = pd.read_csv(zte3g_data_path + file,engine = 'python', encoding = 'gbk')
@@ -114,7 +114,7 @@ for file in zte3g_file:
     df_3G_traffic = df_3G_traffic.append(df_pivot) #用来汇总3G话务量
 
 
-df_4G_user = pd.DataFrame() #用来汇总4G话务量
+df_4G_user = pd.DataFrame() #用来汇总4G用户数
 
 for file in eric_busy_files:    
     df_tmp = pd.read_csv(eric_busy_data + file,header = None,names = busy_titles, engine = 'python', encoding = 'gbk')
