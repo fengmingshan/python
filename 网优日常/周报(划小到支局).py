@@ -166,7 +166,7 @@ df_zero_traffic['week-区县'] = df_zero_traffic['week'] + '-' + df_zero_traffic
 df_zero_traffic = df_zero_traffic[['week-区县','零流量基站数量']] 
 
 # =============================================================================
-# 4G用户数及用户数
+# 4G用户数
 # =============================================================================
 df_rrc_uesr =  pd.pivot_table(df_4G_ALL,
                               index=['week','区县'],
