@@ -666,28 +666,28 @@ for country in country_list :
         df_country = df_country.reset_index()
         del df_country['index']
         df_traffic_high = df_country.loc[0:20,['网元', '厂家','1X话务量']]
-        df_traffic_high['TOP类型'] ='4G高流量基站'
+        df_traffic_high['TOP类型'] ='1X高话务量基站'
         df_traffic_high.to_excel(writer, '1X高话务量')
         
         df_country = df_country.sort_values(by='1X用户数',ascending = True)            
         df_country = df_country.reset_index()
         del df_country['index']
         df_user_low = df_country.loc[0:20,['网元', '厂家','1X用户数']]
-        df_user_low['TOP类型'] = '4G低用户数基站'
+        df_user_low['TOP类型'] = '1X低用户数基站'
         df_user_low.to_excel(writer, '1X低用户数')
         
         df_country = df_country.sort_values(by='1X用户数',ascending = False)            
         df_country = df_country.reset_index()
         del df_country['index']
         df_user_high = df_country.loc[0:20,['网元', '厂家','1X用户数']]
-        df_user_high['TOP类型'] = '4G高用户数基站'
+        df_user_high['TOP类型'] = '1X高用户数基站'
         df_user_high.to_excel(writer, '1X高用户数')
         
         df_country = df_country.sort_values(by='3G用户数',ascending = False)            
         df_country = df_country.reset_index()
         del df_country['index']
         df_user_high = df_country.loc[0:20,['网元', '厂家','3G用户数']]
-        df_user_high['TOP类型'] = '3G用户数基站'
+        df_user_high['TOP类型'] = '3G高用户数基站'
         df_user_high.to_excel(writer, '3G高用户数')
 
         
