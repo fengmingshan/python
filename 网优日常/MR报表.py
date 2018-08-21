@@ -23,12 +23,22 @@ def main():
     
     MR_files = os.listdir(data_path)
     
-    df_all = pd.DataFrame()
-    
+    df_yunnan = pd.DataFrame()    
     for file in MR_files:
         df_tmp = pd.read_csv(data_path + file, engine = 'python', encoding = 'gbk')
-        df_tmp = df_tmp[df_tmp['区域'] == '曲靖市']
-        df_all = df_all.append(df_tmp)
+        df_yunnan = df_yunnan.append(df_tmp)
+        
+    df_yunnan['MR优良采样点'] =  df_yunnan['|≥-105dBm采样点']+df_yunnan['|≥-110dBm采样点']
+    df_yunnan['总采样点'] = df_yunnan['|≥-105dBm采样点']+ df_yunnan['|≥-110dBm采样点'] + df_yunnan['|≥-115dBm采样点'] + df_yunnan['|≥-120dBm采样点'] + df_yunnan['|≥负无穷采样点']
+    df_yunnan_pivot = pd.pivot_table(df_yunnan, index=['区域'], 
+                                      values =['MR优良采样点','总采样点' ], 
+                                      aggfunc = {'MR优良采样点':np.sum,'总采样点':np.sum})     
+    df_yunnan_pivot['MR优良率'] = df_yunnan_pivot['MR优良采样点']/ df_yunnan_pivot['总采样点']
+    df_yunnan_pivot['MR优良率'] = df_yunnan_pivot['MR优良率']*100
+    df_yunnan_pivot = df_yunnan_pivot.reset_index()
+    df_yunnan_pivot = df_yunnan_pivot.sort_values(by='MR优良率',ascending = False)
+        
+    df_all  = df_yunnan[(df_yunnan['区域'] == '曲靖市')&(df_yunnan['厂家'] == '中兴')]
     df_all['MR优良采样点'] =  df_all['|≥-105dBm采样点']+df_all['|≥-110dBm采样点']
     df_all['总采样点'] = df_all['|≥-105dBm采样点']+ df_all['|≥-110dBm采样点'] + df_all['|≥-115dBm采样点'] + df_all['|≥-120dBm采样点'] + df_all['|≥负无穷采样点']
     df_all_pivot = pd.pivot_table(df_all, index=['时间周期','区域','厂家','是否800M设备'], 
@@ -49,6 +59,26 @@ def main():
     df_city = df_city.reset_index()
     df_city['时间周期'] = df_city['时间周期'].map(lambda x:x[5:])
     
+    print('---------汇总原始数据完成！---------')
+    
+    # =============================================================================
+    # 画全省MR优良率
+    # =============================================================================
+    y = df_yunnan_pivot['MR优良率'].T.values
+    city_list = df_yunnan_pivot['区域'].T.values
+    plt.figure(figsize=(12, 4))
+    x_city = range(0,len(city_list)) 
+    plt.bar(x_city,y,color='b',width = 0.3,alpha=0.6,label='全省MR优良率')
+    for x,y in zip(x_city,y):
+        plt.text(x, y*1.001,'%.2f%%' % y, ha='center', va= 'bottom',fontsize=8)
+    plt.xlabel('全省MR优良率')
+    plt.xticks(range(0,len(city_list)),city_list)
+    plt.ylabel('区县')
+    plt.legend(loc='upper middle')
+    plt.title('全省MR优良率')
+    plt.savefig(pic_path + "全省MR优良率.png",format='png', dpi=200) 
+    plt.close()
+
     # =============================================================================
     # 画全市MR优良率
     # =============================================================================
@@ -120,26 +150,48 @@ def main():
     plt.savefig(pic_path + "爱立信800_MR优良率.png",format='png', dpi=400)  
     plt.close()
     
+    print('---------图表绘制完成！---------')
+    
     df_all['MR优良率'] = df_all['MR优良采样点']/ df_all['总采样点']
     df_all['MR优良率'] = df_all['MR优良率']*100
-    df_all['权重'] = (df_all['总采样点']/sum(df_all['MR优良采样点']))*100
-    df_all['权重'] = df_all['权重'].map(lambda x:round(x,5))
+    df_all['总采样点'] = df_all['总采样点'].map(lambda x:int(x))
+    df_all['MR优良采样点'] = df_all['MR优良采样点'].map(lambda x:int(x))
+    df_all = df_all.reset_index() 
+    del df_all['index']
     
-    df_top = df_all[df_all['MR优良率']<80]
+    df_all_day = pd.pivot_table(df_all, index=['时间周期'], 
+                                values =['MR优良采样点','总采样点'], 
+                                aggfunc = {'MR优良采样点':sum,'总采样点':sum})  
+    df_all_day = df_all_day.reset_index()
+    df_all_day.rename(columns={'MR优良采样点':'日优良采样点',
+                               '总采样点':'日总采样点'},inplace =True)
+    df_all_day['日MR优良率'] = df_all_day['日优良采样点']/df_all_day['日总采样点']
+    
+    df_all = pd.merge(df_all,df_all_day,how='left',on='时间周期')
+    df_all['权重'] =  df_all['总采样点']/df_all['日总采样点'] 
+    df_all['关闭采集后MR指标提升量'] = (df_all['日优良采样点']-df_all['MR优良采样点'])/ \
+                                      (df_all['日总采样点'] - df_all['总采样点']) - df_all['日MR优良率']                                                                
+    df_top = df_all[df_all['MR优良率']<90]
     df_top_pivot = pd.pivot_table(df_top, index=['区域','NAME'], 
-                                          values =['MR优良率','权重','厂家' ], 
-                                          aggfunc = {'MR优良率':np.mean,'权重':np.mean,'厂家':len})     
+                                          values =['MR优良率','权重','厂家','关闭采集后MR指标提升量' ], 
+                                          aggfunc = {'MR优良率':np.mean,
+                                                     '权重':np.mean,
+                                                     '厂家':len,
+                                                     '关闭采集后MR指标提升量':np.mean})     
     df_top_pivot.rename(columns={'厂家':'出现次数'},inplace =True)
-    df_top_pivot = df_top_pivot.sort_values(by='权重',ascending = False)
+    df_top_pivot = df_top_pivot.sort_values(by='关闭采集后MR指标提升量',ascending = False)
     df_top_pivot = df_top_pivot.reset_index()
+    
+    print('---------TOP小区计算完成！---------')
     
     with  pd.ExcelWriter(out_path + '本月MR指标.xlsx' ,engine='xlsxwriter')  as writer:  #输出到excel
         book = writer.book 
         sheet = book.add_worksheet('本月MR指标')
-        sheet.insert_image('A2' , pic_path + "全市MR优良率.png")
-        sheet.insert_image('A23', pic_path + "中兴1800_MR优良率.png")
-        sheet.insert_image('A44', pic_path + "中兴800_MR优良率.png")
-        sheet.insert_image('A65', pic_path + "爱立信800_MR优良率.png")
+        sheet.insert_image('A2' , pic_path + "全省MR优良率.png")
+        sheet.insert_image('A23', pic_path + "全市MR优良率.png")
+        sheet.insert_image('A44', pic_path + "中兴1800_MR优良率.png")
+        sheet.insert_image('A65', pic_path + "中兴800_MR优良率.png")
+        sheet.insert_image('A86', pic_path + "爱立信800_MR优良率.png")
     
     with  pd.ExcelWriter(out_path  + 'TOP小区.xlsx')  as writer:  #输出到excel
         df_top_pivot.to_excel(writer, 'TOP小区')             
