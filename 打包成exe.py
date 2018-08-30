@@ -2,6 +2,8 @@ pyinstaller -F *.py
 
 #含有pandas库的容易报错，需要加以下参数
 pyinstaller --clean --win-private-assemblies -F MR.py  
+pyinstaller --clean --win-private-assemblies -F MR-win.py  
+
 
 hiddenimports = ['pandas._libs.tslibs.timedeltas',
 'pandas._libs.tslibs.nattype',

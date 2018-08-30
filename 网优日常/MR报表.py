@@ -74,7 +74,7 @@ def main():
     plt.xlabel('全省MR优良率')
     plt.xticks(range(0,len(city_list)),city_list)
     plt.ylabel('区县')
-    plt.legend(loc='upper middle')
+    plt.legend(loc='center middle')
     plt.title('全省MR优良率')
     plt.savefig(pic_path + "全省MR优良率.png",format='png', dpi=200) 
     plt.close()
@@ -92,7 +92,7 @@ def main():
     plt.xlabel('日期')
     plt.ylabel('全市MR优良率')
     plt.title('全市MR优良率变化情况')
-    plt.legend(loc='upper right')
+    plt.legend(loc='center right')
     plt.savefig(pic_path + "全市MR优良率.png",format='png', dpi=400)  
     plt.close()
     
@@ -110,7 +110,7 @@ def main():
     plt.xlabel('日期')
     plt.ylabel('中兴1800_MR优良率')
     plt.title('中兴1800_MR优良率变化情况')
-    plt.legend(loc='upper right')
+    plt.legend(loc='center right')
     plt.savefig(pic_path + "中兴1800_MR优良率.png",format='png', dpi=400)  
     plt.close()
     
@@ -128,7 +128,7 @@ def main():
     plt.xlabel('日期')
     plt.ylabel('中兴800_MR优良率')
     plt.title('中兴800_MR优良率变化情况')
-    plt.legend(loc='upper right')
+    plt.legend(loc='center right')
     plt.savefig(pic_path + "中兴800_MR优良率.png",format='png', dpi=400)  
     plt.close()
     
@@ -146,7 +146,7 @@ def main():
     plt.xlabel('日期')
     plt.ylabel('爱立信800_MR优良率')
     plt.title('爱立信800_MR优良率变化情况')
-    plt.legend(loc='upper right')
+    plt.legend(loc='center right')
     plt.savefig(pic_path + "爱立信800_MR优良率.png",format='png', dpi=400)  
     plt.close()
     
@@ -171,7 +171,7 @@ def main():
     df_all['权重'] =  df_all['总采样点']/df_all['日总采样点'] 
     df_all['关闭采集后MR指标提升量'] = (df_all['日优良采样点']-df_all['MR优良采样点'])/ \
                                       (df_all['日总采样点'] - df_all['总采样点']) - df_all['日MR优良率']                                                                
-    df_top = df_all[df_all['MR优良率']<90]
+    df_top = df_all[(df_all['MR优良率']<90)&(df_all['厂家']=='中兴')]
     df_top_pivot = pd.pivot_table(df_top, index=['区域','NAME'], 
                                           values =['MR优良率','权重','厂家','关闭采集后MR指标提升量' ], 
                                           aggfunc = {'MR优良率':np.mean,
