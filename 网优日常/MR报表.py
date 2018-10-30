@@ -192,7 +192,7 @@ def main():
         sheet.insert_image('A44', pic_path + "中兴1800_MR优良率.png")
         sheet.insert_image('A65', pic_path + "中兴800_MR优良率.png")
         sheet.insert_image('A86', pic_path + "爱立信800_MR优良率.png")
-    
+
     with  pd.ExcelWriter(out_path  + 'TOP小区.xlsx')  as writer:  #输出到excel
         df_top_pivot.to_excel(writer, 'TOP小区')             
 

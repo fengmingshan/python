@@ -7,86 +7,258 @@ Created on Thu Aug 30 11:17:24 2018
 
 import pandas as pd 
 import os
+import numpy as np
+from datetime import datetime 
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
+
+current_date = str(datetime.now()).split('.')[0].split(' ')[0]
 
 data_path = r'D:\CQI报表\原始数据' + '\\'
 out_path = r'D:\CQI报表' + '\\'
-PhyChannel1 = 'PhyChannel_ommb1.xlsx' 
+pic_path = r'D:\CQI报表\pic' + '\\'
+PhyChannel1 = 'PhyChannel_OMMB1.xlsx' 
 PhyChannel2 = 'PhyChannel_OMMB2.xlsx'
+
 cell_name = 'cell_name.xlsx'
 
-df_chan1 =  pd.read_excel(outpath + PhyChannel1 ,encoding='utf-8',skiprows=1)
-df_chan2 =  pd.read_excel(outpath + PhyChannel2 ,encoding='utf-8',skiprows=1)
-df_chan1 = df_chan1.drop([0,1])
-df_chan2 = df_chan2.drop([0,1])
-df_chan = df_chan1.append(df_chan2)
-df_chan = df_chan[['管理网元ID','对象描述','UE CQI/PMI上报周期配置(毫秒)(小区复位生效)']]
-df_chan['对象描述'] = df_chan['对象描述'].map(lambda x:x.split('=')[1])
-df_chan['管理网元ID'] = df_chan['管理网元ID'] + '_' + df_chan['对象描述']
-del df_chan['对象描述']
-df_chan = df_chan.rename(columns={'管理网元ID': 'cell_id'})
-df_chan = df_chan.reset_index()
-del df_chan['index']
+df_OMMB1 = pd.read_excel(out_path + PhyChannel1 ,encoding='utf-8') 
+df_OMMB2 = pd.read_excel(out_path + PhyChannel2 ,encoding='utf-8') 
+df_OMMB1 = df_OMMB1.drop([0,1,2])
+df_OMMB2 = df_OMMB2.drop([0,1,2])
 
+df_OMMB1.rename(columns={'RESULT':'OMMB'},inplace =True)
+df_OMMB2.rename(columns={'RESULT':'OMMB'},inplace =True)
+df_OMMB1['OMMB'] = 'OMMB1'
+df_OMMB2['OMMB'] = 'OMMB2'
+df_PhyChannel = df_OMMB1.append(df_OMMB2)
+df_PhyChannel = df_PhyChannel[['OMMB','MOI','SubNetwork','MEID','description','cqiRptPeriod']]
+df_PhyChannel['MOI'] = df_PhyChannel['MOI'].map(lambda x:x.replace('ConfigSet=0,',''))
+df_PhyChannel['description'] = df_PhyChannel['description'].map(lambda x:x.split('=')[1])
+df_PhyChannel['description'] = df_PhyChannel['MEID'] + '_' + df_PhyChannel['description']
+df_PhyChannel.rename(columns={'description':'小区编码'},inplace =True)
 
-files = os.listdir(path)
-df_result = pd.DataFrame(columns=[])
-df_day =  pd.read_excel(outpath + cell_name , encoding='utf-8')
-
+files = os.listdir(data_path)
+df_yunnan = pd.DataFrame()
 for file in files:
-    df_tmp = pd.read_csv(path + file ,engine= 'python',encoding='gbk')
-    df_tmp['CQI1-6求和'] = df_tmp['12.2 CQI0上报数量(次)'] +  df_tmp['12.2 CQI1上报数量(次)'] +  df_tmp['12.2 CQI2上报数量(次)'] +  df_tmp['12.2 CQI3上报数量(次)'] +  df_tmp['12.2 CQI4上报数量(次)'] +  df_tmp['12.2 CQI5上报数量(次)']+  df_tmp['12.2 CQI6上报数量(次)'] 
-    df_day_tmp = df_tmp[['小区名称','时间','CQI1-6求和','12.2 CQI上报总数量(次)']]
-    df_day_tmp['优良率'] = 1 - df_day_tmp['CQI1-6求和']/ df_day_tmp['12.2 CQI上报总数量(次)']
-    df_day = pd.merge(df_day,df_day_tmp,how='left', on='小区名称' )
-    df_result = df_result.append(df_tmp)
-    df_result['优良率'] = 1 - df_result['CQI1-6求和']/ df_result['12.2 CQI上报总数量(次)']
+    df_tmp = pd.read_csv(data_path + file ,engine= 'python',encoding='gbk')
+    df_yunnan = df_yunnan.append(df_tmp)
+
+df_yunnan_pivot = pd.pivot_table(df_yunnan, index=['区域'], 
+                                  values =['CQI上报总次数' ,'CQI大于等于7次数'], 
+                                  aggfunc = {'CQI上报总次数':np.sum,'CQI大于等于7次数':np.sum})     
+df_yunnan_pivot['CQI优良比'] = df_yunnan_pivot['CQI大于等于7次数'] / df_yunnan_pivot['CQI上报总次数'] 
+df_yunnan_pivot = df_yunnan_pivot.sort_values(by='CQI优良比',ascending = False)
+df_yunnan_pivot = df_yunnan_pivot.reset_index()          
+
+
+df_qujing = df_yunnan[(df_yunnan['区域'] == '曲靖市')]
+df_qujing_pivot = pd.pivot_table(df_qujing, index=['日期'], 
+                                          values =['CQI上报总次数' ,'CQI大于等于7次数'], 
+                                          aggfunc = {'CQI上报总次数':np.sum,'CQI大于等于7次数':np.sum})     
+df_qujing_pivot = df_qujing_pivot.reset_index()          
+df_qujing_pivot.rename(columns={'CQI上报总次数':'CQI全天总数','CQI大于等于7次数':'CQI大于等于7全天总数'},inplace =True)
+df_qujing_pivot['CQI优良比_全市'] =  df_qujing_pivot['CQI大于等于7全天总数']/df_qujing_pivot['CQI全天总数']
+
+
+df_qujing_zte  = df_yunnan[(df_yunnan['区域'] == '曲靖市')&(df_yunnan['厂家'] == '中兴')]
+df_zte_day = pd.pivot_table(df_qujing_zte, index=['日期','区域'], 
+                                               values =['CQI上报总次数','CQI大于等于7次数' ], 
+                                               aggfunc = {'CQI上报总次数':np.sum,'CQI大于等于7次数':np.sum})     
+df_zte_day = df_zte_day.reset_index()    
+df_zte_day['CQI优良比'] =  df_zte_day['CQI大于等于7次数']/df_zte_day['CQI上报总次数']
+
+df_qujing_eric  = df_yunnan[(df_yunnan['区域'] == '曲靖市')&(df_yunnan['厂家'] == '爱立信')]
+df_eric_day = pd.pivot_table(df_qujing_eric, index=['日期','区域'], 
+                                               values =['CQI上报总次数','CQI大于等于7次数' ], 
+                                               aggfunc = {'CQI上报总次数':np.sum,'CQI大于等于7次数':np.sum})     
+df_eric_day = df_eric_day.reset_index()    
+df_eric_day['CQI优良比'] =  df_eric_day['CQI大于等于7次数']/df_eric_day['CQI上报总次数']
 
     
 # =============================================================================
 # 质优小区
 # =============================================================================
-df_zte_good = df_result[(df_result['厂家']=='中兴')&(df_result['优良率']>0.88)]    
-df_zte_good = df_zte_good.groupby(by='小区名称',as_index=False)[['基站名称','12.2 CQI上报总数量(次)','CQI1-6求和']].mean()  
-df_zte_good['优良率'] = 1 - df_zte_good['CQI1-6求和']/ df_zte_good['12.2 CQI上报总数量(次)']
-df_zte_good.loc['合计'] = df_zte_good.apply(lambda x: x.sum()) 
-df_zte_good['质差贡献比重'] = ''
-for i in range(0,len(df_zte_good)-1,1):
-    df_zte_good.loc[i,'质差贡献比重'] = df_zte_good.loc[i,'CQI1-6求和']/df_zte_good.loc['合计','CQI1-6求和']
-df_zte_good.loc['合计','小区名称'] = '合计'
-df_zte_good.loc['合计','质差贡献比重'] = 0
-df_zte_good['CQI1-6求和'] = df_zte_good['CQI1-6求和'].map(lambda x:round(x,0))
-df_zte_good['12.2 CQI上报总数量(次)'] = df_zte_good['12.2 CQI上报总数量(次)'].map(lambda x:round(x,0))
-df_zte_good['优良率'] = df_zte_good['优良率'].map(lambda x:round(x,4))
-df_zte_good['质差贡献比重'] = df_zte_good['质差贡献比重'].map(lambda x:round(x,5))
-df_zte_good = df_zte_good.sort_values(by='质差贡献比重',ascending = False) # 按质差贡献比重降序排列 
-df_zte_good = df_zte_good.drop('合计')
-df_zte_good['cell_id'] = df_zte_good['小区名称'].map(lambda x: x.split('_')[0] +'_'+ x.split('_')[1])
-df_zte_good = pd.merge(df_zte_good,df_chan,how = 'left',on = 'cell_id'  )
+df_zte_good = df_qujing_zte[df_qujing_zte['CQI大于等于7比例']>90]   
+df_zte_good.rename(columns={'厂家':'小区编码','CQI大于等于7比例':'CQI优良比'},inplace =True)
+df_zte_good['小区编码'] = df_zte_good['小区名'].map(lambda x:str(x).split('R')[0][:-1])
+df_zte_good = pd.merge(df_zte_good,df_PhyChannel,how='left',on='小区编码')
+df_zte_good = pd.merge(df_zte_good,df_qujing_pivot,how='left',on='日期')
+df_zte_good = df_zte_good[['区域','日期','小区名','小区编码','是否800M设备','CQI上报总次数',\
+                           'CQI大于等于7次数','CQI优良比','OMMB','MOI','SubNetwork','MEID',\
+                           'cqiRptPeriod','CQI全天总数','CQI大于等于7全天总数']]
+df_zte_good['权重'] = df_zte_good['CQI上报总次数']/df_zte_good['CQI全天总数']
+date_now = df_zte_good.loc[len(df_zte_good)-1,'日期']
+df_zte_good = df_zte_good[df_zte_good['日期'] == date_now]
+df_zte_good = df_zte_good.sort_values(by='权重',ascending = False) # 按权重降序排列  
 
 # =============================================================================
 # 质差小区
 # =============================================================================
-df_zte_worse = df_result[(df_result['厂家']=='中兴')&(df_result['优良率']<0.88)]    
-df_zte_worse = df_zte_worse.groupby(by='小区名称',as_index=False)[['基站名称','12.2 CQI上报总数量(次)','CQI1-6求和']].mean()  
-df_zte_worse['优良率'] = 1 - df_zte_worse['CQI1-6求和']/ df_zte_worse['12.2 CQI上报总数量(次)']
-df_zte_worse.loc['合计'] = df_zte_worse.apply(lambda x: x.sum()) 
-df_zte_worse['质差贡献比重'] = ''
-for i in range(0,len(df_zte_worse)-1,1):
-    df_zte_worse.loc[i,'质差贡献比重'] = df_zte_worse.loc[i,'CQI1-6求和']/df_zte_worse.loc['合计','CQI1-6求和']
-df_zte_worse.loc['合计','小区名称'] = '合计'
-df_zte_worse.loc['合计','质差贡献比重'] = 0
-df_zte_worse['CQI1-6求和'] = df_zte_worse['CQI1-6求和'].map(lambda x:round(x,0))
-df_zte_worse['12.2 CQI上报总数量(次)'] = df_zte_worse['12.2 CQI上报总数量(次)'].map(lambda x:round(x,0))
-df_zte_worse['优良率'] = df_zte_worse['优良率'].map(lambda x:round(x,4))
-df_zte_worse['质差贡献比重'] = df_zte_worse['质差贡献比重'].map(lambda x:round(x,5))
-df_zte_worse = df_zte_worse.sort_values(by='质差贡献比重',ascending = False) # 按质差贡献比重降序排列
-df_zte_worse = df_zte_worse.drop('合计')
-df_zte_worse['cell_id'] = df_zte_worse['小区名称'].map(lambda x: x.split('_')[0] +'_'+ x.split('_')[1])
-df_zte_worse = pd.merge(df_zte_worse,df_chan,how = 'left',on = 'cell_id'  )
+df_zte_worse = df_qujing_zte[df_qujing_zte['CQI大于等于7比例']<90]  
+df_zte_worse.rename(columns={'厂家':'小区编码','CQI大于等于7比例':'CQI优良比'},inplace =True)
+df_zte_worse['小区编码'] = df_zte_worse['小区名'].map(lambda x:str(x).split('R')[0][:-1])
+df_zte_worse = pd.merge(df_zte_worse,df_PhyChannel,how='left',on='小区编码')
+df_zte_worse = pd.merge(df_zte_worse,df_qujing_pivot,how='left',on='日期')
+df_zte_worse = df_zte_worse[['区域','日期','小区名','小区编码','是否800M设备','CQI上报总次数',\
+                           'CQI大于等于7次数','CQI优良比','OMMB','MOI','SubNetwork','MEID',\
+                           'cqiRptPeriod','CQI全天总数','CQI大于等于7全天总数']]
+df_zte_worse['权重'] = df_zte_worse['CQI上报总次数']/df_zte_worse['CQI全天总数']
+date_now = df_zte_worse.loc[len(df_zte_worse)-1,'日期']
+df_zte_worse = df_zte_worse[df_zte_worse['日期'] == date_now]
+df_zte_worse = df_zte_worse.sort_values(by='权重',ascending = False) # 按权重降序排列  
 
-with pd.ExcelWriter(outpath + '中兴质差.xlsx') as writer: 
-    df_day.to_excel(writer,'按天汇总') 
-    df_zte_worse.to_excel(writer,'中兴质差扇区') 
-    df_zte_good.to_excel(writer,'中兴优良扇区') 
-    df_chan.to_excel(writer,'CQI周期配置') 
+# =============================================================================
+# 画全省CQI优良率
+# =============================================================================
+y = df_yunnan_pivot['CQI优良比'].map(lambda x:x*100).T.values
+city_list = df_yunnan_pivot['区域'].T.values
+plt.figure(figsize=(12, 4))
+x_city = range(0,len(city_list)) 
+plt.bar(x_city,y,color='b',width = 0.3,alpha=0.6,label='全省CQI优良比')
+for x,y in zip(x_city,y):
+    plt.text(x, y*1.001,'%.2f%%' % y, ha='center', va= 'bottom',fontsize=8)
+plt.xlabel('全省CQI优良比')
+plt.xticks(range(0,len(city_list)),city_list)
+plt.ylabel('城市')
+plt.legend(loc='center right')
+plt.title('全省CQI优良比')
+plt.savefig(pic_path + "全省CQI优良比.png",format='png', dpi=200) 
+plt.close()
 
+# =============================================================================
+# 画全市CQI优良率
+# =============================================================================
+y1 = df_qujing_pivot['CQI优良比_全市'].map(lambda x:x*100).T.values
+x1 = df_qujing_pivot['日期'].T.values
+plt.figure(figsize=(12, 4))
+plt.xticks(range(len(x1)), x1,fontsize=8)
+plt.plot(range(len(x1)),y1,label='CQI优良比',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
+for a,b in zip(range(len(x1)),y1):
+    plt.text(a,b*1.001,  '%.2f%%' % b, ha='center', va= 'bottom',fontsize=9)
+plt.xlabel('日期')
+plt.ylabel('全市CQI优良比')
+plt.title('全市CQI优良比变化情况')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "全市CQI优良比.png",format='png', dpi=400)  
+plt.close()
+
+# =============================================================================
+# 画中兴CQI优良率
+# =============================================================================
+y1 = df_zte_day['CQI优良比'].map(lambda x:x*100).T.values
+x1 = df_zte_day['日期'].T.values
+plt.figure(figsize=(12, 4))
+plt.xticks(range(len(x1)), x1,fontsize=8)
+plt.plot(range(len(x1)),y1,label='CQI优良比',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
+for a,b in zip(range(len(x1)),y1):
+    plt.text(a,b*1.001,  '%.2f%%' % b, ha='center', va= 'bottom',fontsize=9)
+plt.xlabel('日期')
+plt.ylabel('中兴CQI优良比')
+plt.title('中兴CQI优良比变化情况')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "中兴CQI优良比.png",format='png', dpi=400)  
+plt.close()
+
+# =============================================================================
+# 画爱立信CQI优良率
+# =============================================================================
+y1 = df_eric_day['CQI优良比'].map(lambda x:x*100).T.values
+x1 = df_eric_day['日期'].T.values
+plt.figure(figsize=(12, 4))
+plt.xticks(range(len(x1)), x1,fontsize=8)
+plt.plot(range(len(x1)),y1,label='CQI优良比',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
+for a,b in zip(range(len(x1)),y1):
+    plt.text(a,b*1.001,  '%.2f%%' % b, ha='center', va= 'bottom',fontsize=9)
+plt.xlabel('日期')
+plt.ylabel('爱立信CQI优良比')
+plt.title('爱立信CQI优良比变化情况')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "爱立信CQI优良比.png",format='png', dpi=400)  
+plt.close()
+
+
+# =============================================================================
+# 生成ommb1修改指令
+# =============================================================================
+df_good_ommb1 = df_zte_good[(df_zte_good['cqiRptPeriod'] != '1;2;3')&(df_zte_good['OMMB'] == 'OMMB1')]
+df_worse_ommb1 = df_zte_worse[(df_zte_worse['cqiRptPeriod'] != '3;4;5')&(df_zte_worse['OMMB'] == 'OMMB1')]
+df_good_ommb1 = df_good_ommb1.reset_index()
+df_worse_ommb1 = df_worse_ommb1.reset_index()
+
+
+with open(out_path + 'apply_right_OMMB1.txt','a') as f:
+    for i in range(0,len(df_good_ommb1),1):
+        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
+        .format(df_good_ommb1.loc[i,'SubNetwork'],
+                df_good_ommb1.loc[i,'MEID'],
+)
+        f.write(line+'\n')         
+
+with open(out_path + 'apply_right_OMMB1.txt','a') as f:
+    for i in range(0,len(df_worse_ommb1),1):
+        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
+        .format(df_worse_ommb1.loc[i,'SubNetwork'],
+                df_worse_ommb1.loc[i,'MEID'],
+)
+        f.write(line+'\n')         
+
+with open(out_path + 'OMMB1_command.txt','a') as f:
+    for i in range(0,len(df_good_ommb1),1):
+        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"1;2;3\"",EXTENDS="";'\
+        .format(df_good_ommb1.loc[i,'MOI'])
+        f.write(line+'\n') 
+
+with open(out_path + 'OMMB1_command.txt','a') as f:
+    for i in range(0,len(df_worse_ommb1),1):
+        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"3;4;5\"",EXTENDS="";'\
+        .format(df_worse_ommb1.loc[i,'MOI'])
+        f.write(line+'\n') 
+
+# =============================================================================
+# 生成ommb2修改指令
+# =============================================================================
+
+df_good_ommb2 = df_zte_good[(df_zte_good['cqiRptPeriod'] != '1;2;3')&(df_zte_good['OMMB'] == 'OMMB2')]
+df_worse_ommb2 = df_zte_worse[(df_zte_worse['cqiRptPeriod'] != '3;4;5')&(df_zte_worse['OMMB'] == 'OMMB2')]
+df_good_ommb2 = df_good_ommb2.reset_index()
+df_worse_ommb2 = df_worse_ommb2.reset_index()
+
+with open(out_path + 'apply_right_OMMB2.txt','a') as f:
+    for i in range(0,len(df_good_ommb2),1):
+        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
+        .format(df_good_ommb2.loc[i,'SubNetwork'],
+                df_good_ommb2.loc[i,'MEID'],
+)
+        f.write(line+'\n')         
+
+with open(out_path + 'apply_right_OMMB2.txt','a') as f:
+    for i in range(0,len(df_worse_ommb2),1):
+        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
+        .format(df_worse_ommb2.loc[i,'SubNetwork'],
+                df_worse_ommb2.loc[i,'MEID'],
+)
+        f.write(line+'\n')         
+
+with open(out_path + 'OMMB2_command.txt','a') as f:
+    for i in range(0,len(df_good_ommb2),1):
+        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"1;2;3\"",EXTENDS="";'\
+        .format(df_good_ommb2.loc[i,'MOI'])
+        f.write(line+'\n') 
+
+with open(out_path + 'OMMB2_command.txt','a') as f:
+    for i in range(0,len(df_worse_ommb2),1):
+        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"3;4;5\"",EXTENDS="";'\
+        .format(df_worse_ommb2.loc[i,'MOI'])
+        f.write(line+'\n') 
+
+with  pd.ExcelWriter(out_path + '曲靖CQI优良率' + current_date + '.xlsx')  as writer:  #输出到excel
+    book = writer.book 
+    sheet = book.add_worksheet('本月MR指标')
+    sheet.insert_image('A2' , pic_path + "全省CQI优良比.png")
+    sheet.insert_image('A23', pic_path + "全市CQI优良比.png")
+    sheet.insert_image('A44', pic_path + "中兴CQI优良比.png")
+    sheet.insert_image('A65', pic_path + "爱立信CQI优良比.png")
+    df_zte_good.to_excel(writer,'质优小区') 
+    df_zte_worse.to_excel(writer,'质差小区') 
