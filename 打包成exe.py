@@ -5,7 +5,7 @@ pyinstaller --clean --win-private-assemblies -F MR.py
 pyinstaller --clean --win-private-assemblies -F MR-win.py  
 
 
-pyinstaller --clean --win-private-assemblies -F CQI.py 
+pyinstaller --clean --win-private-assemblies -F CQI_LC.py 
 
 hiddenimports = ['pandas._libs.tslibs.timedeltas',
 'pandas._libs.tslibs.nattype',
