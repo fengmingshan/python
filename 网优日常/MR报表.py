@@ -38,7 +38,7 @@ def main():
     df_yunnan_pivot = df_yunnan_pivot.reset_index()
     df_yunnan_pivot = df_yunnan_pivot.sort_values(by='MR优良率',ascending = False)
         
-    df_all  = df_yunnan[(df_yunnan['区域'] == '曲靖市')&(df_yunnan['厂家'] == '中兴')]
+    df_all  = df_yunnan[df_yunnan['区域'] == '曲靖市']
     df_all['MR优良采样点'] =  df_all['|≥-105dBm采样点']+df_all['|≥-110dBm采样点']
     df_all['总采样点'] = df_all['|≥-105dBm采样点']+ df_all['|≥-110dBm采样点'] + df_all['|≥-115dBm采样点'] + df_all['|≥-120dBm采样点'] + df_all['|≥负无穷采样点']
     df_all_pivot = pd.pivot_table(df_all, index=['时间周期','区域','厂家','是否800M设备'], 

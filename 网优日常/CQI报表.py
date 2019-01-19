@@ -16,24 +16,18 @@ plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 current_date = str(datetime.now()).split('.')[0].split(' ')[0]
 
 data_path = r'D:\CQI报表\原始数据' + '\\'
-out_path = r'D:\CQI报表' + '\\'
+out_path = r'D:\CQI报表\脚本输出' + '\\'
 pic_path = r'D:\CQI报表\pic' + '\\'
-PhyChannel1 = 'PhyChannel_OMMB1.xlsx' 
-PhyChannel2 = 'PhyChannel_OMMB2.xlsx'
+path = r'D:\CQI报表' + '\\'
 
-cell_name = 'cell_name.xlsx'
-
-df_OMMB1 = pd.read_excel(out_path + PhyChannel1 ,encoding='utf-8') 
-df_OMMB2 = pd.read_excel(out_path + PhyChannel2 ,encoding='utf-8') 
-df_OMMB1 = df_OMMB1.drop([0,1,2])
-df_OMMB2 = df_OMMB2.drop([0,1,2])
-
-df_OMMB1.rename(columns={'RESULT':'OMMB'},inplace =True)
-df_OMMB2.rename(columns={'RESULT':'OMMB'},inplace =True)
-df_OMMB1['OMMB'] = 'OMMB1'
-df_OMMB2['OMMB'] = 'OMMB2'
-df_PhyChannel = df_OMMB1.append(df_OMMB2)
-df_PhyChannel = df_PhyChannel[['OMMB','MOI','SubNetwork','MEID','description','cqiRptPeriod']]
+config_files = [x for x in os.listdir(path) if 'PhyChannel' in x ]
+df_PhyChannel = pd.DataFrame()
+for file in config_files :
+    df_tmp = pd.read_excel(path + file ,encoding='utf-8') 
+    df_tmp = df_tmp.drop([0,1,2])
+    df_tmp['OMMB'] = file.split('_')[1][0:5]
+    df_PhyChannel = df_PhyChannel.append(df_tmp)
+df_PhyChannel = df_PhyChannel[['OMMB','MOI','SubNetwork','MEID','description','cqiRptPeriod','cqiRptChNum',]]
 df_PhyChannel['MOI'] = df_PhyChannel['MOI'].map(lambda x:x.replace('ConfigSet=0,',''))
 df_PhyChannel['description'] = df_PhyChannel['description'].map(lambda x:x.split('=')[1])
 df_PhyChannel['description'] = df_PhyChannel['MEID'] + '_' + df_PhyChannel['description']
@@ -80,30 +74,47 @@ df_eric_day['CQI优良比'] =  df_eric_day['CQI大于等于7次数']/df_eric_day
 # =============================================================================
 # 质优小区
 # =============================================================================
-df_zte_good = df_qujing_zte[df_qujing_zte['CQI大于等于7比例']>90]   
+df_zte_good = df_qujing_zte[df_qujing_zte['CQI大于等于7比例']>=92]   
 df_zte_good.rename(columns={'厂家':'小区编码','CQI大于等于7比例':'CQI优良比'},inplace =True)
 df_zte_good['小区编码'] = df_zte_good['小区名'].map(lambda x:str(x).split('R')[0][:-1])
 df_zte_good = pd.merge(df_zte_good,df_PhyChannel,how='left',on='小区编码')
 df_zte_good = pd.merge(df_zte_good,df_qujing_pivot,how='left',on='日期')
 df_zte_good = df_zte_good[['区域','日期','小区名','小区编码','是否800M设备','CQI上报总次数',\
                            'CQI大于等于7次数','CQI优良比','OMMB','MOI','SubNetwork','MEID',\
-                           'cqiRptPeriod','CQI全天总数','CQI大于等于7全天总数']]
+                           'cqiRptPeriod','cqiRptChNum','CQI全天总数','CQI大于等于7全天总数']]
 df_zte_good['权重'] = df_zte_good['CQI上报总次数']/df_zte_good['CQI全天总数']
 date_now = df_zte_good.loc[len(df_zte_good)-1,'日期']
 df_zte_good = df_zte_good[df_zte_good['日期'] == date_now]
 df_zte_good = df_zte_good.sort_values(by='权重',ascending = False) # 按权重降序排列  
 
 # =============================================================================
+# 正常小区
+# =============================================================================
+df_zte_normal = df_qujing_zte[(df_qujing_zte['CQI大于等于7比例']>91)&(df_qujing_zte['CQI大于等于7比例']<92)]   
+df_zte_normal.rename(columns={'厂家':'小区编码','CQI大于等于7比例':'CQI优良比'},inplace =True)
+df_zte_normal['小区编码'] = df_zte_normal['小区名'].map(lambda x:str(x).split('R')[0][:-1])
+df_zte_normal = pd.merge(df_zte_normal,df_PhyChannel,how='left',on='小区编码')
+df_zte_normal = pd.merge(df_zte_normal,df_qujing_pivot,how='left',on='日期')
+df_zte_normal = df_zte_normal[['区域','日期','小区名','小区编码','是否800M设备','CQI上报总次数',\
+                           'CQI大于等于7次数','CQI优良比','OMMB','MOI','SubNetwork','MEID',\
+                           'cqiRptPeriod','cqiRptChNum','CQI全天总数','CQI大于等于7全天总数']]
+df_zte_normal['权重'] = df_zte_normal['CQI上报总次数']/df_zte_normal['CQI全天总数']
+date_now = df_zte_normal.loc[len(df_zte_normal)-1,'日期']
+df_zte_normal = df_zte_normal[df_zte_normal['日期'] == date_now]
+df_zte_normal = df_zte_normal.sort_values(by='权重',ascending = False) # 按权重降序排列  
+
+
+# =============================================================================
 # 质差小区
 # =============================================================================
-df_zte_worse = df_qujing_zte[df_qujing_zte['CQI大于等于7比例']<90]  
+df_zte_worse = df_qujing_zte[df_qujing_zte['CQI大于等于7比例']<=91]  
 df_zte_worse.rename(columns={'厂家':'小区编码','CQI大于等于7比例':'CQI优良比'},inplace =True)
 df_zte_worse['小区编码'] = df_zte_worse['小区名'].map(lambda x:str(x).split('R')[0][:-1])
 df_zte_worse = pd.merge(df_zte_worse,df_PhyChannel,how='left',on='小区编码')
 df_zte_worse = pd.merge(df_zte_worse,df_qujing_pivot,how='left',on='日期')
 df_zte_worse = df_zte_worse[['区域','日期','小区名','小区编码','是否800M设备','CQI上报总次数',\
                            'CQI大于等于7次数','CQI优良比','OMMB','MOI','SubNetwork','MEID',\
-                           'cqiRptPeriod','CQI全天总数','CQI大于等于7全天总数']]
+                           'cqiRptPeriod','cqiRptChNum','CQI全天总数','CQI大于等于7全天总数']]
 df_zte_worse['权重'] = df_zte_worse['CQI上报总次数']/df_zte_worse['CQI全天总数']
 date_now = df_zte_worse.loc[len(df_zte_worse)-1,'日期']
 df_zte_worse = df_zte_worse[df_zte_worse['日期'] == date_now]
@@ -179,79 +190,65 @@ plt.savefig(pic_path + "爱立信CQI优良比.png",format='png', dpi=400)
 plt.close()
 
 
-# =============================================================================
-# 生成ommb1修改指令
-# =============================================================================
-df_good_ommb1 = df_zte_good[(df_zte_good['cqiRptPeriod'] != '0;1;2')&(df_zte_good['OMMB'] == 'OMMB1')]
-df_worse_ommb1 = df_zte_worse[(df_zte_worse['cqiRptPeriod'] != '3;4;5')&(df_zte_worse['OMMB'] == 'OMMB1')]
-df_good_ommb1 = df_good_ommb1.reset_index()
-df_worse_ommb1 = df_worse_ommb1.reset_index()
 
-
-with open(out_path + 'apply_right_OMMB1.txt','a') as f:
-    for i in range(0,len(df_good_ommb1),1):
-        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
-        .format(df_good_ommb1.loc[i,'SubNetwork'],
-                df_good_ommb1.loc[i,'MEID'],
-)
-        f.write(line+'\n')         
-
-with open(out_path + 'apply_right_OMMB1.txt','a') as f:
-    for i in range(0,len(df_worse_ommb1),1):
-        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
-        .format(df_worse_ommb1.loc[i,'SubNetwork'],
-                df_worse_ommb1.loc[i,'MEID'],
-)
-        f.write(line+'\n')         
-
-with open(out_path + 'OMMB1_command.txt','a') as f:
-    for i in range(0,len(df_good_ommb1),1):
-        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"0;1;2\"",EXTENDS="";'\
-        .format(df_good_ommb1.loc[i,'MOI'])
-        f.write(line+'\n') 
-
-with open(out_path + 'OMMB1_command.txt','a') as f:
-    for i in range(0,len(df_worse_ommb1),1):
-        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"3;4;5\"",EXTENDS="";'\
-        .format(df_worse_ommb1.loc[i,'MOI'])
-        f.write(line+'\n') 
 
 # =============================================================================
-# 生成ommb2修改指令
+# 生成修改指令
 # =============================================================================
+for x in ['OMMB1','OMMB2','OMMB3']:
+    df_good_ommb = df_zte_good[(df_zte_good['cqiRptChNum'] != '6;0;0')&(df_zte_good['OMMB'] == x)]
+    df_normal_ommb = df_zte_normal[(df_zte_normal['cqiRptChNum'] != '0;6;0')&(df_zte_normal['OMMB'] == x)]
+    df_worse_ommb = df_zte_worse[(df_zte_worse['cqiRptChNum'] != '1;0;5')&(df_zte_worse['OMMB'] == x)]
+    df_good_ommb = df_good_ommb.reset_index()
+    df_normal_ommb = df_normal_ommb.reset_index()
+    df_worse_ommb = df_worse_ommb.reset_index()
 
-df_good_ommb2 = df_zte_good[(df_zte_good['cqiRptPeriod'] != '0;1;2')&(df_zte_good['OMMB'] == 'OMMB2')]
-df_worse_ommb2 = df_zte_worse[(df_zte_worse['cqiRptPeriod'] != '3;4;5')&(df_zte_worse['OMMB'] == 'OMMB2')]
-df_good_ommb2 = df_good_ommb2.reset_index()
-df_worse_ommb2 = df_worse_ommb2.reset_index()
+    with open(out_path + 'apply_right_' + x +'.txt','a') as f:
+        for i in range(0,len(df_good_ommb),1):
+            line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
+            .format(df_good_ommb.loc[i,'SubNetwork'],
+                    df_good_ommb.loc[i,'MEID'],
+    )
+            f.write(line+'\n')         
+    
+    with open(out_path + 'apply_right_'+ x + '.txt','a') as f:
+        for i in range(0,len(df_normal_ommb),1):
+            line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
+            .format(df_normal_ommb.loc[i,'SubNetwork'],
+                    df_normal_ommb.loc[i,'MEID'],
+    )
+            f.write(line+'\n')         
+    
+    with open(out_path + 'apply_right_' + x + '.txt','a') as f:
+        for i in range(0,len(df_worse_ommb),1):
+            line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
+            .format(df_worse_ommb.loc[i,'SubNetwork'],
+                    df_worse_ommb.loc[i,'MEID'],
+    )
+            f.write(line+'\n')         
+    
+    with open(out_path + x + '_modify_CQI.txt','a') as f:
+        for i in range(0,len(df_good_ommb),1):
+            line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"0;3;5\",cqiRptChNum=\"6;0;0\"",EXTENDS="";'\
+            .format(df_good_ommb.loc[i,'MOI'])
+            f.write(line+'\n') 
+            
+    with open(out_path + x + '_modify_CQI.txt','a') as f:
+        for i in range(0,len(df_normal_ommb),1):
+            line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"1;3;5\",cqiRptChNum=\"1;0;5\"",EXTENDS="";'\
+            .format(df_normal_ommb.loc[i,'MOI'])
+            f.write(line+'\n') 
+    
+    
+    with open(out_path + x + '_modify_CQI.txt','a') as f:
+        for i in range(0,len(df_worse_ommb),1):
+            line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"1;3;5\",cqiRptChNum=\"1;0;5\"",EXTENDS="";'\
+            .format(df_worse_ommb.loc[i,'MOI'])
+            f.write(line+'\n') 
 
-with open(out_path + 'apply_right_OMMB2.txt','a') as f:
-    for i in range(0,len(df_good_ommb2),1):
-        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
-        .format(df_good_ommb2.loc[i,'SubNetwork'],
-                df_good_ommb2.loc[i,'MEID'],
-)
-        f.write(line+'\n')         
-
-with open(out_path + 'apply_right_OMMB2.txt','a') as f:
-    for i in range(0,len(df_worse_ommb2),1):
-        line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
-        .format(df_worse_ommb2.loc[i,'SubNetwork'],
-                df_worse_ommb2.loc[i,'MEID'],
-)
-        f.write(line+'\n')         
-
-with open(out_path + 'OMMB2_command.txt','a') as f:
-    for i in range(0,len(df_good_ommb2),1):
-        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"0;1;2\"",EXTENDS="";'\
-        .format(df_good_ommb2.loc[i,'MOI'])
-        f.write(line+'\n') 
-
-with open(out_path + 'OMMB2_command.txt','a') as f:
-    for i in range(0,len(df_worse_ommb2),1):
-        line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"3;4;5\"",EXTENDS="";'\
-        .format(df_worse_ommb2.loc[i,'MOI'])
-        f.write(line+'\n') 
+# =============================================================================
+# 输出报表
+# =============================================================================
 
 with  pd.ExcelWriter(out_path + '曲靖CQI优良率' + current_date + '.xlsx')  as writer:  #输出到excel
     book = writer.book 
@@ -260,5 +257,8 @@ with  pd.ExcelWriter(out_path + '曲靖CQI优良率' + current_date + '.xlsx')  
     sheet.insert_image('A23', pic_path + "全市CQI优良比.png")
     sheet.insert_image('A44', pic_path + "中兴CQI优良比.png")
     sheet.insert_image('A65', pic_path + "爱立信CQI优良比.png")
-    df_zte_good.to_excel(writer,'质优小区') 
-    df_zte_worse.to_excel(writer,'质差小区') 
+    df_zte_good.to_excel(writer,'质优小区',index=False) 
+    df_zte_normal.to_excel(writer,'正常小区',index=False) 
+    df_zte_worse.to_excel(writer,'质差小区',index=False) 
+
+

@@ -9,7 +9,7 @@ import numpy as np
 
 import os 
 
-data_path = r'D:\4G电压动态报表\2018年10月份电压值' + '\\'    #把一个月的电压汇总表放在这里
+data_path = r'D:\4G电压动态报表\2018年12月电压' + '\\'    #把一个月的电压汇总表放在这里
 out_path = r'D:\4G电压动态报表' + '\\'              #汇总后的表格会输出到这里
 
 file_list = os.listdir(data_path)
@@ -23,8 +23,8 @@ for file in file_list :
     for col in  old_columns:
         df_tmp[col] = df_tmp[col].map(lambda x:np.NaN if x == '-' else x )
         if '时间' in col :
-            df_tmp[col] = df_tmp[col].fillna(method = 'pad' )                           
-            df_tmp[col] = df_tmp[col].fillna(method = 'bfill' )
+            df_tmp[col] = df_tmp[col].fillna(method = 'pad') 
+            df_tmp[col] = df_tmp[col].fillna(method = 'bfill')                                                     
             df_tmp[col] = df_tmp[col].map(lambda x:x.split(' ')[1][0:5])
             
     voltage_columns = []
