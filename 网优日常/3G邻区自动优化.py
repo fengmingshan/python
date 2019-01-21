@@ -85,13 +85,15 @@ df_handover['Scell_index'] = df_handover['源BTS标识'] + '_' + df_handover['�
 df_handover['neighbor_index'] = df_handover['源BTS标识'] + '_' + df_handover['源小区号'] + \
                                 '-' + df_handover['目标BTS标识'] + '_' + df_handover['目标小区号']
 df_handover['切换总次数'] = df_handover['切换成功次数'] + df_handover['无效导频失败次数'] + df_handover['拥塞失败次数'] + df_handover['其他失败次数']                              
-df_handover = df_handover[['neighbor_index','Scell_index','切换总次数','切换成功次数']]
-df_handover = pd.pivot_table(df_handover, index=['neighbor_index','Scell_index'], 
-                              values =['切换总次数' ,'切换成功次数'], 
-                              aggfunc = {'切换总次数':np.sum,'切换成功次数':np.sum}) 
+df_handover = df_handover.rename(columns = {'源BTS标识':'system','源小区号':'cellid','目标BTS标识':'ncellsystemid',\
+                                            '目标小区号':'ncellid'} )
+df_handover = df_handover[['system','cellid','Scell_index','ncellsystemid','ncellid','neighbor_index','切换总次数','切换成功次数']]
+df_handover = pd.pivot_table(df_handover, index=['system','cellid','Scell_index','ncellsystemid','ncellid','neighbor_index'],
+                             values =['切换总次数' ,'切换成功次数'],
+                             aggfunc = {'切换总次数':np.sum,'切换成功次数':np.sum}) 
 df_handover = df_handover.reset_index() 
 df_handover = pd.merge(df_handover,df_cell_config,how = 'left', on = 'Scell_index')
-df_handover = df_handover[['neighbor_index','Scell_index','Scell_name','Scell_pn','切换总次数','切换成功次数']]
+df_handover = df_handover[['system','cellid','Scell_index','Scell_name','Scell_pn','ncellsystemid','ncellid','neighbor_index','切换总次数','切换成功次数']]
 df_handover['切换成功率(%)'] =  df_handover['切换成功次数']/df_handover['切换总次数']
 
  
@@ -107,7 +109,6 @@ df_cell_neighbor['Scell_index'] =  df_cell_neighbor['system'] + '_' + df_cell_ne
 df_cell_neighbor = df_cell_neighbor[['system','cellid','Scell_index','alias_b','pilot_pn','ncellsystemid','ncellid','neighbor_index']]
 df_cell_neighbor = df_cell_neighbor.rename(columns ={'pilot_pn':'neighbor_pn','alias_b':'neighbor_name'})
 df_cell_neighbor = pd.merge(df_cell_neighbor,df_cell_config,how = 'left', on = 'Scell_index')
-df_cell_neighbor = pd.merge(df_cell_neighbor,df_handover,how = 'left', on = 'neighbor_index')
 
 # 合并处理载频邻区文件            
 df_carrier_neighbor = pd.DataFrame()
@@ -121,17 +122,17 @@ df_carrier_neighbor['Scell_index'] =  df_carrier_neighbor['system'] + '_' + df_c
 df_carrier_neighbor = df_carrier_neighbor[['system','cellid','Scell_index','carrierid','alias_b','pilot_pn','ncellsystemid','ncellid','neighbor_index']]
 df_carrier_neighbor = df_carrier_neighbor.rename(columns ={'pilot_pn':'neighbor_pn','alias_b':'neighbor_name'})
 df_carrier_neighbor = pd.merge(df_carrier_neighbor,df_cell_config,how = 'left', on = 'Scell_index')
-df_carrier_neighbor = pd.merge(df_carrier_neighbor,df_handover,how ='left', on = 'neighbor_index')
 
 # =============================================================================
 # 检查小区邻区
 # =============================================================================
-df_cell = df_cell_neighbor[['system','cellid','ncellsystemid','ncellid','neighbor_pn','neighbor_name','neighbor_index']]
+df_cell = df_cell_neighbor[['neighbor_index','neighbor_pn','neighbor_name',]]
 df_cell_check = pd.merge(df_handover,df_cell,how = 'left',on = 'neighbor_index')
 df_cell_check = df_cell_check[['system','cellid','Scell_index','Scell_name','Scell_pn','ncellsystemid',\
                                'ncellid','neighbor_name','neighbor_pn','切换总次数',\
                                '切换成功次数','切换成功率(%)','neighbor_index']]
 
 df_cell_check = df_cell_check.sort_values(by='切换总次数',ascending = False) 
-#with pd.ExcelWriter(out_path + 'cell_check.xlsx') as writer: #不用保存和退出，系统自动会完成
-#    df_cell_check.to_excel(writer,'cell_check',index = False) 
+
+with pd.ExcelWriter(out_path + 'cell_check.xlsx') as writer: #不用保存和退出，系统自动会完成
+    df_cell_check.to_excel(writer,'cell_check',index = False) 

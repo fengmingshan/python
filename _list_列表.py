@@ -8,6 +8,8 @@ import copy
 
 #数据结构list
 li1=[ 'abcd', 786 , 2.23, 'runoob', 70.2 ]
+li1[0] = 'cdef'
+
 li2=[3,4,5]
 print (li1) # 输出完整列表
 print (li1[0]) # 输出列表第一个元素
@@ -40,7 +42,7 @@ print ("删除2000 : ", list2)
 # =============================================================================
 list1 = ['Google', 1997,'microsoft',1995,'tencent',1999]
 # 我想通过迭代删除整个list, so easy是不是?
-
+del list1[0]
 # 方法1：
 for i in range(0,len(list1),1): # 年轻人,图样图森破!
     del list1[i]    # 报错了：list assignment index out of range ，index超出范围
@@ -55,9 +57,9 @@ print('new_list1[2]=',list1[2])
 
 #方法2：
 # 小样，我就不信治不了你！
-list1 = ['Google', 1997,'microsoft',1995,'tencent',1999]
-for element in list1: # 年轻人:图样图森破! * 2
-    list1.remove(element)    
+list1 = ['Google', 1997 , 'microsoft' , 1995 , 'tencent' , 1999]
+for x in list1: # 年轻人:图样图森破! * 2
+    list1.remove(x)    
 print('new_list1=',list1)  
 # 没报错，但[1997, 1995, 1999]还在，通过元素迭代也是一样的，自动补位机制还是有效
 

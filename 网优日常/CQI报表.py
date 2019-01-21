@@ -142,6 +142,7 @@ plt.close()
 # 画全市CQI优良率
 # =============================================================================
 y1 = df_qujing_pivot['CQI优良比_全市'].map(lambda x:x*100).T.values
+df_qujing_pivot['日期'] = df_qujing_pivot['日期'].map(lambda x:x[5:])
 x1 = df_qujing_pivot['日期'].T.values
 plt.figure(figsize=(12, 4))
 plt.xticks(range(len(x1)), x1,fontsize=8)
@@ -159,6 +160,7 @@ plt.close()
 # 画中兴CQI优良率
 # =============================================================================
 y1 = df_zte_day['CQI优良比'].map(lambda x:x*100).T.values
+df_zte_day['日期'] = df_zte_day['日期'].map(lambda x:x[5:])
 x1 = df_zte_day['日期'].T.values
 plt.figure(figsize=(12, 4))
 plt.xticks(range(len(x1)), x1,fontsize=8)
@@ -176,6 +178,7 @@ plt.close()
 # 画爱立信CQI优良率
 # =============================================================================
 y1 = df_eric_day['CQI优良比'].map(lambda x:x*100).T.values
+df_eric_day['日期'] = df_eric_day['日期'].map(lambda x:x[5:])
 x1 = df_eric_day['日期'].T.values
 plt.figure(figsize=(12, 4))
 plt.xticks(range(len(x1)), x1,fontsize=8)
@@ -197,7 +200,7 @@ plt.close()
 # =============================================================================
 for x in ['OMMB1','OMMB2','OMMB3']:
     df_good_ommb = df_zte_good[(df_zte_good['cqiRptChNum'] != '6;0;0')&(df_zte_good['OMMB'] == x)]
-    df_normal_ommb = df_zte_normal[(df_zte_normal['cqiRptChNum'] != '0;6;0')&(df_zte_normal['OMMB'] == x)]
+    df_normal_ommb = df_zte_normal[(df_zte_normal['cqiRptChNum'] != '1;0;5')&(df_zte_normal['OMMB'] == x)]
     df_worse_ommb = df_zte_worse[(df_zte_worse['cqiRptChNum'] != '1;0;5')&(df_zte_worse['OMMB'] == x)]
     df_good_ommb = df_good_ommb.reset_index()
     df_normal_ommb = df_normal_ommb.reset_index()

@@ -5,6 +5,7 @@ Created on Tue Dec 19 16:04:57 2017
 @author: Administrator
 """
 tup1 = ('physics', 'chemistry', 1997, 20.3)
+
 print(tup1[0])
 tup2 = ()    #创建空元组：
 

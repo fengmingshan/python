@@ -11,7 +11,9 @@ dict2 = {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
 print ("dict2['Name']: ", dict2['Name'])
 print ("dict2['Age']: ", dict2['Age'])
 
-dict2['age']=8  #更新元素
+
+dict2['Age']
+dict2['Age'] = 10  #更新元素
 dict2['school']='菜鸟教程'#增加元素
 print ("dict2['age']: ", dict2['age'])
 print ("dict2['school']: ", dict2['school'])
@@ -66,7 +68,7 @@ for k in d.keys():
 # iter each value:
 print('iter value:', e)
 for k in d.values():
-    print('value:', v)
+    print('value:', k)
 
 # iter both key and value:
 print('iter item:', e)
@@ -109,7 +111,9 @@ print(list(d.items()))
 #字典的操作获取所有key
 info = dict(name='cold', blog='linuxzen.com')
 info.keys()
+info.values()
 
+x = list(info.values())
 #获取key,value并循环
 info = dict(name='cold', blog='linuxzen.com')
 for key, value in info.items():
