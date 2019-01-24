@@ -188,44 +188,65 @@ df_carrier_check = df_carrier_check[['system','cellid','Scell_index','Scell_name
                                     '切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
 
 全量小区 = sorted(list(set(df_carrier_check['Scell_index'])))
-添加邻区汇总表 = pd.DataFrame() 
-删除邻区汇总表 = pd.DataFrame() 
+df_添加邻区汇总表 = pd.DataFrame() 
+df_删除邻区汇总表 = pd.DataFrame() 
+df_同PN邻区汇总表 = pd.DataFrame()
 
-df_tmp = df_carrier_check[df_carrier_check['Scell_index'] == '1_0']
-df_tmp = df_tmp.reset_index()
-df_tmp.drop('index',axis = 1 , inplace = True)
+# =============================================================================
+# 迭代检查邻区
+# =============================================================================
+for i in 全量小区:
+    df_tmp = df_carrier_check[df_carrier_check['Scell_index'] == i]
+    df_tmp = df_tmp.reset_index()
+    df_tmp.drop('index',axis = 1 , inplace = True)
+    
+    df_normal = df_tmp[df_tmp['操作类型'] == '正常']
+    df_normal = df_normal.reset_index()
+    df_normal.drop('index',axis = 1 , inplace = True)
+    
+    邻区数量 = len(df_normal)
+    邻区PN列表 = list(df_normal['Ncell_pn'])
+    if len(df_normal) > 1:
+        最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
+    for i in range(0,len(df_tmp),1):
+        if df_tmp.loc[i,'操作类型'] == '待定':
+            if 邻区数量 < 20:
+                df_tmp.loc[i,'操作类型'] = '添加'
+                df_添加邻区汇总表 = df_添加邻区汇总表.append(df_tmp.loc[i,:])
+                邻区数量 += 1
+            elif 邻区数量 >= 20 and df_tmp.loc[i,'切换总次数'] >= 10:
+                if (df_tmp.loc[i,'切换总次数'] - 最小切换次数)/最小切换次数 >= 0.3:
+                    if df_tmp.loc[i,'Ncell_pn'] not in 邻区PN列表:
+                        df_tmp.loc[i,'操作类型'] = '添加'
+                        df_添加邻区汇总表 = df_添加邻区汇总表.append(df_tmp.loc[i,:])
+                        df_删除邻区汇总表 = df_删除邻区汇总表.append(df_normal.loc[len(df_normal)-1,:])
+                        df_normal.drop(len(df_normal)-1 , inplace = True)
+                        df_normal = df_normal.append(df_tmp.loc[i,:])
+                        df_normal.sort_values(by='切换总次数',ascending = False , inplace = True)
+                        df_normal = df_normal.reset_index()
+                        df_normal.drop('index',axis = 1 , inplace = True)
+                        if len(df_normal) > 1:
+                            最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
+                    else :
+                        df_已配置同PN邻区 = df_normal[df_normal['Ncell_pn'] == '99']
+                        df_已配置同PN邻区['邻区类型'] = '已配置'
+                        df_同PN邻区汇总表.append(df_已配置同PN邻区)
+                        df_新发现同PN邻区 =  df_tmp.loc[i,:]
+                        df_新发现同PN邻区['邻区类型'] = '新发现'
+                        df_同PN邻区汇总表.append(df_新发现同PN邻区)
 
-df_normal = df_tmp[df_tmp['操作类型'] == '正常']
-df_normal = df_normal.reset_index()
-df_normal.drop('index',axis = 1 , inplace = True)
-
-邻区数量 = len(df_normal)
-邻区PN列表 = list(df_normal['Ncell_pn'])
-最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
-for i in range(0,len(df_tmp),1):
-    if df_tmp.loc[i,'操作类型'] == '待定':
-        if 邻区数量 < 20:
-            df_tmp.loc[i,'操作类型'] = '添加'
-            邻区数量 += 1
-        elif 邻区数量 >= 20:
-            if df_tmp.loc[i,'切换总次数'] - 最小切换次数 > 100:
-                if df_tmp.loc[i,'Ncell_pn'] not in 邻区PN列表:
-                    df_tmp.loc[i,'操作类型'] = '添加'
-                    添加邻区汇总表 = df_carrier_add.append(df_tmp.loc[i,:])
-                    删除邻区汇总表 = df_carrier_delete.append(df_tmp.loc[i,:])
-                    df_normal.drop(len(df_normal)-1 , inplace = True)
-                    df_normal = df_normal.append(df_tmp.loc[i,:])
-                    df_normal.sort_values(by='切换总次数',ascending = False , inplace = True)
-                    df_normal = df_normal.reset_index()
-                    最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
-                else :
-                    同PN小区行号 = df_normal[df_normal['Ncell_pn'] == '99'].index
-                pass
+if len(df_添加邻区汇总表) > 0:
+    df_添加邻区汇总表 = df_添加邻区汇总表[['system','cellid','Scell_index','Scell_name','Scell_pn',
+                                         'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                         '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
+if len(df_删除邻区汇总表) > 0:
+    df_删除邻区汇总表 = df_删除邻区汇总表[['system','cellid','Scell_index','Scell_name','Scell_pn',
+                                         'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                         '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
 
 with pd.ExcelWriter(out_path + '检查结果_new.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_tmp.to_excel(writer,'原始数据') 
     df_normal.to_excel(writer,'添加邻区') 
-    添加邻区汇总表.to_excel(writer,'添加邻区汇总表') 
-    删除邻区汇总表..to_excel(writer,'删除邻区汇总表') 
-
+    df_添加邻区汇总表.to_excel(writer,'添加邻区汇总表') 
+    df_删除邻区汇总表.to_excel(writer,'删除邻区汇总表') 
+    df_同PN邻区汇总表.to_excel(writer,'同PN邻区汇总表') 
 
