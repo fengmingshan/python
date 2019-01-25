@@ -196,8 +196,8 @@ for i in 全量小区:
                         df_normal.loc[len(df_normal)-1,'操作类型'] = '删除'
                         df_小区邻区添加 = df_小区邻区添加.append(df_tmp.loc[i,:])
                         df_小区邻区删除 = df_小区邻区删除.append(df_normal.loc[len(df_normal)-1,:])
-                        df_小区邻区替换 = df_小区邻区替换.append(df_tmp.loc[i,:])
                         df_小区邻区替换 = df_小区邻区替换.append(df_normal.loc[len(df_normal)-1,:])
+                        df_小区邻区替换 = df_小区邻区替换.append(df_tmp.loc[i,:])
                         df_normal.drop(len(df_normal)-1 , inplace = True)
                         df_normal = df_normal.append(df_tmp.loc[i,:])
                         df_normal.sort_values(by='切换总次数',ascending = False , inplace = True)
@@ -301,8 +301,8 @@ for i in 全量小区:
                         df_normal.loc[len(df_normal)-1,'操作类型'] = '删除'
                         df_载频邻区添加 = df_载频邻区添加.append(df_tmp.loc[i,:])
                         df_载频邻区删除 = df_载频邻区删除.append(df_normal.loc[len(df_normal)-1,:])
-                        df_载频邻区替换 = df_载频邻区替换.append(df_tmp.loc[i,:])
                         df_载频邻区替换 = df_载频邻区替换.append(df_normal.loc[len(df_normal)-1,:])
+                        df_载频邻区替换 = df_载频邻区替换.append(df_tmp.loc[i,:])
                         df_normal.drop(len(df_normal)-1 , inplace = True)
                         df_normal = df_normal.append(df_tmp.loc[i,:])
                         df_normal.sort_values(by='切换总次数',ascending = False , inplace = True)
