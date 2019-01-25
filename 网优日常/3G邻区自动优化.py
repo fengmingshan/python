@@ -208,19 +208,37 @@ for i in 全量小区:
                         n = df_normal[df_normal['Ncell_pn'] == df_tmp.loc[i,'Ncell_pn']].index.values[0]
                         if df_tmp.loc[i,'切换总次数'] > df_normal.loc[n,'切换总次数']:
                             df_tmp.loc[i,'操作类型'] = '替换'  
-                            df_小区邻区添加.append(df_tmp.loc[i,:])
-                            df_小区邻区删除 = df_小区邻区删除.append(df_normal.loc[len(df_normal)-1,:])
-                            df_载频邻区替换 = df_载频邻区替换.append(df_normal.loc[n,:])
-                            df_载频邻区替换 = df_载频邻区替换.append(df_tmp.loc[i,:])
+                            df_小区邻区添加 = df_小区邻区添加.append(df_tmp.loc[i,:])
+                            df_小区邻区删除 = df_小区邻区删除.append(df_normal.loc[n,:])
+                            df_小区邻区替换 = df_小区邻区替换.append(df_normal.loc[n,:])
+                            df_小区邻区替换 = df_小区邻区替换.append(df_tmp.loc[i,:])
                             df_normal.drop(n,inplace = True) 
                             df_normal.append(df_tmp.loc[i,:])
                             df_normal = df_normal.reset_index()
                             小区邻区PN列表 = list(df_normal['Ncell_pn'])
+
+if len(df_小区邻区添加) > 0:
+    df_小区邻区添加 = df_小区邻区添加[['system','cellid','Scell_index','Scell_name','Scell_pn',
+                                     'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                     '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
+
+if len(df_小区邻区删除) > 0:
+    df_小区邻区删除 = df_小区邻区删除[['system','cellid','Scell_index','Scell_name','Scell_pn',
+                                     'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                     '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
+
+if len(df_小区邻区替换) > 0:
+    df_小区邻区替换 = df_小区邻区替换[['system','cellid','Scell_index','Scell_name','Scell_pn',
+                                     'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                     '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
+
+
                         
 
-with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '小区邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
+with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_小区邻区添加.to_excel(writer,'添加小区邻区',index = False) 
     df_小区邻区删除.to_excel(writer,'删除小区邻区',index = False) 
+    df_小区邻区替换.to_excel(writer,'替换小区邻区',index = False) 
 
 # =============================================================================
 # 汇总载频邻区
@@ -270,7 +288,7 @@ for i in 全量小区:
         if df_tmp.loc[i,'操作类型'] == '待定':
             if 邻区数量 < 20:
                 df_tmp.loc[i,'操作类型'] = '添加'
-                df_添加邻区汇总表 = df_添加邻区汇总表.append(df_tmp.loc[i,:])
+                df_载频邻区添加 = df_载频邻区添加.append(df_tmp.loc[i,:])
                 df_normal = df_normal.append(df_tmp.loc[i,:])
                 df_normal.sort_values(by='切换总次数',ascending = False , inplace = True)
                 df_normal = df_normal.reset_index()
@@ -297,21 +315,21 @@ for i in 全量小区:
                             df_tmp.loc[i,'操作类型'] = '替换' 
                             df_载频邻区添加.append(df_tmp.loc[i,:])
                             df_载频邻区删除 = df_小区邻区删除.append(df_normal.loc[n,:])
-                            df_载频邻区替换 = df_载频邻区替换.append(n,:])
+                            df_载频邻区替换 = df_载频邻区替换.append(df_normal.loc[n,:])
                             df_载频邻区替换 = df_载频邻区替换.append(df_tmp.loc[i,:])
                             df_normal.drop(n,inplace = True) 
                             df_normal.append(df_tmp.loc[i,:])
                             载频邻区PN列表 = list(df_normal['Ncell_pn'])
 
-if len(df_添加邻区汇总表) > 0:
+if len(df_载频邻区添加) > 0:
     df_载频邻区添加 = df_载频邻区添加[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
-if len(df_删除邻区汇总表) > 0:
+if len(df_载频邻区删除) > 0:
     df_载频邻区删除 = df_载频邻区删除[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
-if len(df_邻区替换汇总表) > 0 and len(df_邻区替换汇总表) > 0:
+if len(df_载频邻区替换) > 0 :
     df_载频邻区替换 = df_载频邻区替换[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
