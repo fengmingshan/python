@@ -8,6 +8,13 @@ Created on Tue Jan 29 15:27:13 2019
 import pandas as pd 
 import os
 
+# 修改小区邻区指令
+# ADD 1X_LINKCELL_L:POS="1"-"0"-"21",NCELLSYSTEM=1,NCELL=1,ISEACHOTHER=0;
+# DEL 1X_LINKCELL:POS="1"-"0"-"24";
+
+# 修改载频邻区指令
+# SET 1X_NGHBRLIST:POS="1"-"0"-"0"-"21";
+# DEL 1X_NGHBRLIST:POS="1"-"0"-"0"-"21",ISEACHOTHER=NO;
 
 # =============================================================================
 # 设置环境变量
@@ -15,12 +22,10 @@ import os
 data_path = r'd:\3G邻区自动优化' + '\\'
 out_path = r'd:\3G邻区自动优化\修改脚本输出' + '\\'
 
-BSC1_cell_neighbor_file = [x for x in os.listdir(data_path) if ('BSC1_' in x and '载频邻区检查结果' in x )][0]
-BSC1_carrie_neighbor_file = [x for x in os.listdir(data_path) if ('BSC1_' in x and '小区邻区检查结果' in x )]
+cell_neighbor_file = [x for x in os.listdir(data_path) if '小区邻区检查结果' in x ]
+carrie_neighbor_file = [x for x in os.listdir(data_path) if '载频邻区检查结果' in x ]
 
-BSC2_cell_neighbor_file = [x for x in os.listdir(data_path) if ('BSC2_' in x and '载频邻区检查结果' in x )]
-BSC2_carrie_neighborr_file = [x for x in os.listdir(data_path) if ('BSC2_' in x and '小区邻区检查结果' in x )]
+for file in cell_neighbor_file : 
+    df_tmp1 = pd.read_excel(data_path + file, sheet_name='删除小区邻区')
 
-print(BSC1_cell_neighbor_file)
-
-ADD 1X_LINKCELL_L:POS="1"-"0"-"21",NCELLSYSTEM=1,NCELL=1,ISEACHOTHER=0;
+    df_tmp2 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
