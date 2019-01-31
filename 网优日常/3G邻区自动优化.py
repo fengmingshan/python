@@ -180,7 +180,7 @@ for i in 全量小区:
 
     for i in range(0,len(df_tmp),1):
         if df_tmp.loc[i,'操作类型'] == '待定':
-            if 小区邻区数量 < 70:
+            if 小区邻区数量 < 55 and df_tmp.loc[i,'切换总次数'] >= 10:
                 df_tmp.loc[i,'操作类型'] = '添加'
                 df_小区邻区添加 = df_小区邻区添加.append(df_tmp.loc[i,:])
                 df_normal = df_normal.append(df_tmp.loc[i,:])
@@ -188,7 +188,7 @@ for i in 全量小区:
                 df_normal = df_normal.reset_index()
                 df_normal.drop('index',axis = 1 , inplace = True)
                 小区邻区数量 += 1
-            elif 小区邻区数量 >= 70 and df_tmp.loc[i,'切换总次数'] >= 10:
+            elif 小区邻区数量 >= 55 and df_tmp.loc[i,'切换总次数'] >= 10:
                 if (df_tmp.loc[i,'切换总次数'] - 最小切换次数)/最小切换次数 >= 0.3:
                     if df_tmp.loc[i,'Ncell_pn'] not in 小区邻区PN列表:
                         df_tmp.loc[i,'操作类型'] = '替换'
@@ -276,8 +276,8 @@ for i in 全量小区:
     df_normal = df_normal.reset_index()
     df_normal.drop('index',axis = 1 , inplace = True)
     
-    邻区数量 = len(df_normal)
-    邻区PN列表 = list(df_normal['Ncell_pn'])
+    载频邻区数量 = len(df_normal)
+    载频邻区PN列表 = list(df_normal['Ncell_pn'])
     if len(df_normal) > 0:
         最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
     else:
@@ -285,17 +285,17 @@ for i in 全量小区:
 
     for i in range(0,len(df_tmp),1):
         if df_tmp.loc[i,'操作类型'] == '待定':
-            if 邻区数量 < 20:
+            if 载频邻区数量 < 20 and df_tmp.loc[i,'切换总次数'] >= 10:
                 df_tmp.loc[i,'操作类型'] = '添加'
                 df_载频邻区添加 = df_载频邻区添加.append(df_tmp.loc[i,:])
                 df_normal = df_normal.append(df_tmp.loc[i,:])
                 df_normal.sort_values(by='切换总次数',ascending = False , inplace = True)
                 df_normal = df_normal.reset_index()
                 df_normal.drop('index',axis = 1 , inplace = True)
-                邻区数量 += 1
-            elif 邻区数量 >= 20 and df_tmp.loc[i,'切换总次数'] >= 10:
+                载频邻区数量 += 1
+            elif 载频邻区数量 >= 20 and df_tmp.loc[i,'切换总次数'] >= 10:
                 if (df_tmp.loc[i,'切换总次数'] - 最小切换次数)/最小切换次数 >= 0.3:
-                    if df_tmp.loc[i,'Ncell_pn'] not in 邻区PN列表:
+                    if df_tmp.loc[i,'Ncell_pn'] not in 载频邻区PN列表:
                         df_tmp.loc[i,'操作类型'] = '替换'
                         df_normal.loc[len(df_normal)-1,'操作类型'] = '删除'
                         df_载频邻区添加 = df_载频邻区添加.append(df_tmp.loc[i,:])
@@ -335,7 +335,7 @@ if len(df_载频邻区替换) > 0 :
 
     
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] +'_载频邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_载频邻区替换.to_excel(writer,'邻区替换汇总表',index = False) 
-    df_载频邻区添加.to_excel(writer,'添加邻区汇总表',index = False) 
-    df_载频邻区删除.to_excel(writer,'删除邻区汇总表',index = False) 
+    df_载频邻区替换.to_excel(writer,'替换载频邻区',index = False) 
+    df_载频邻区添加.to_excel(writer,'添加载频邻区',index = False) 
+    df_载频邻区删除.to_excel(writer,'删除载频邻区',index = False) 
 

@@ -53,22 +53,20 @@ for file in cell_neighbor_file :
     df_删除载频邻区 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
     with open(out_path + file[0:4]+'_删除小区邻区.txt','w') as f:
         for i in range(0,len(df_bad),1):
-            line = r'DEL 1X_NGHBRLIST:POS="{0}"-"{1}"-"{2}"-"{3}",ISEACHOTHER=NO;'\
-            .format(df_删除小区邻区.loc[i,'system'],
-                    df_删除小区邻区.loc[i,'cellid'],
-                    df_删除小区邻区.loc[i,'carrierid'],
-                    df_删除小区邻区.loc[i,'Ncell_pn']
+            line = r'DEL 1X_NGHBRLIST:POS="{0}"-"{1}"-"0"-"{3}",ISEACHOTHER=NO;'\
+            .format(df_删除载频邻区.loc[i,'system'],
+                    df_删除载频邻区.loc[i,'cellid'],
+                    df_删除载频邻区.loc[i,'Ncell_pn']
 )
         f.write(line+'\n') 
     
     df_添加载频邻区 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
     with open(out_path + file[0:4]+'_删除小区邻区.txt','w') as f:
         for i in range(0,len(df_bad),1):
-            line = r'SET 1X_NGHBRLIST:POS="{0}"-"{1}"-"{2}"-"{3}";'\
-            .format(df_删除小区邻区.loc[i,'system'],
-                    df_删除小区邻区.loc[i,'cellid'],
-                    df_删除小区邻区.loc[i,'carrierid'],
-                    df_删除小区邻区.loc[i,'Ncell_pn']
+            line = r'SET 1X_NGHBRLIST:POS="{0}"-"{1}"-"0"-"{3}";'\
+            .format(df_添加载频邻区.loc[i,'system'],
+                    df_添加载频邻区.loc[i,'cellid'],
+                    df_添加载频邻区.loc[i,'Ncell_pn']
 )
         f.write(line+'\n') 
     
