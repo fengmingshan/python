@@ -26,6 +26,49 @@ cell_neighbor_file = [x for x in os.listdir(data_path) if '小区邻区检查结
 carrie_neighbor_file = [x for x in os.listdir(data_path) if '载频邻区检查结果' in x ]
 
 for file in cell_neighbor_file : 
-    df_tmp1 = pd.read_excel(data_path + file, sheet_name='删除小区邻区')
+    df_删除小区邻区 = pd.read_excel(data_path + file, sheet_name='删除小区邻区')
+    with open(out_path + file[0:4]+'_删除小区邻区.txt','w') as f:
+        for i in range(0,len(df_bad),1):
+            line = r'DEL 1X_LINKCELL:POS="{0}"-"{1}"-"{2}";'\
+            .format(df_删除小区邻区.loc[i,'system'],
+                    df_删除小区邻区.loc[i,'cellid'],
+                    df_删除小区邻区.loc[i,'Ncell_pn'],
+)
+        f.write(line+'\n') 
 
-    df_tmp2 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
+    df_添加小区邻区 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
+    with open(out_path + file[0:4]+'_删除小区邻区.txt','w') as f:
+        for i in range(0,len(df_bad),1):
+            line = r'ADD 1X_LINKCELL_L:POS="{0}"-"{1}"-"{2}",NCELLSYSTEM={3},NCELL={4},ISEACHOTHER=0;'\
+            .format(df_删除小区邻区.loc[i,'system'],
+                    df_删除小区邻区.loc[i,'cellid'],
+                    df_删除小区邻区.loc[i,'Ncell_pn'],
+                    df_删除小区邻区.loc[i,'ncellsystemid'],
+                    df_删除小区邻区.loc[i,'ncellid']
+)
+        f.write(line+'\n') 
+
+
+for file in cell_neighbor_file : 
+    df_删除载频邻区 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
+    with open(out_path + file[0:4]+'_删除小区邻区.txt','w') as f:
+        for i in range(0,len(df_bad),1):
+            line = r'DEL 1X_NGHBRLIST:POS="{0}"-"{1}"-"{2}"-"{3}",ISEACHOTHER=NO;'\
+            .format(df_删除小区邻区.loc[i,'system'],
+                    df_删除小区邻区.loc[i,'cellid'],
+                    df_删除小区邻区.loc[i,'carrierid'],
+                    df_删除小区邻区.loc[i,'Ncell_pn']
+)
+        f.write(line+'\n') 
+    
+    df_添加载频邻区 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
+    with open(out_path + file[0:4]+'_删除小区邻区.txt','w') as f:
+        for i in range(0,len(df_bad),1):
+            line = r'SET 1X_NGHBRLIST:POS="{0}"-"{1}"-"{2}"-"{3}";'\
+            .format(df_删除小区邻区.loc[i,'system'],
+                    df_删除小区邻区.loc[i,'cellid'],
+                    df_删除小区邻区.loc[i,'carrierid'],
+                    df_删除小区邻区.loc[i,'Ncell_pn']
+)
+        f.write(line+'\n') 
+    
