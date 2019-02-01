@@ -225,14 +225,14 @@ if len(df_小区邻区删除) > 0:
     df_小区邻区删除 = df_小区邻区删除[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
-
 if len(df_小区邻区替换) > 0:
     df_小区邻区替换 = df_小区邻区替换[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
 
+with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
+    df_cell_neighbor.to_excel(writer,'小区邻区总表',index = False) 
 
-                        
 
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_小区邻区添加.to_excel(writer,'添加小区邻区',index = False) 
@@ -332,7 +332,6 @@ if len(df_载频邻区替换) > 0 :
     df_载频邻区替换 = df_载频邻区替换[['system','cellid','carrierid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
-
     
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] +'_载频邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_载频邻区替换.to_excel(writer,'替换载频邻区',index = False) 
