@@ -52,8 +52,8 @@ df_tmp.drop('index',axis = 1,inplace = True)
 df_tmp['网元'] = df_tmp['小区'].map(lambda x:x.split('_')[0]) 
 df_tmp['网元'] = df_tmp['网元'].astype(int)
 df_tmp = pd.merge(df_tmp,df_支局,how = 'left' , on = '网元' )
-df_tmp = df_tmp[['区县','乡镇_街道','小区','手机号','号码归属省','号码归属市','总流量','终端品牌','终端型号','日期','号码归属省','号码归属市','上周常驻城市','上周常驻区域']]
-df_tmp.rename(columns={'小区':'基站名称','总流量':'总流量(MB)','终端品牌':'手机品牌','终端型号':'手机型号'},inplace =True)
+df_tmp = df_tmp[['区县','乡镇_街道','小区','手机号','总流量','终端品牌','终端型号','日期','号码归属省','号码归属市','上周常驻城市','上周常驻区域']]
+df_tmp.rename(columns={'小区':'基站名称','总流量':'忙时总流量(MB)','终端品牌':'手机品牌','终端型号':'手机型号'},inplace =True)
 df_tmp.fillna('-',inplace = True)
 
 区县列表 = list(set(df_tmp['区县']))
