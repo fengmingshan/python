@@ -83,12 +83,11 @@ for file in cell_neighbor_file :
     df_all = df_删除小区邻区.append(df_添加小区邻区)
     df_all = df_all.append(df_删除载频邻区)
     df_all = df_all.append(df_添加载频邻区)
-    sys_list = list(set(df_all['system']))
-    
+    sys_list = list(set(df_all['system']))    
     with open(out_path + file[0:4]+'_获取权限.txt','a') as f:
-    for i in sys_list:
-        line = r'APPLY CMRIGHT:SYSTEM={0};'\
-        .format(i)
-        f.write(line+'\n') 
+        for i in sys_list:
+            line = r'APPLY CMRIGHT:SYSTEM={0};'\
+            .format(i)
+            f.write(line+'\n') 
 
 

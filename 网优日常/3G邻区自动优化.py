@@ -47,16 +47,24 @@ handover_files = [x for x in os.listdir(data_path) if '小区切换邻区对象'
 cell_neighbor_files = [x for x in os.listdir(data_path) if '邻接小区参数表' in x ]
 carrie_neighborr_files = [x for x in os.listdir(data_path) if '载频邻区参数表' in x ]
 
-## 转换xls文件格式为txt格式
-#for file in handover_files:
-#    os.rename(data_path + file,data_path + file.replace('.xls','.txt'))
-#handover_files = [x for x in os.listdir(data_path) if '小区切换邻区对象' in x ]
-# 
-## 将TXT格式的文件转换成xls格式，并删除旧的txt文件  
-#for file in handover_files:
-#    txt2xls(data_path + file,data_path + file.replace('.txt','.xls'))
-#    os.remove(data_path + file)
+if handover_files[0].split('.')[1] == 'xls' and handover_files[len(handover_files)-1].split('.')[1] == 'xls' :
+    # 转换xls文件格式为txt格式
+    for file in handover_files:
+        os.rename(data_path + file,data_path + file.replace('.xls','.txt'))
+    handover_files = [x for x in os.listdir(data_path) if '小区切换邻区对象' in x ]
+     
+    # 将TXT格式的文件转换成xls格式，并删除旧的txt文件  
+    for file in handover_files:
+        txt2xls(data_path + file,data_path + file.replace('.txt','.xlsx'))
+        os.remove(data_path + file)
+    handover_files = [x for x in os.listdir(data_path) if '小区切换邻区对象' in x ]
+    for file in handover_files:
+        df_tmp = pd.read_excel(data_path + file,encoding='utf-8')
+        with pd.ExcelWriter(data_path + file.replace('xls','xlsx')) as writer: #不用保存和退出，系统自动会完成
+            df_tmp.to_excel(writer,'sheet1',index = False) 
+        os.remove(data_path + file)
 
+    
 # 合并处理小区实体参数文件           
 df_cell_config = pd.DataFrame()
 for file in cell_config_files:
@@ -268,7 +276,6 @@ df_载频邻区添加 = pd.DataFrame()
 df_载频邻区删除 = pd.DataFrame() 
 
 for cell in 全量小区:
-    cell = '102_0'
     df_tmp = df_carrier_check[df_carrier_check['Scell_index'] == cell]
     df_tmp = df_tmp.reset_index()
     df_tmp.drop('index',axis = 1 , inplace = True)
@@ -285,7 +292,6 @@ for cell in 全量小区:
         最小切换次数 = 0
 
     for i in range(0,len(df_tmp),1):
-        i = 10
         if df_tmp.loc[i,'操作类型'] == '待定':
             if 载频邻区数量 < 20 and df_tmp.loc[i,'切换总次数'] >= 10:
                 df_tmp.loc[i,'操作类型'] = '添加'
