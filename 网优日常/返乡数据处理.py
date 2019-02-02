@@ -35,23 +35,17 @@ df_tmp['前7位']  = df_tmp['手机号'].map(lambda x:x[0:7])
 df_tmp = pd.merge(df_tmp,df_号段,how = 'left' , on = '前7位' )
 df_tmp = df_tmp[df_tmp['曲靖本地号段'] != '曲靖']
 
-df_去重复 = df_tmp[['手机号','总流量']]
-df_去重复['总流量'] =  df_去重复['总流量'].astype(int)
-df_去重复 = pd.pivot_table(df_去重复, index=['手机号'], 
-                                      values =['总流量'], 
-                                      aggfunc = {'总流量':np.sum})     
-df_去重复 = df_去重复.reset_index()
-df_去重复.drop('index',axis = 1,inplace = True)
-
-df_tmp.drop('总流量',axis = 1,inplace = True)
-df_最终 = pd.merge(df_去重复,df_tmp,how = 'left' , on = '手机号' )
-df_最终 = df_最终.sort_values(by='手机号',ascending = True) # 按时间顺序升序排列  
-df_最终 = df_最终.reset_index()
-df_最终['网元'] = df_最终['小区'].map(lambda x:x.split('_')[0]) 
-df_最终 = pd.merge(df_最终,df_支局,how = 'left' , on = '网元' )
-
-
-
-with pd.ExcelWriter(out_path + '返乡数据.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_最终.to_excel(writer,'曲靖返乡数据') 
+df_tmp = df_tmp.sort_values(by=['手机号','总流量'],ascending = False) # 按时间顺序升序排列  
+df_tmp.drop_duplicates(subset='手机号', keep='first', inplace=True)
+df_tmp = df_tmp.reset_index()
+df_tmp.drop('index',axis = 1,inplace = True)
+df_tmp['网元'] = df_tmp['小区'].map(lambda x:x.split('_')[0]) 
+df_tmp['网元'] = df_tmp['网元'].astype(int)
+df_tmp = pd.merge(df_tmp,df_支局,how = 'left' , on = '网元' )
+区县列表 = list(set(df_tmp['区县']))
+df_区县 = pd.DataFrame()
+for 区县 in 区县列表:
+    df_区县 = df_tmp[df_tmp['区县'] == 区县]  
+    with pd.ExcelWriter(out_path + 区县 + '_返乡数据.xlsx') as writer: #不用保存和退出，系统自动会完成
+        df_区县.to_excel(writer, 区县 + '返乡数据') 
 
