@@ -40,7 +40,7 @@ df_tmp = df_tmp[df_tmp['曲靖本地号段'] != '曲靖']
 
 df_tmp['手机号'] = df_tmp['手机号'].astype(str)
 df_tmp['总流量'] = df_tmp['总流量'].astype(int)
-df_tmp['总流量'] = df_tmp['总流量'].map(lambda x:round(x/(1024*1024),0))
+df_tmp['总流量'] = df_tmp['总流量'].map(lambda x:round(x/(1024*1024),2))
 
 df_tmp = df_tmp.sort_values(by=['手机号','总流量'],ascending = False) # 按时间顺序升序排列  
 df_tmp.drop_duplicates('手机号', 'first',inplace=True)
@@ -51,7 +51,7 @@ df_tmp['网元'] = df_tmp['小区'].map(lambda x:x.split('_')[0])
 df_tmp['网元'] = df_tmp['网元'].astype(int)
 df_tmp = pd.merge(df_tmp,df_支局,how = 'left' , on = '网元' )
 df_tmp = df_tmp[['区县','乡镇_街道','小区','手机号','总流量','终端品牌','终端型号','日期','号码归属省','号码归属市','上周常驻城市','上周常驻区域']]
-df_tmp.rename(columns={'小区':'基站名称','总流量':'忙时总流量(MB)','终端品牌':'手机品牌','终端型号':'手机型号'},inplace =True)
+df_tmp.rename(columns={'小区':'基站名称','总流量':'忙时流量(MB)','终端品牌':'手机品牌','终端型号':'手机型号'},inplace =True)
 df_tmp.fillna('-',inplace = True)
 
 区县列表 = list(set(df_tmp['区县']))
