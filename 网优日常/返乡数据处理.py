@@ -34,15 +34,13 @@ df_支局.drop_duplicates(inplace=True)
 
 df_tmp = df_tmp[(df_tmp['场景类型'] != '高速公路') & (df_tmp['场景类型'] != '汽车客运站')& (df_tmp['场景类型'] != '火车站')& (df_tmp['场景类型'] != '高铁')]
 
-df_tmp = df_tmp.sort_values(by='总流量',ascending = False) # 按时间顺序升序排列  
-
 df_tmp['前7位']  = df_tmp['手机号'].map(lambda x:x[0:7])
 df_tmp = pd.merge(df_tmp,df_号段,how = 'left' , on = '前7位' )
 df_tmp = df_tmp[df_tmp['曲靖本地号段'] != '曲靖']
 
 df_tmp['手机号'] = df_tmp['手机号'].astype(str)
 df_tmp['总流量'] = df_tmp['总流量'].astype(int)
-df_tmp['总流量'] = df_tmp['总流量'].map(lambda x:x/1024)
+df_tmp['总流量'] = df_tmp['总流量'].map(lambda x:round(x/(1024*1024),0))
 
 df_tmp = df_tmp.sort_values(by=['手机号','总流量'],ascending = False) # 按时间顺序升序排列  
 df_tmp.drop_duplicates('手机号', 'first',inplace=True)
