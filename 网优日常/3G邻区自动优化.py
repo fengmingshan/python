@@ -162,8 +162,8 @@ df_小区邻区替换 = pd.DataFrame()
 df_小区邻区删除 = pd.DataFrame() 
 df_小区邻区添加 = pd.DataFrame() 
 
-for i in 全量小区:
-    df_tmp = df_cell_check[df_cell_check['Scell_index'] == i]
+for cell in 全量小区:
+    df_tmp = df_cell_check[df_cell_check['Scell_index'] == cell]
     df_tmp = df_tmp.reset_index()
     df_tmp.drop('index',axis = 1 , inplace = True)
     
@@ -267,8 +267,9 @@ df_载频邻区替换 = pd.DataFrame()
 df_载频邻区添加 = pd.DataFrame() 
 df_载频邻区删除 = pd.DataFrame() 
 
-for i in 全量小区:
-    df_tmp = df_carrier_check[df_carrier_check['Scell_index'] == i]
+for cell in 全量小区:
+    cell = '102_0'
+    df_tmp = df_carrier_check[df_carrier_check['Scell_index'] == cell]
     df_tmp = df_tmp.reset_index()
     df_tmp.drop('index',axis = 1 , inplace = True)
     
@@ -284,6 +285,7 @@ for i in 全量小区:
         最小切换次数 = 0
 
     for i in range(0,len(df_tmp),1):
+        i = 10
         if df_tmp.loc[i,'操作类型'] == '待定':
             if 载频邻区数量 < 20 and df_tmp.loc[i,'切换总次数'] >= 10:
                 df_tmp.loc[i,'操作类型'] = '添加'
@@ -332,7 +334,15 @@ if len(df_载频邻区替换) > 0 :
     df_载频邻区替换 = df_载频邻区替换[['system','cellid','carrierid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
+
+with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_载频邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
+    df_carrier_neighbor.to_excel(writer,'载频邻区总表',index = False) 
+
     
+with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_切换次数总表.xlsx') as writer: #不用保存和退出，系统自动会完成
+    df_handover.to_excel(writer,'切换次数总表',index = False) 
+
+
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] +'_载频邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_载频邻区替换.to_excel(writer,'替换载频邻区',index = False) 
     df_载频邻区添加.to_excel(writer,'添加载频邻区',index = False) 

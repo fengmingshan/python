@@ -10,15 +10,17 @@ import sys
 import os
 import shutil
 
-cTime = "2011-03-19 20:07:02"
-mTime = "2011-03-19 20:07:02"
-file =r'd:\test\基站巡检信息（模板）.xlsx'
-file_new = 
+path = r'd:\test' + '\\'
+path_new = r'd:\test\new' + '\\'
 
-os.stat(file)
-shutil.copystat(path, path_new)
+cTime = "2016-01-15 16:07:02"
+mTime = "2016-01-15 17:08:02"
+file1 = r'd:\test\3G基站信息表-曲靖201601.xls'
+file2 = r'd:\test\电信LTE工参201601.xls'
+
 
 cTime_t =time.mktime(time.strptime(cTime,'%Y-%m-%d %H:%M:%S')) 
 mTime_t =time.mktime(time.strptime(mTime,'%Y-%m-%d %H:%M:%S')) 
 
-os.utime(file, (cTime_t, mTime_t))
+os.utime(file1, (cTime_t, mTime_t))
+os.utime(file2, (cTime_t, mTime_t))
