@@ -12,7 +12,7 @@ import xlwt
 # =============================================================================
 # 设置环境变量
 # =============================================================================
-data_path = r'd:\3G邻区自动优化\BSC1原始数据' + '\\'
+data_path = r'd:\3G邻区自动优化\BSC2原始数据' + '\\'
 out_path = r'd:\3G邻区自动优化' + '\\'
 
 # 定义一个文本转xls的函数，因为切换次数的xls文件格式有问题
@@ -57,7 +57,7 @@ if handover_files[0].split('.')[1] == 'xls' and handover_files[len(handover_file
      
     # 将TXT格式的文件转换成xls格式，并删除旧的txt文件  
     for file in handover_files:
-        txt2xls(data_path + file,data_path + file.replace('.txt','.xlsx'))
+        txt2xls(data_path + file,data_path + file.replace('.txt','.xls'))
         os.remove(data_path + file)
     handover_files = [x for x in os.listdir(data_path) if '小区切换邻区对象' in x ]
     for file in handover_files:
@@ -126,17 +126,16 @@ for file in cell_neighbor_files:
 df_cell_neighbor['neighbor_index'] = df_cell_neighbor['system'] + '_' + df_cell_neighbor['cellid'] + \
                                     '-' + df_cell_neighbor['ncellsystemid'] + '_' + df_cell_neighbor['ncellid']
 df_cell_neighbor['Scell_index'] =  df_cell_neighbor['system'] + '_' + df_cell_neighbor['cellid']
-df_cell_neighbor['Ncell_index'] = df_carrier_neighbor['ncellsystemid'] + '_'  + df_carrier_neighbor['ncellid']    
+df_cell_neighbor['Ncell_index'] = df_cell_neighbor['ncellsystemid'] + '_'  + df_cell_neighbor['ncellid']    
 df_cell_neighbor['操作类型'] = '正常'
-df_cell_neighbor = df_cell_neighbor[['system','cellid','Scell_index','alias_b','pilot_pn','ncellsystemid','ncellid','neighbor_index']]
 df_cell_neighbor = df_cell_neighbor.rename(columns ={'pilot_pn':'Ncell_pn','alias_b':'Ncell_name'})
 df_cell_neighbor = pd.merge(df_cell_neighbor,df_cell_config,how = 'left', on = 'Scell_index')
 df_切换次数 =  df_handover[['neighbor_index','切换总次数','切换成功次数','切换成功率(%)']]
 df_cell_neighbor = pd.merge(df_cell_neighbor,df_切换次数,how = 'left', on = 'neighbor_index')
 df_cell_neighbor.fillna(0,inplace = True)
-df_cell_neighbor = df_carrier_neighbor[['system','cellid','carrierid','Scell_index','Scell_name','Scell_pn',
-                                         'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
-                                         '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]    
+df_cell_neighbor = df_cell_neighbor[['system','cellid','Scell_index','Scell_name','Scell_pn',
+                                     'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                     '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]    
 # 合并处理载频邻区文件            
 df_carrier_neighbor = pd.DataFrame()
 for file in carrie_neighborr_files:
@@ -205,7 +204,7 @@ for cell in 全量小区:
 
     for i in range(0,len(df_tmp),1):
         if df_tmp.loc[i,'操作类型'] == '待定':
-            if 小区邻区数量 < 55 and df_tmp.loc[i,'切换总次数'] >= 10:
+            if 小区邻区数量 < 50 and df_tmp.loc[i,'切换总次数'] >= 10:
                 df_tmp.loc[i,'操作类型'] = '添加'
                 df_小区邻区添加 = df_小区邻区添加.append(df_tmp.loc[i,:])
                 df_normal = df_normal.append(df_tmp.loc[i,:])
@@ -213,7 +212,10 @@ for cell in 全量小区:
                 df_normal = df_normal.reset_index()
                 df_normal.drop('index',axis = 1 , inplace = True)
                 小区邻区数量 += 1
-            elif 小区邻区数量 >= 55 and df_tmp.loc[i,'切换总次数'] >= 10:
+                最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
+                小区邻区PN列表 = list(df_normal['Ncell_pn'])
+
+            elif 小区邻区数量 >= 50 and df_tmp.loc[i,'切换总次数'] >= 10:
                 if (df_tmp.loc[i,'切换总次数'] - 最小切换次数)/最小切换次数 >= 0.3:
                     if df_tmp.loc[i,'Ncell_pn'] not in 小区邻区PN列表:
                         df_tmp.loc[i,'操作类型'] = '替换'
@@ -351,6 +353,7 @@ for cell in 全量小区:
                             df_载频邻区替换 = df_载频邻区替换.append(df_tmp.loc[i,:])
                             df_normal.drop(n,inplace = True) 
                             df_normal.append(df_tmp.loc[i,:])
+                            最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
                             载频邻区PN列表 = list(df_normal['Ncell_pn'])
 
 if len(df_载频邻区添加) > 0:

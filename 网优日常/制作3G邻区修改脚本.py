@@ -56,8 +56,8 @@ for file in cell_neighbor_file :
             f.write(line+'\n') 
 
 
-for file in cell_neighbor_file : 
-    df_删除载频邻区 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
+for file in carrie_neighbor_file : 
+    df_删除载频邻区 = pd.read_excel(data_path + file, sheet_name='删除载频邻区')
     with open(out_path + file[0:4]+'_删除载频邻区.txt','a') as f:
         for i in range(0,len(df_删除载频邻区),1):
             line = r'DEL 1X_NGHBRLIST:POS="{0}"-"{1}"-"0"-"{2}",ISEACHOTHER=NO;'\
@@ -67,7 +67,7 @@ for file in cell_neighbor_file :
 )
             f.write(line+'\n') 
     
-    df_添加载频邻区 = pd.read_excel(data_path + file, sheet_name='添加小区邻区')
+    df_添加载频邻区 = pd.read_excel(data_path + file, sheet_name='添加载频邻区')
     with open(out_path + file[0:4]+'_添加载频邻区.txt','a') as f:
         for i in range(0,len(df_添加载频邻区),1):
             line = r'ADD 1X_NGHBRLIST_L:POS="{0}"-"{1}"-"0"-"{2}",NCELLSYSTEM={3},NCELL={4},NGHBR_CONFIG=0,SEARCH_PRIORITY=0,ACCESS_ENTRY_HO=Disable,FREQ_INCL=NOT_INC,ACCESS_HO_ALLOWED=Disable,TIMING_INCL=NOT_INC,NGHBR_TX_OFFSET=0,NGHBR_TX_DURATION=3,NGHBR_TX_PERIOD=0,ADD_PILOT_REC_INCL=NOT_INC,NGHBR_PILOT_REC_TYPE=0,SRCH_OFFSET_NGHBR=0;'\
