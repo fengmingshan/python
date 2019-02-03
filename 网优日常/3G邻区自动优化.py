@@ -42,6 +42,8 @@ def txt2xls(filename,xlsname):
     except:
         raise
 
+print('**********汇总原始数据!**********')
+
 cell_config_files = [x for x in os.listdir(data_path) if '小区实体参数表' in x ]
 handover_files = [x for x in os.listdir(data_path) if '小区切换邻区对象' in x ]
 cell_neighbor_files = [x for x in os.listdir(data_path) if '邻接小区参数表' in x ]
@@ -124,10 +126,17 @@ for file in cell_neighbor_files:
 df_cell_neighbor['neighbor_index'] = df_cell_neighbor['system'] + '_' + df_cell_neighbor['cellid'] + \
                                     '-' + df_cell_neighbor['ncellsystemid'] + '_' + df_cell_neighbor['ncellid']
 df_cell_neighbor['Scell_index'] =  df_cell_neighbor['system'] + '_' + df_cell_neighbor['cellid']
+df_cell_neighbor['Ncell_index'] = df_carrier_neighbor['ncellsystemid'] + '_'  + df_carrier_neighbor['ncellid']    
+df_cell_neighbor['操作类型'] = '正常'
 df_cell_neighbor = df_cell_neighbor[['system','cellid','Scell_index','alias_b','pilot_pn','ncellsystemid','ncellid','neighbor_index']]
 df_cell_neighbor = df_cell_neighbor.rename(columns ={'pilot_pn':'Ncell_pn','alias_b':'Ncell_name'})
 df_cell_neighbor = pd.merge(df_cell_neighbor,df_cell_config,how = 'left', on = 'Scell_index')
-
+df_切换次数 =  df_handover[['neighbor_index','切换总次数','切换成功次数','切换成功率(%)']]
+df_cell_neighbor = pd.merge(df_cell_neighbor,df_切换次数,how = 'left', on = 'neighbor_index')
+df_cell_neighbor.fillna(0,inplace = True)
+df_cell_neighbor = df_carrier_neighbor[['system','cellid','carrierid','Scell_index','Scell_name','Scell_pn',
+                                         'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                         '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]    
 # 合并处理载频邻区文件            
 df_carrier_neighbor = pd.DataFrame()
 for file in carrie_neighborr_files:
@@ -137,10 +146,17 @@ for file in carrie_neighborr_files:
 df_carrier_neighbor['neighbor_index'] = df_carrier_neighbor['system'] + '_' + df_carrier_neighbor['cellid'] + \
                                         '-' + df_carrier_neighbor['ncellsystemid'] + '_' + df_carrier_neighbor['ncellid']
 df_carrier_neighbor['Scell_index'] =  df_carrier_neighbor['system'] + '_' + df_carrier_neighbor['cellid']
-df_carrier_neighbor = df_carrier_neighbor[['system','cellid','Scell_index','carrierid','alias_b','pilot_pn','ncellsystemid','ncellid','neighbor_index']]
+df_carrier_neighbor['Ncell_index'] = df_carrier_neighbor['ncellsystemid'] + '_'  + df_carrier_neighbor['ncellid']    
+df_carrier_neighbor['操作类型'] = '正常'
 df_carrier_neighbor = df_carrier_neighbor.rename(columns ={'pilot_pn':'Ncell_pn','alias_b':'Ncell_name'})
 df_carrier_neighbor = pd.merge(df_carrier_neighbor,df_cell_config,how = 'left', on = 'Scell_index')
-
+df_carrier_neighbor = pd.merge(df_carrier_neighbor,df_切换次数,how = 'left', on = 'neighbor_index')
+df_carrier_neighbor.fillna(0,inplace = True)
+df_carrier_neighbor = df_carrier_neighbor[['system','cellid','carrierid','Scell_index','Scell_name','Scell_pn',
+                                             'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
+                                             '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]  
+print('**********原始数据汇总完成!**********')
+  
 # =============================================================================
 # 检查小区邻区
 # =============================================================================
@@ -170,12 +186,13 @@ df_小区邻区替换 = pd.DataFrame()
 df_小区邻区删除 = pd.DataFrame() 
 df_小区邻区添加 = pd.DataFrame() 
 
+print('**********检查小区邻区!**********')
 for cell in 全量小区:
     df_tmp = df_cell_check[df_cell_check['Scell_index'] == cell]
     df_tmp = df_tmp.reset_index()
     df_tmp.drop('index',axis = 1 , inplace = True)
     
-    df_normal = df_tmp[df_tmp['操作类型'] == '正常']
+    df_normal = df_cell_neighbor[df_cell_neighbor['Scell_index'] == 'cell']
     df_normal = df_normal.reset_index()
     df_normal.drop('index',axis = 1 , inplace = True)
     
@@ -211,6 +228,8 @@ for cell in 全量小区:
                         df_normal = df_normal.reset_index()
                         df_normal.drop('index',axis = 1 , inplace = True)
                         最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
+                        小区邻区PN列表 = list(df_normal['Ncell_pn'])
+
                     else :            
                         n = df_normal[df_normal['Ncell_pn'] == df_tmp.loc[i,'Ncell_pn']].index.values[0]
                         if df_tmp.loc[i,'切换总次数'] > df_normal.loc[n,'切换总次数']:
@@ -221,7 +240,10 @@ for cell in 全量小区:
                             df_小区邻区替换 = df_小区邻区替换.append(df_tmp.loc[i,:])
                             df_normal.drop(n,inplace = True) 
                             df_normal.append(df_tmp.loc[i,:])
+                            df_normal.sort_values(by='切换总次数',ascending = False , inplace = True)
                             df_normal = df_normal.reset_index()
+                            df_normal.drop('index',axis = 1 , inplace = True)
+                            最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
                             小区邻区PN列表 = list(df_normal['Ncell_pn'])
 
 if len(df_小区邻区添加) > 0:
@@ -237,15 +259,13 @@ if len(df_小区邻区替换) > 0:
     df_小区邻区替换 = df_小区邻区替换[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
-
-with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_cell_neighbor.to_excel(writer,'小区邻区总表',index = False) 
-
-
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_小区邻区添加.to_excel(writer,'添加小区邻区',index = False) 
     df_小区邻区删除.to_excel(writer,'删除小区邻区',index = False) 
     df_小区邻区替换.to_excel(writer,'替换小区邻区',index = False) 
+
+print('**********小区邻区检查完毕!**********')
+
 
 # =============================================================================
 # 汇总载频邻区
@@ -275,12 +295,13 @@ df_载频邻区替换 = pd.DataFrame()
 df_载频邻区添加 = pd.DataFrame() 
 df_载频邻区删除 = pd.DataFrame() 
 
+print('**********检查载频邻区!**********')
 for cell in 全量小区:
     df_tmp = df_carrier_check[df_carrier_check['Scell_index'] == cell]
     df_tmp = df_tmp.reset_index()
     df_tmp.drop('index',axis = 1 , inplace = True)
     
-    df_normal = df_tmp[df_tmp['操作类型'] == '正常']
+    df_normal = df_carrier_neighbor[df_carrier_neighbor['Scell_index'] == cell]
     df_normal = df_normal.reset_index()
     df_normal.drop('index',axis = 1 , inplace = True)
     
@@ -301,6 +322,8 @@ for cell in 全量小区:
                 df_normal = df_normal.reset_index()
                 df_normal.drop('index',axis = 1 , inplace = True)
                 载频邻区数量 += 1
+                载频邻区PN列表 = list(df_normal['Ncell_pn'])
+                最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
             elif 载频邻区数量 >= 20 and df_tmp.loc[i,'切换总次数'] >= 10:
                 if (df_tmp.loc[i,'切换总次数'] - 最小切换次数)/最小切换次数 >= 0.3:
                     if df_tmp.loc[i,'Ncell_pn'] not in 载频邻区PN列表:
@@ -316,10 +339,12 @@ for cell in 全量小区:
                         df_normal = df_normal.reset_index()
                         df_normal.drop('index',axis = 1 , inplace = True)
                         最小切换次数 = df_normal.loc[len(df_normal)-1 , '切换总次数']
+                        载频邻区PN列表 = list(df_normal['Ncell_pn'])
                     else :
                         n = df_normal[df_normal['Ncell_pn'] == df_tmp.loc[i,'Ncell_pn']].index.values[0]
                         if df_tmp.loc[i,'切换总次数'] > df_normal.loc[n,'切换总次数']:
-                            df_tmp.loc[i,'操作类型'] = '替换' 
+                            df_tmp.loc[i,'操作类型'] = '替换'
+                            df_normal.loc[n,'操作类型'] = '删除'
                             df_载频邻区添加.append(df_tmp.loc[i,:])
                             df_载频邻区删除 = df_小区邻区删除.append(df_normal.loc[n,:])
                             df_载频邻区替换 = df_载频邻区替换.append(df_normal.loc[n,:])
@@ -341,16 +366,21 @@ if len(df_载频邻区替换) > 0 :
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
 
+df_切换次数为零小区 = df_carrier_neighbor[df_carrier_neighbor['切换总次数'] == 0 ]
+
+
+with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
+    df_cell_neighbor.to_excel(writer,'小区邻区总表',index = False) 
+
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_载频邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_carrier_neighbor.to_excel(writer,'载频邻区总表',index = False) 
-
     
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_切换次数总表.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_handover.to_excel(writer,'切换次数总表',index = False) 
-
 
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] +'_载频邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_载频邻区替换.to_excel(writer,'替换载频邻区',index = False) 
     df_载频邻区添加.to_excel(writer,'添加载频邻区',index = False) 
     df_载频邻区删除.to_excel(writer,'删除载频邻区',index = False) 
-
+    df_切换次数为零小区.to_excel(writer,'切换次数为零',index = False) 
+print('**********载频邻区检查完毕!**********')
