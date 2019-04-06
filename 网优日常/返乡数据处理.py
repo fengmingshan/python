@@ -34,7 +34,7 @@ df_支局 = df_支局1.append(df_支局2)
 df_支局.drop_duplicates(inplace=True)
 df_基站名称 = pd.read_excel(data_path + 基站名称 ,encoding='utf-8') 
 
-df_tmp = df_tmp[(df_tmp['场景类型'] != '高速公路') & (df_tmp['场景类型'] != '汽车客运站')& (df_tmp['场景类型'] != '火车站')& (df_tmp['场景类型'] != '高铁')]
+#df_tmp = df_tmp[(df_tmp['场景类型'] != '高速公路') & (df_tmp['场景类型'] != '汽车客运站')& (df_tmp['场景类型'] != '火车站')& (df_tmp['场景类型'] != '高铁')]
 
 df_tmp['前7位']  = df_tmp['手机号'].map(lambda x:x[0:7])
 df_tmp = pd.merge(df_tmp,df_号段,how = 'left' , on = '前7位' )

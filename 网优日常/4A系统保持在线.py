@@ -15,18 +15,22 @@ import time
 __browser_url = r'C:\Users\Administrator\AppData\Roaming\360se6\Application\360se.exe' 
 #登录页面
 url = r'http://135.32.99.19'
-
+url1 = r'http://www.baidu.com'
 
 chrome_options = Options()
 chrome_options.binary_location = __browser_url
 
 driver = webdriver.Chrome(chrome_options=chrome_options)
-driver.get(url)
+driver.get(url1)
 
 # 等待一定时间，让js脚本加载完毕
-browser.implicitly_wait(5)
+driver.implicitly_wait(30)
+try:
+    while True :
+        time.sleep(60)
+        driver.refresh()
+except KeyboardInterrupt:
+    print('检测到CTRL+C,准备退出程序!') 
 
-time.sleep(60)
-driver.refresh()
-
+    
 

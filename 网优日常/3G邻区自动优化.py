@@ -133,6 +133,9 @@ df_cell_neighbor = pd.merge(df_cell_neighbor,df_cell_config,how = 'left', on = '
 df_切换次数 =  df_handover[['neighbor_index','切换总次数','切换成功次数','切换成功率(%)']]
 df_cell_neighbor = pd.merge(df_cell_neighbor,df_切换次数,how = 'left', on = 'neighbor_index')
 df_cell_neighbor.fillna(0,inplace = True)
+df_cell_neighbor = df_cell_neighbor.sort_values(by='切换总次数',ascending = False) 
+df_cell_neighbor = df_cell_neighbor.reset_index()
+df_cell_neighbor.drop('index',axis = 1 , inplace = True)
 df_cell_neighbor = df_cell_neighbor[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]    
@@ -151,6 +154,9 @@ df_carrier_neighbor = df_carrier_neighbor.rename(columns ={'pilot_pn':'Ncell_pn'
 df_carrier_neighbor = pd.merge(df_carrier_neighbor,df_cell_config,how = 'left', on = 'Scell_index')
 df_carrier_neighbor = pd.merge(df_carrier_neighbor,df_切换次数,how = 'left', on = 'neighbor_index')
 df_carrier_neighbor.fillna(0,inplace = True)
+df_carrier_neighbor = df_carrier_neighbor.sort_values(by='切换总次数',ascending = False) 
+df_carrier_neighbor = df_carrier_neighbor.reset_index()
+df_carrier_neighbor.drop('index',axis = 1 , inplace = True)
 df_carrier_neighbor = df_carrier_neighbor[['system','cellid','carrierid','Scell_index','Scell_name','Scell_pn',
                                              'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                              '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]  
@@ -191,7 +197,7 @@ for cell in 全量小区:
     df_tmp = df_tmp.reset_index()
     df_tmp.drop('index',axis = 1 , inplace = True)
     
-    df_normal = df_cell_neighbor[df_cell_neighbor['Scell_index'] == 'cell']
+    df_normal = df_cell_neighbor[df_cell_neighbor['Scell_index'] == cell]
     df_normal = df_normal.reset_index()
     df_normal.drop('index',axis = 1 , inplace = True)
     
@@ -261,13 +267,13 @@ if len(df_小区邻区替换) > 0:
     df_小区邻区替换 = df_小区邻区替换[['system','cellid','Scell_index','Scell_name','Scell_pn',
                                      'ncellsystemid','ncellid','Ncell_index','Ncell_name','Ncell_pn',
                                      '切换总次数','切换成功次数','切换成功率(%)','neighbor_index','操作类型']]
+
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_小区邻区添加.to_excel(writer,'添加小区邻区',index = False) 
     df_小区邻区删除.to_excel(writer,'删除小区邻区',index = False) 
     df_小区邻区替换.to_excel(writer,'替换小区邻区',index = False) 
 
 print('**********小区邻区检查完毕!**********')
-
 
 # =============================================================================
 # 汇总载频邻区
@@ -372,14 +378,14 @@ if len(df_载频邻区替换) > 0 :
 df_切换次数为零小区 = df_carrier_neighbor[df_carrier_neighbor['切换总次数'] == 0 ]
 
 
-with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_cell_neighbor.to_excel(writer,'小区邻区总表',index = False) 
-
-with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_载频邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_carrier_neighbor.to_excel(writer,'载频邻区总表',index = False) 
-    
-with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_切换次数总表.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_handover.to_excel(writer,'切换次数总表',index = False) 
+#with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_小区邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
+#    df_cell_neighbor.to_excel(writer,'小区邻区总表',index = False) 
+#
+#with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_载频邻区总表.xlsx') as writer: #不用保存和退出，系统自动会完成
+#    df_carrier_neighbor.to_excel(writer,'载频邻区总表',index = False) 
+#    
+#with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] + '_切换次数总表.xlsx') as writer: #不用保存和退出，系统自动会完成
+#    df_handover.to_excel(writer,'切换次数总表',index = False) 
 
 with pd.ExcelWriter(out_path + data_path.split('\\')[2][0:4] +'_载频邻区检查结果.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_载频邻区替换.to_excel(writer,'替换载频邻区',index = False) 
