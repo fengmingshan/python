@@ -52,7 +52,6 @@ def Judge_MOD3(a,b,c,d):
 	else:
 		return 0
 
-
 df_all['Neighbor1_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(x.ServingCell_PCI,x.Neighbor1_PCI,x.Neighbor1_RSRP,x.ServingCell_RSRP),axis =1 )
 df_all['Neighbor2_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(x.ServingCell_PCI,x.Neighbor2_PCI,x.Neighbor2_RSRP,x.ServingCell_RSRP),axis =1 )
 df_all['Neighbor3_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(x.ServingCell_PCI,x.Neighbor3_PCI,x.Neighbor3_RSRP,x.ServingCell_RSRP),axis =1 )
