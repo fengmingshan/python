@@ -98,4 +98,4 @@ df_all = df_all[['ServingCell_RSRP',
                 'Neighbor8_IS_MOD3',
                 'SINR']]
 
-df_all.to_csv(data_path + '曲靖DT数据高速.csv',index = False) 
+df_all.to_csv(data_path + '曲靖DT数据高速2.csv',index = False) 
