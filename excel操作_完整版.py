@@ -220,3 +220,14 @@ help(DataFrame.to_csv)
 with pd.ExcelWriter('output.xlsx') as writer: #不用保存和退出，系统自动会完成
     df1.to_excel(writer,'Sheet1') 
     df2.to_excel(writer,'Sheet2',index=False) # index=False不带row index输出
+
+
+# 通过多列的数据计算生成一个新的列：
+def Judge_MOD3(a,b,c,d): # 定义计算函数
+	if a%3 == b % 3  and d-c <= 3:
+		return 1
+	else:
+		return 0
+
+# 使用apply函数将表格的多列输入到Judge_MOD3进行计算，得到一个新的列
+df_all['Neighbor1_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(x.ServingCell_PCI,x.Neighbor1_PCI,x.Neighbor1_RSRP,x.ServingCell_RSRP),axis =1 )
