@@ -16,7 +16,7 @@ data_path = 'd:\_python\python\神经网络_tensorflow\MR_data' +'\\'
 # =============================================================================
 #  单层神经网络
 # =============================================================================
-MR_data = pd.read_csv(data_path + 'MR_1neighbor.csv', engine = 'python')
+df_MR_data = pd.read_csv(data_path + 'MR_city.csv', engine = 'python')
 # 先对数据进行处理
 bin1 = list(range(-20,30,1))
 bin2 =[x+0.5 for x in bin1 ]
@@ -31,11 +31,11 @@ def get_near(x):
             else :
                 return cut_bin[i+1]
             
-MR_data['SINR'] = MR_data['SINR'].map(lambda x:get_near(x))               
+df_MR_data['SINR'] = df_MR_data['SINR'].map(lambda x:get_near(x))               
+df_MR_data = df_MR_data.fillna(0)
+y = df_MR_data['SINR']
 
-y = MR_data['SINR']
-
-X = MR_data.drop('SINR',axis = 1)
+X = df_MR_data.drop('SINR',axis = 1)
 cols = X.columns
 for col in cols:
      X[col] = X[col].astype(np.float32)
@@ -62,11 +62,11 @@ def add_layer(inputs, in_size, out_size, activation_function=None):
 
 
 # 定义占位符输入变量
-xs = tf.placeholder(tf.float32, [None, 5])
+xs = tf.placeholder(tf.float32, [None, 36])
 ys = tf.placeholder(tf.float32, [None, 1])
 
 # 输入层5个，隐藏层50个，激励函数relu
-l1 = add_layer(xs, 5, 50, activation_function=tf.nn.relu)
+l1 = add_layer(xs, 36, 50, activation_function=tf.nn.relu)
 
 
 # 输入层10个，输出层1个，无激励函数

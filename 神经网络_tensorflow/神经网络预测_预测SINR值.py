@@ -16,7 +16,7 @@ data_path = 'd:\_python\python\神经网络_tensorflow\MR_data' +'\\'
 # =============================================================================
 #  单层神经网络
 # =============================================================================
-MR_data = pd.read_csv(data_path + 'MR_1neighbor.csv', engine = 'python')
+df_MR = pd.read_csv(data_path + 'QJ_city_1neighbor.csv',engine = 'python')
 # 先对数据进行处理
 bin1 = list(range(-20,30,1))
 bin2 =[x+0.5 for x in bin1 ]
@@ -31,12 +31,11 @@ def get_near(x):
             else :
                 return cut_bin[i+1]
             
-MR_data['SINR'] = MR_data['SINR'].map(lambda x:get_near(x))               
-
-y = MR_data['SINR']
-
-X = MR_data.drop('SINR',axis = 1)
-cols = X.columns
+df_MR['SINR'] = df_MR['SINR'].map(lambda x:get_near(x))               
+df_MR = df_MR.fillna(0)
+y = df_MR['SINR']
+X = df_MR.drop('SINR',axis = 1)
+cols = df_MR.columns
 for col in cols:
      X[col] = X[col].astype(np.float32)
 
@@ -46,9 +45,8 @@ X_tr = np.array(X_tr)
 X_te = np.array(X_te)
 y_tr = np.array(y_tr)[:, np.newaxis]
 y_te = np.array(y_te)[:, np.newaxis]
-
 numClasses = 1
-inputSize = 5 
+inputSize = 36 
 numHiddenUnits = 50 
 trainingIterations = 9000 
  
@@ -68,7 +66,7 @@ B1 = tf.cast(B1, tf.float32)
 W2 = tf.cast(W2, tf.float32)  
 B2 = tf.cast(B2, tf.float32)
 
-hiddenLayerOutput = tf.matmul(X_tr, W1) + B1
+hiddenLayerOutput = tf.matmul(X, W1) + B1
 hiddenLayerOutput = tf.nn.relu(hiddenLayerOutput)
 finalOutput = tf.matmul(hiddenLayerOutput, W2) + B2
 
@@ -84,11 +82,11 @@ with tf.Session() as sess:
     sess.run(init)
     for i in range(7200):
         # training
-        _, trainingLoss = sess.run([opt, loss], feed_dict={X: X_tr, y: y_tr})
+        _, trainingLoss = sess.run([opt, loss], feed_dict={X:X_tr, y: y_tr})
         if i % 200 == 0:
-            # 每50步我们输出一下机器学习的误差。
+            # 每200步我们输出一下机器学习的误差。
             print(sess.run(loss, feed_dict={X: X_tr, y: y_tr}))
-    result = sess.run(finalOutput, feed_dict={X: X_tr})
+    result = sess.run(finalOutput, feed_dict={X: X_te})
     result.dtype = 'float16'
     df_result = pd.DataFrame(result)
     df_result.to_csv(r'd:\_python\python\神经网络_tensorflow\MR_data' + '\\' + 'result.csv')
