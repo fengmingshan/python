@@ -16,7 +16,7 @@ data_path = 'd:\_python\python\神经网络_tensorflow\MR_data' +'\\'
 # =============================================================================
 #  单层神经网络
 # =============================================================================
-df_MR = pd.read_csv(data_path + 'MR_city.csv',engine = 'python')
+df_MR = pd.read_csv(data_path + 'QJ_city_1neighbor.csv',engine = 'python')
 # 先对数据进行处理
 bin1 = list(range(-20,30,1))
 bin2 =[x+0.5 for x in bin1 ]
@@ -46,7 +46,7 @@ X_te = np.array(X_te)
 y_tr = np.array(y_tr)[:, np.newaxis]
 y_te = np.array(y_te)[:, np.newaxis]
 numClasses = 1
-inputSize = 36 
+inputSize = 7 
 numHiddenUnits = 50 
 trainingIterations = 9000 
  
