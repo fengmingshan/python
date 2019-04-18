@@ -28,5 +28,5 @@ df_pivot = pd.pivot_table(df_combine, index=['网元'],
                                      '下行PRB平均占用率_1':np.max,
                                      '分QCI用户体验下行平均速率（Mbps）_1':np.max})    
 
-with pd.ExcelWriter(data_path + 'prb.xlsx') as writer: #不用保存和退出，系统自动会完成
+with pd.ExcelWriter(data_path + 'prb.xlsx') as writer: 
     df_pivot.to_excel(writer,'prb') 
