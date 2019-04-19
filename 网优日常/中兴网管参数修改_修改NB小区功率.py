@@ -37,7 +37,7 @@ with open(data_path + current_date + '_' + 'apply_right_OMMB1.txt','a') as f:
 
 with open(data_path + current_date + '_'  + 'OMMB1_chang_NBCellPower.txt','a') as f:
     for i in range(0,len(df_ommb1),1):                                                           
-        line = r'UPDATE:MOC="ECellEquipmentFunctionNB",MOI="{0}",ATTRIBUTES="cpTransPwr=10.0",EXTENDS="";'\
+        line = r'UPDATE:MOC="ECellEquipmentFunctionNB",MOI="{0}",ATTRIBUTES="cpSpeRefSigPwr=-0.8,maxCPTransPwr=10,cpTransPwr=10.0",EXTENDS="";'\
         .format(df_ommb1.loc[i,'MOI'])
         f.write(line+'\n') 
 
@@ -62,7 +62,7 @@ with open(data_path + current_date + '_'  + 'apply_right_OMMB2.txt','a') as f:
 
 with open(data_path + current_date + '_'  + 'OMMB2_chang_NBCellPower.txt','a') as f:
     for i in range(0,len(df_ommb2),1):
-        line = r'UPDATE:MOC="ECellEquipmentFunctionNB",MOI="{0}",ATTRIBUTES="cpTransPwr=10.0",EXTENDS="";'\
+        line = r'UPDATE:MOC="ECellEquipmentFunctionNB",MOI="{0}",ATTRIBUTES="cpSpeRefSigPwr=-0.8,maxCPTransPwr=10,cpTransPwr=10.0",EXTENDS="";'\
         .format(df_ommb2.loc[i,'MOI'],)
         f.write(line+'\n') 
 
@@ -86,6 +86,6 @@ with open(data_path + current_date + '_'  + 'apply_right_OMMB3.txt','a') as f:
 
 with open(data_path + current_date + '_'  + 'OMMB3_chang_NBCellPower.txt','a') as f:
     for i in range(0,len(df_ommb3),1):
-        line = r'UPDATE:MOC="ECellEquipmentFunctionNB",MOI="{0}",ATTRIBUTES="cpTransPwr=10.0",EXTENDS="";'\
+        line = r'UPDATE:MOC="ECellEquipmentFunctionNB",MOI="{0}",ATTRIBUTES="cpSpeRefSigPwr=-0.8,maxCPTransPwr=10,cpTransPwr=10.0",EXTENDS="";'\
         .format(df_ommb3.loc[i,'MOI'])
         f.write(line+'\n') 
