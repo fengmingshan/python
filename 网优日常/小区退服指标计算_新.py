@@ -34,10 +34,10 @@ data_path = r'D:\2019年工作\2019年4月小区退服指标计算（新）' + '
 pic_path = r'D:\2019年工作\2019年4月小区退服指标计算（新）\PIC' + '\\'
 
 all_files = os.listdir(data_path)
-files = [x for x in all_files if 'alarm_cel_exit_service_child' in x] 
+break_files = [x for x in all_files if 'alarm_cel_exit_service_child' in x] 
 
 df_ALL = pd.DataFrame()
-for file in files :
+for file in break_files :
     df_tmp = pd.read_excel(data_path + file,skiprows = 1)
     df_ALL= df_ALL.append(df_tmp)
 df_ALL = df_ALL.reset_index()
@@ -71,6 +71,8 @@ df_break.columns
 # =============================================================================
 # 计算各县累计断站时长
 # =============================================================================
+statistics_file = [x for x in all_files if '小区退服时长统计' in x]
+df_statistics = pd.read_excel(data_path + statistics_file[0],skiprows = 3)
 
 with  pd.ExcelWriter(data_path + '退服原始数据.xlsx')  as writer:  #输出到excel
     df_LTE.to_excel(writer,'退服原始数据',index=False) 
