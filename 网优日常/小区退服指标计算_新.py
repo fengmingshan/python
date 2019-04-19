@@ -13,12 +13,20 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 
+# =============================================================================
+# 生成各县退服清单
+# =============================================================================
 def 填写退服小区(a,b):
 	if pd.isnull(a):
 		return b.split('_')[0] + '_' + b.split('_')[1]
 	else:
 		return a 
 
+def 填写退服时长(a,b):
+	if pd.isnull(a):
+		return b
+	else:
+		return a 
 
 current_date = str(datetime.now()).split('.')[0].split(' ')[0]
 
@@ -40,12 +48,31 @@ df_LTE = df_ALL[(df_ALL['是否NB小区'] == '否') | (df_ALL['是否NB小区'].
 df_LTE.columns
 df_LTE['退服小区标识'] = df_LTE.apply(lambda x : 填写退服小区(x.关联小区标识,x.告警对象名称),axis = 1)
 df_LTE['LTE小区个数'] = df_LTE['LTE小区个数'].map(lambda x : 1 if pd.isnull(x) else x)
+df_LTE.rename(columns={'退服时长(分钟)':'总退服时长',
+                       '6-8点退服时长（分钟）':'总6至8点退服时长',
+                       '8-22点退服时长（分钟）':'总8至22点退服时长',
+                       '22-24点退服时长（分钟）':'总22至24点退服时长',
+                       'LTE6-8点退服时长（分钟）':'LTE6至8点退服时长',
+                       'LTE8-22点退服时长（分钟）':'LTE8至22点退服时长',
+                       'LTE22-24点退服时长（分钟）':'LTE22至24点退服时长',},inplace =True)
 
+df_LTE['LTE退服总时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE退服总时长,x.总退服时长),axis = 1)
+df_LTE['LTE6至8点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE6至8点退服时长,x.总6至8点退服时长),axis = 1)
+df_LTE['LTE8至22点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE8至22点退服时长,x.总8至22点退服时长),axis = 1)
+df_LTE['LTE22至24点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE22至24点退服时长,x.总22至24点退服时长),axis = 1)
+
+with  pd.ExcelWriter(data_path + '各县退服清单.xlsx')  as writer:  #输出到excel
+    for name in ['沾益县', '会泽县', '罗平县', '宣威市', '麒麟区', '马龙县', '富源县', '陆良县', '师宗县']:
+        df_break = df_LTE[df_LTE['区县'] == name]
+        df_break_pivot = pd.pivot_table(df_yunnan, index=['告警对象名称'], 
+                                                  values =['LTE退服总时长' ,'CQI大于等于7次数'], 
+                                                  aggfunc = {'CQI上报总次数':np.sum,'CQI大于等于7次数':np.sum})     
+df_break.columns
 # =============================================================================
 # 计算各县累计断站时长
 # =============================================================================
 
-with  pd.ExcelWriter(data_path + 'LTE原始数据.xlsx')  as writer:  #输出到excel
-    df_LTE.to_excel(writer,'LTE原始数据',index=False) 
+with  pd.ExcelWriter(data_path + '退服原始数据.xlsx')  as writer:  #输出到excel
+    df_LTE.to_excel(writer,'退服原始数据',index=False) 
 
     
