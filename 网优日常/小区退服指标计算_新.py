@@ -64,17 +64,66 @@ df_LTE['LTE22至24点退服时长'] = df_LTE.apply(lambda x : 填写退服时长
 with  pd.ExcelWriter(data_path + '各县退服清单.xlsx')  as writer:  #输出到excel
     for name in ['沾益县', '会泽县', '罗平县', '宣威市', '麒麟区', '马龙县', '富源县', '陆良县', '师宗县']:
         df_break = df_LTE[df_LTE['区县'] == name]
-        df_break_pivot = pd.pivot_table(df_yunnan, index=['告警对象名称'], 
-                                                  values =['LTE退服总时长' ,'CQI大于等于7次数'], 
-                                                  aggfunc = {'CQI上报总次数':np.sum,'CQI大于等于7次数':np.sum})     
-df_break.columns
+        
+        
 # =============================================================================
 # 计算各县累计断站时长
 # =============================================================================
 statistics_file = [x for x in all_files if '小区退服时长统计' in x]
 df_statistics = pd.read_excel(data_path + statistics_file[0],skiprows = 3)
+df_country_break = pd.pivot_table(df_statistics, index=['地市/区县'], 
+                                              values =['6-8点小区平均退服时长（分钟）' ,
+                                                       '8-22点小区平均退服时长（分钟）',
+                                                       '22-24点小区平均退服时长（分钟）',
+                                                       '6-8点小区平均退服时长（分钟）.1',
+                                                       '8-22点小区平均退服时长（分钟）.1',
+                                                       '22-24点小区平均退服时长（分钟）.1',
+                                                       '6-8点小区平均退服时长（分钟）.2',
+                                                       '8-22点小区平均退服时长（分钟）.2',
+                                                       '22-24点小区平均退服时长（分钟）.2',
+                                                       '6-8点小区平均退服时长（分钟）.3',
+                                                       '8-22点小区平均退服时长（分钟）.3',
+                                                       '22-24点小区平均退服时长（分钟）.3',
+                                                       'A类小区总数',
+                                                       'B类小区总数',
+                                                       'C类小区总数',
+                                                       'D类小区总数'], 
+                                              aggfunc = {'6-8点小区平均退服时长（分钟）':np.sum,
+                                                         '8-22点小区平均退服时长（分钟）':np.sum,
+                                                         '22-24点小区平均退服时长（分钟）':np.sum,
+                                                         '6-8点小区平均退服时长（分钟）.1':np.sum,
+                                                         '8-22点小区平均退服时长（分钟）.1':np.sum,
+                                                         '22-24点小区平均退服时长（分钟）.1':np.sum,
+                                                         '6-8点小区平均退服时长（分钟）.2':np.sum,
+                                                         '8-22点小区平均退服时长（分钟）.2':np.sum,
+                                                         '22-24点小区平均退服时长（分钟）.2':np.sum,
+                                                         '6-8点小区平均退服时长（分钟）.3':np.sum,
+                                                         '8-22点小区平均退服时长（分钟）.3':np.sum,
+                                                         '22-24点小区平均退服时长（分钟）.3':np.sum,
+                                                         'A类小区总数':np.max,
+                                                         'B类小区总数':np.max,
+                                                         'C类小区总数':np.max,
+                                                         'D类小区总数':np.max})     
+df_country_break['A类小区平均退服时长'] = df_country_break['6-8点小区平均退服时长（分钟）'] * 0.8 + \
+                                         df_country_break['8-22点小区平均退服时长（分钟）'] * 1.2 + \
+                                         df_country_break['22-24点小区平均退服时长（分钟）'] * 0.8
+df_country_break['B类小区平均退服时长'] = df_country_break['6-8点小区平均退服时长（分钟）.1'] * 0.8 + \
+                                         df_country_break['8-22点小区平均退服时长（分钟）.1'] * 1.2 + \
+                                         df_country_break['22-24点小区平均退服时长（分钟）.1'] * 0.8
+df_country_break['CD类小区平均退服时长'] = df_country_break['6-8点小区平均退服时长（分钟）.2'] * 0.8 +  \
+                                            df_country_break['8-22点小区平均退服时长（分钟）.2'] * 1.2 + \
+                                            df_country_break['22-24点小区平均退服时长（分钟）.2'] * 0.8 + \
+                                            df_country_break['6-8点小区平均退服时长（分钟）.3'] * 0.8 + \
+                                            df_country_break['8-22点小区平均退服时长（分钟）.3'] * 1.2 + \
+                                            df_country_break['22-24点小区平均退服时长（分钟）.3'] * 0.8
+df_country_break['CD类小区总数'] =   df_country_break['C类小区总数'] +  df_country_break['D类小区总数']  
+                                      
+df_country_break = df_country_break[['地市/区县','A类小区总数','A类小区平均退服时长','B类小区总数','B类小区平均退服时长','CD类小区总数','CD类小区平均退服时长']]
+df_country_break.rename(columns={'A类小区平均退服时长':'A类小区平均退服时长(达标值: <115分钟)',
+                                   'B类小区平均退服时长':'B类小区平均退服时长(达标值: <150分钟)',
+                                   'CD类小区平均退服时长':'CD类小区平均退服时长(达标值: <300分钟)',},inplace =True)
 
-with  pd.ExcelWriter(data_path + '退服原始数据.xlsx')  as writer:  #输出到excel
-    df_LTE.to_excel(writer,'退服原始数据',index=False) 
+with  pd.ExcelWriter(data_path + '小区退服时长汇总.xlsx')  as writer:  #输出到excel
+    df_country_break.to_excel(writer,'小区退服时长汇总',index=False) 
 
     
