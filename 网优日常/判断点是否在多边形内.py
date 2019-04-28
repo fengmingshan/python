@@ -12,12 +12,12 @@ def isPointinPolygon(point, rangelist):  #[[0,0],[1,1],[0,1],[0,0]] [1,0.8]
     for i in range(len(rangelist)-1):
         lnglist.append(rangelist[i][0])
         latlist.append(rangelist[i][1])
-    print(lnglist, latlist)
+#    print(lnglist, latlist)
     maxlng = max(lnglist)
     minlng = min(lnglist)
     maxlat = max(latlist)
     minlat = min(latlist)
-    print(maxlng, minlng, maxlat, minlat)
+#    print(maxlng, minlng, maxlat, minlat)
     if (point[0] > maxlng or point[0] < minlng or
         point[1] > maxlat or point[1] < minlat):
         return False
@@ -33,7 +33,7 @@ def isPointinPolygon(point, rangelist):  #[[0,0],[1,1],[0,1],[0,0]] [1,0.8]
         if (point1[1] < point[1] and point2[1] >= point[1]) or (point1[1] >= point[1] and point2[1] < point[1]):
             # 求线段与射线交点 再和lat比较
             point12lng = point2[0] - (point2[1] - point[1]) * (point2[0] - point1[0])/(point2[1] - point1[1])
-            print(point12lng)
+#            print(point12lng)
             # 点在多边形边上
             if (point12lng == point[0]):
                 print("点在多边形边上")
@@ -41,7 +41,7 @@ def isPointinPolygon(point, rangelist):  #[[0,0],[1,1],[0,1],[0,0]] [1,0.8]
             if (point12lng < point[0]):
                 count +=1
         point1 = point2
-    print(count)
+#    print(count)
     if count%2 == 0:
         return False
     else:
@@ -49,7 +49,7 @@ def isPointinPolygon(point, rangelist):  #[[0,0],[1,1],[0,1],[0,0]] [1,0.8]
  
  
 if __name__ == '__main__':
-    print(isPointinPolygon([0.8,0.8], [[0,0],[1,1],[0,1],[0,0]]))
+    print(isPointinPolygon([103.808355,25.492171], [[103.808613,25.500267],[103.803720,25.494302],[103.805995,25.488491],[103.809729,25.489033],[103.814578,25.484036]]))
 
 
 
