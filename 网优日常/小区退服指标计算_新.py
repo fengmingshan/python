@@ -60,7 +60,16 @@ df_LTE['LTE退服总时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE�
 df_LTE['LTE6至8点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE6至8点退服时长,x.总6至8点退服时长),axis = 1)
 df_LTE['LTE8至22点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE8至22点退服时长,x.总8至22点退服时长),axis = 1)
 df_LTE['LTE22至24点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE22至24点退服时长,x.总22至24点退服时长),axis = 1)
+df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('Heartbeat Failure','基站中断'))
+df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('PLMN Service Unavailable','小区退服'))
+df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('Service Unavailable','小区退服'))
+df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('基站退出服务','基站中断'))
+df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('小区不可用告警','小区退服'))
+df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('LTE小区退出服务','小区退服'))
+df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('网元断链告警','基站中断'))
 
+
+#df_LTE.columns
 with  pd.ExcelWriter(data_path + '各县退服清单.xlsx')  as writer:  #输出到excel
     for name in ['沾益县', '会泽县', '罗平县', '宣威市', '麒麟区', '马龙县', '富源县', '陆良县', '师宗县']:
         df_break = df_LTE[df_LTE['区县'] == name]
