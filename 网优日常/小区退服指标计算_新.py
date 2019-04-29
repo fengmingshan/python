@@ -119,57 +119,44 @@ df_LTE_times = df_LTE_times.reset_index().drop('index',axis = 1)
 df_LTE_times = df_LTE_times[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题', '本月累计断站次数','本月累计退服时长(分钟)' ]]
 df_LTE_times.drop_duplicates('中文名称',keep = 'first' ,inplace = True)
 df_LTE_times = df_LTE_times.reset_index().drop('index',axis = 1)            
+
+
 # =============================================================================
 # 计算各县累计断站时长
 # =============================================================================
 statistics_file = [x for x in all_files if '小区退服时长统计' in x]
 df_statistics = pd.read_excel(data_path + statistics_file[0],skiprows = 3)
+
+df_statistics['A类小区平均退服时长'] = df_statistics['6-8点小区平均退服时长（分钟）'] * 1 + \
+                                         df_statistics['8-22点小区平均退服时长（分钟）'] * 1.2 + \
+                                         df_statistics['22-24点小区平均退服时长（分钟）'] * 1
+
+df_statistics['B类小区平均退服时长'] = df_statistics['6-8点小区平均退服时长（分钟）.1'] * 1 + \
+                                         df_statistics['8-22点小区平均退服时长（分钟）.1'] * 1.2 + \
+                                         df_statistics['22-24点小区平均退服时长（分钟）.1'] * 1
+                                         
+df_statistics['CD类退服总时长'] = df_statistics['6-8点退服总时长（分钟）.2'] + \
+                                    df_statistics['8-22点退服时长（分钟）.2'] + \
+                                    df_statistics['22-24点退服时长（分钟）.2'] + \
+                                    df_statistics['6-8点退服总时长（分钟）.3'] + \
+                                    df_statistics['8-22点退服时长（分钟）.3'] + \
+                                    df_statistics['22-24点退服时长（分钟）.3']
+df_statistics['CD类小区总数'] =   df_statistics['C类小区总数'] +  df_statistics['D类小区总数']  
+df_statistics['CD类小区平均退服时长'] = df_statistics['CD类退服总时长']/df_statistics['CD类小区总数']
+
 df_country_break = pd.pivot_table(df_statistics, index=['地市/区县'], 
-                                              values =['6-8点小区平均退服时长（分钟）' ,
-                                                       '8-22点小区平均退服时长（分钟）',
-                                                       '22-24点小区平均退服时长（分钟）',
-                                                       '6-8点小区平均退服时长（分钟）.1',
-                                                       '8-22点小区平均退服时长（分钟）.1',
-                                                       '22-24点小区平均退服时长（分钟）.1',
-                                                       '6-8点小区平均退服时长（分钟）.2',
-                                                       '8-22点小区平均退服时长（分钟）.2',
-                                                       '22-24点小区平均退服时长（分钟）.2',
-                                                       '6-8点小区平均退服时长（分钟）.3',
-                                                       '8-22点小区平均退服时长（分钟）.3',
-                                                       '22-24点小区平均退服时长（分钟）.3',
+                                              values =['A类小区平均退服时长' ,
+                                                       'B类小区平均退服时长',
+                                                       'CD类小区平均退服时长',
                                                        'A类小区总数',
                                                        'B类小区总数',
-                                                       'C类小区总数',
-                                                       'D类小区总数'], 
-                                              aggfunc = {'6-8点小区平均退服时长（分钟）':np.sum,
-                                                         '8-22点小区平均退服时长（分钟）':np.sum,
-                                                         '22-24点小区平均退服时长（分钟）':np.sum,
-                                                         '6-8点小区平均退服时长（分钟）.1':np.sum,
-                                                         '8-22点小区平均退服时长（分钟）.1':np.sum,
-                                                         '22-24点小区平均退服时长（分钟）.1':np.sum,
-                                                         '6-8点小区平均退服时长（分钟）.2':np.sum,
-                                                         '8-22点小区平均退服时长（分钟）.2':np.sum,
-                                                         '22-24点小区平均退服时长（分钟）.2':np.sum,
-                                                         '6-8点小区平均退服时长（分钟）.3':np.sum,
-                                                         '8-22点小区平均退服时长（分钟）.3':np.sum,
-                                                         '22-24点小区平均退服时长（分钟）.3':np.sum,
+                                                       'CD类小区总数'], 
+                                              aggfunc = {'A类小区平均退服时长':np.sum,
+                                                         'B类小区平均退服时长':np.sum,
+                                                         'CD类小区平均退服时长':np.sum,
                                                          'A类小区总数':np.max,
                                                          'B类小区总数':np.max,
-                                                         'C类小区总数':np.max,
-                                                         'D类小区总数':np.max})     
-df_country_break['A类小区平均退服时长'] = df_country_break['6-8点小区平均退服时长（分钟）'] * 0.8 + \
-                                         df_country_break['8-22点小区平均退服时长（分钟）'] * 1.2 + \
-                                         df_country_break['22-24点小区平均退服时长（分钟）'] * 0.8
-df_country_break['B类小区平均退服时长'] = df_country_break['6-8点小区平均退服时长（分钟）.1'] * 0.8 + \
-                                         df_country_break['8-22点小区平均退服时长（分钟）.1'] * 1.2 + \
-                                         df_country_break['22-24点小区平均退服时长（分钟）.1'] * 0.8
-df_country_break['CD类小区平均退服时长'] = df_country_break['6-8点小区平均退服时长（分钟）.2'] * 0.8 +  \
-                                            df_country_break['8-22点小区平均退服时长（分钟）.2'] * 1.2 + \
-                                            df_country_break['22-24点小区平均退服时长（分钟）.2'] * 0.8 + \
-                                            df_country_break['6-8点小区平均退服时长（分钟）.3'] * 0.8 + \
-                                            df_country_break['8-22点小区平均退服时长（分钟）.3'] * 1.2 + \
-                                            df_country_break['22-24点小区平均退服时长（分钟）.3'] * 0.8
-df_country_break['CD类小区总数'] =   df_country_break['C类小区总数'] +  df_country_break['D类小区总数']  
+                                                         'CD类小区总数':np.max})     
 df_country_break = df_country_break.reset_index() 
                                      
 df_country_break = df_country_break[['地市/区县','A类小区总数','A类小区平均退服时长','B类小区总数','B类小区平均退服时长','CD类小区总数','CD类小区平均退服时长']]
