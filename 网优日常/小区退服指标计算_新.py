@@ -108,16 +108,17 @@ df_break_times.rename(columns={'告警对象名称':'本月累计断站次数',
 
 df_LTE = pd.merge(df_LTE,df_break_times,how = 'left' , on = 'Index')
 df_LTE = df_LTE[['区县','厂家名称','所属基站ID','中文名称','网元等级','告警标题','告警发生时间','告警恢复时间','LTE退服总时长','本月累计退服时长(分钟)','本月累计断站次数',]]
+
 df_LTE_duration = df_LTE.sort_values(by=['本月累计退服时长(分钟)','告警发生时间'],ascending = [False,True]) # 按退服时长降序排列  
 df_LTE_duration = df_LTE_duration.reset_index().drop('index',axis = 1)
-df_LTE_duration = df_LTE_duration[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题','告警发生时间','告警恢复时间','LTE退服总时长','本月累计退服时长(分钟)', '本月累计断站次数']]
+df_LTE_duration = df_LTE_duration[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题','告警发生时间','告警恢复时间','LTE退服总时长','本月累计退服时长(分钟)','本月累计断站次数' ]]
 
 
 df_LTE_times = df_LTE.sort_values(by=['本月累计断站次数','告警发生时间'],ascending = [False,True],) # 按退服时长降序排列 
 df_LTE_times = df_LTE_times.reset_index().drop('index',axis = 1)
-df_LTE_times = df_LTE_times[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题', '本月累计退服时长(分钟)', '本月累计断站次数']]
+df_LTE_times = df_LTE_times[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题', '本月累计断站次数','本月累计退服时长(分钟)' ]]
 df_LTE_times.drop_duplicates('中文名称',keep = 'first' ,inplace = True)
-df_LTE_times = df_LTE_times.reset_index()            
+df_LTE_times = df_LTE_times.reset_index().drop('index',axis = 1)            
 # =============================================================================
 # 计算各县累计断站时长
 # =============================================================================
@@ -175,16 +176,19 @@ df_country_break = df_country_break[['地市/区县','A类小区总数','A类小
 df_country_break.rename(columns={'A类小区平均退服时长':'A类小区平均退服时长(达标值: <115分钟)',
                                    'B类小区平均退服时长':'B类小区平均退服时长(达标值: <150分钟)',
                                    'CD类小区平均退服时长':'CD类小区平均退服时长(达标值: <300分钟)',},inplace =True)
+df_country_break = df_country_break.sort_values(by=['CD类小区总数'],ascending = [True]) # 按退服时长降序排列  
 
-with  pd.ExcelWriter(out_path  + '全市小区退服汇总' +  current_date + '.xlsx')  as writer:  #输出到excel
-    df_country_break.to_excel(writer,'全市小区退服时长汇总',index=False) 
-    
+df_LTE_duration.drop_duplicates('中文名称',keep = 'first' ,inplace = True)
+df_LTE_duration = df_LTE_duration[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题', '本月累计退服时长(分钟)', '本月累计断站次数']]
+        
+with  pd.ExcelWriter(out_path  + '全市小区退服汇总_' +  current_date + '.xlsx')  as writer:  #输出到excel
+    df_country_break.to_excel(writer,'全市小区退服时长',index=False) 
+    df_LTE_duration.head(50).to_excel(writer,'全市退服时长TOP50',index=False) 
+    df_LTE_times.head(50).to_excel(writer,'全市退服次数TOP50',index=False) 
+
 for name in ['沾益县', '会泽县', '罗平县', '宣威市', '麒麟区', '马龙县', '富源县', '陆良县', '师宗县']:
     df_break_duration = df_LTE_duration[df_LTE_duration['区县'] == name]
     df_break_times = df_LTE_times[df_LTE_times['区县'] == name]
-    with  pd.ExcelWriter(out_path + name + '_' + '小区退服清单' +  current_date + '.xlsx')  as writer:  #输出到excel
-        df_break_duration.to_excel(writer, name + '小区退服时长排序',index=False) 
-        df_break_times.to_excel(writer, name + '小区退服次数排序',index=False) 
-
-
-    
+    with  pd.ExcelWriter(out_path + name + '_' + '小区退服清单_' +  current_date + '.xlsx')  as writer:  #输出到excel
+        df_break_duration.to_excel(writer, name + '退服时长排序', index = False) 
+        df_break_times.to_excel(writer, name + '退服次数排序', index = False) 
