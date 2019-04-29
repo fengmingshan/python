@@ -107,13 +107,17 @@ df_break_times.rename(columns={'告警对象名称':'本月累计断站次数',
                                'LTE退服总时长':'本月累计退服时长(分钟)'},inplace =True)
 
 df_LTE = pd.merge(df_LTE,df_break_times,how = 'left' , on = 'Index')
-df_LTE = df_LTE[['区县','厂家名称','所属基站ID','中文名称','网元等级','告警标题','告警发生时间','告警恢复时间','本月累计退服时长(分钟)','本月累计断站次数',]]
+df_LTE = df_LTE[['区县','厂家名称','所属基站ID','中文名称','网元等级','告警标题','告警发生时间','告警恢复时间','LTE退服总时长','本月累计退服时长(分钟)','本月累计断站次数',]]
 df_LTE_duration = df_LTE.sort_values(by=['本月累计退服时长(分钟)','告警发生时间'],ascending = [False,True]) # 按退服时长降序排列  
 df_LTE_duration = df_LTE_duration.reset_index().drop('index',axis = 1)
+df_LTE_duration = df_LTE_duration[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题','告警发生时间','告警恢复时间','LTE退服总时长','本月累计退服时长(分钟)', '本月累计断站次数']]
+
 
 df_LTE_times = df_LTE.sort_values(by=['本月累计断站次数','告警发生时间'],ascending = [False,True],) # 按退服时长降序排列 
 df_LTE_times = df_LTE_times.reset_index().drop('index',axis = 1)
-                
+df_LTE_times = df_LTE_times[['区县', '厂家名称', '所属基站ID', '中文名称', '网元等级', '告警标题', '本月累计退服时长(分钟)', '本月累计断站次数']]
+df_LTE_times.drop_duplicates('中文名称',keep = 'first' ,inplace = True)
+df_LTE_times = df_LTE_times.reset_index()            
 # =============================================================================
 # 计算各县累计断站时长
 # =============================================================================
