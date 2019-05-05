@@ -98,10 +98,10 @@ df_LTE['Index'] = df_LTE.apply(lambda x :fill_Index(x.Index,x.告警标题,x.所
 
 
 df_break_times = pd.pivot_table(df_LTE, index=['Index'], 
-                                          values =['告警对象名称',
-                                                   'LTE退服总时长' ], 
-                                          aggfunc = {'告警对象名称' :'count',
-                                                     'LTE退服总时长': np.sum})     
+                                        values =['告警对象名称',
+                                                 'LTE退服总时长' ], 
+                                        aggfunc = {'告警对象名称' :'count',
+                                                   'LTE退服总时长': np.sum})     
 df_break_times = df_break_times.reset_index()
 df_break_times.rename(columns={'告警对象名称':'本月累计断站次数',
                                'LTE退服总时长':'本月累计退服时长(分钟)'},inplace =True)
