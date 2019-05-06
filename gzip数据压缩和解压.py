@@ -23,8 +23,8 @@ with gzip.open(file_path + "data.txt.gz", "rb") as f_zip : #创建压缩文件�
 
     with open(file_path + "data_unzip.txt", "a")  as f_out : #打开文件            
         f_out.write(file_content.decode("utf-8")) #写入新文件当中
-        
-
+ 
+       
 # gzip 解压函数
 def gzip_uncompress(c_data):  
     '''定义gzip解压函数'''
