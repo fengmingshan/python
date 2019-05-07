@@ -7,29 +7,89 @@ Created on Mon May  6 15:57:51 2019
 
 import os
 import json
-from urllib import parse
-from urllib import request
+import requests
 import base64
 import gzip
 from io import StringIO
 from io import BytesIO  
-
+# =============================================================================
+# 第一个数据包
+# =============================================================================
 # 数据包header
-headers = { Host: www.mywbsite.fr,
-"Connection": "keep-alive",
-"Content-Length": 129,
-"Origin": "https://www.mywbsite.fr",
-"X-Requested-With": "XMLHttpRequest",
-"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.52 Safari/536.5",
-"Content-Type": "application/json",
-"Accept": "*/*",
-"Referer": "https://www.mywbsite.fr/data/mult.aspx",
-"Accept-Encoding": "gzip,deflate,sdch",
-"Accept-Language": "fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4",
-"Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.3",
-"Cookie": "ASP.NET_SessionId=j1r1b2a2v2w245; GSFV=FirstVisit=;     GSRef=https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CHgQFjAA&url=https://www.mywbsite.fr/&ei=FZq_T4abNcak0QWZ0vnWCg&usg=AFQjCNHq90dwj5RiEfr1Pw; HelpRotatorCookie=HelpLayerWasSeen=0; NSC_GSPOUGS!TTM=ffffffff09f4f58455e445a4a423660; GS=Site=frfr; __utma=1.219229010.1337956889.1337956889.1337958824.2; __utmb=1.1.10.1337958824; __utmc=1; __utmz=1.1337956889.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)"
+headers = {
+"Connection": "close",
+"Charset": 'UTF-8',
+"X-SECU":'9CF279BEE18C1689AD00000148047583',
+"Content-Type": 'application/X-cfg-upg-cache',
+"User-Agent": 'Dalvik/2.1.0 (Linux; U; Android 7.0; MI MAX MIUI/V10.2.1.0.NBDCNXM)',
+'Host': '42.99.18.27:9777',
+"Accept-Encoding": "gzip",
+"Content-Length": '0'
+}
+url = 'http://42.99.18.27:9777'
+data =  {'ue-mac':'78:02:F8:66:3E:A6',
+         'imei':'99000836929878',
+         'ab-code':'68',
+         'seq':''
+}
+j_data = json.dumps(data)
+# post数据包
+response = requests.post(url = url,data = j_data, headers = headers);
+
+print(response)
+
+# =============================================================================
+# 第二个数据包
+# =============================================================================
+# 数据包header
+headers = {
+"Connection": "close",
+"Charset": 'UTF-8',
+"X-SECU":'9CF279BEE18C1689AD00000148047583',
+"Content-Type": 'application/X-cfg-upg-cache;charset= "UTF-8"',
+"User-Agent": 'Dalvik/2.1.0 (Linux; U; Android 7.0; MI MAX MIUI/V10.2.1.0.NBDCNXM)',
+'Host': '42.99.18.27:9777',
+"Accept-Encoding": "gzip",
+"Content-Length": '0'
+}
+url = 'http://42.99.18.27:9777'
+data =  {'seq' : '0',
+         'ab-code' : '68',
+         'imei' : '99000836929878',
+         'city' : 'e69bb2e99d96e5b882',
+         'prov' : 'e4ba91e58d97e79c81',
+         'area-code' : '249',
+         'ue-mac' : '78:02:F8:66:3E:A6',
+         'imsi' : '460110554863125',
+         'vendor' : '5869616f6d69',
+         'model' : '4d49204d4158'
 }
 
 # post数据包
+response = requests.post(url = url,data = data, headers = headers);
 
-r = requests.post(url, data = data, headers = headers);
+print(response)
+
+# =============================================================================
+# 下载测试模板
+# =============================================================================
+# 数据包header
+headers = {
+"Connection": "close",
+"Charset": 'UTF-8',
+"X-SECU":'9CF279BEE18C1689AD00000148047583',
+"Content-Type": 'application/X-cfg-upg-cache',
+"User-Agent": 'Dalvik/2.1.0 (Linux; U; Android 7.0; MI MAX MIUI/V10.2.1.0.NBDCNXM)',
+'Host': '42.99.18.27:9777',
+"Accept-Encoding": "gzip",
+"Content-Length": '0'
+}
+url = 'http://42.99.18.27:9777'
+data = '/cfg/0?ue-mac=78:02:F8:66:3E:A6&imei=99000836929878&ab-code=68&seq='
+j_data = json.dumps(data)
+# post数据包
+response = requests.get(url = url,data = j_data, headers = headers);
+
+print(response.text)
+
+
