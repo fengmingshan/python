@@ -36,7 +36,7 @@ j_data = json.dumps(data)
 # post数据包
 response = requests.post(url = url,data = j_data, headers = headers);
 
-print(response.read())
+print(response.url)
 
 
 # =============================================================================
@@ -65,9 +65,10 @@ data =  {'seq' : '0',
          'vendor' : '5869616f6d69',
          'model' : '4d49204d4158'
 }
+j_data = json.dumps(data)
 
 # post数据包
-response = requests.post(url = url,data = data, headers = headers);
+response = requests.post(url = url,data = j_data, headers = headers);
 
 print(response)
 
@@ -86,10 +87,9 @@ headers = {
 "Content-Length": '0'
 }
 url = 'http://42.99.18.27:9778/fil'
-data = 'markid=c839061bca1a434c98206bc400327c0b.xml.gzip&imei=99000836929878&ue-mac=78:02:F8:66:3E:A6'
 data =  {'markid' : 'c839061bca1a434c98206bc400327c0b.xml.gzip',
          'imei' : '99000836929878',
-         'ue-mac' : '78:02:F8:66:3E:A6',
+         'ue-mac' : '78:02:F8:66:3E:A6'
 }
 j_data = json.dumps(data)
 # post数据包
