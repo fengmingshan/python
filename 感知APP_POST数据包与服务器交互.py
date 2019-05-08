@@ -26,7 +26,7 @@ headers = {
 "Accept-Encoding": "gzip",
 "Content-Length": '0'
 }
-url = 'http://42.99.18.27:9777'
+url = 'http://42.99.18.27:9777/cfg/0'
 data =  {'ue-mac':'78:02:F8:66:3E:A6',
          'imei':'99000836929878',
          'ab-code':'68',
@@ -36,7 +36,8 @@ j_data = json.dumps(data)
 # post数据包
 response = requests.post(url = url,data = j_data, headers = headers);
 
-print(response)
+print(response.read())
+
 
 # =============================================================================
 # 第二个数据包
@@ -52,7 +53,7 @@ headers = {
 "Accept-Encoding": "gzip",
 "Content-Length": '0'
 }
-url = 'http://42.99.18.27:9777'
+url = 'http://42.99.18.27:9777/cfg/1'
 data =  {'seq' : '0',
          'ab-code' : '68',
          'imei' : '99000836929878',
@@ -80,12 +81,16 @@ headers = {
 "X-SECU":'9CF279BEE18C1689AD00000148047583',
 "Content-Type": 'application/X-cfg-upg-cache',
 "User-Agent": 'Dalvik/2.1.0 (Linux; U; Android 7.0; MI MAX MIUI/V10.2.1.0.NBDCNXM)',
-'Host': '42.99.18.27:9777',
+'Host': '42.99.18.27:9778',
 "Accept-Encoding": "gzip",
 "Content-Length": '0'
 }
-url = 'http://42.99.18.27:9777'
-data = '/cfg/0?ue-mac=78:02:F8:66:3E:A6&imei=99000836929878&ab-code=68&seq='
+url = 'http://42.99.18.27:9778/fil'
+data = 'markid=c839061bca1a434c98206bc400327c0b.xml.gzip&imei=99000836929878&ue-mac=78:02:F8:66:3E:A6'
+data =  {'markid' : 'c839061bca1a434c98206bc400327c0b.xml.gzip',
+         'imei' : '99000836929878',
+         'ue-mac' : '78:02:F8:66:3E:A6',
+}
 j_data = json.dumps(data)
 # post数据包
 response = requests.get(url = url,data = j_data, headers = headers);
