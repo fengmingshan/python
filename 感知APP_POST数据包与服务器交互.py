@@ -32,11 +32,16 @@ data =  {'ue-mac':'78:02:F8:66:3E:A6',
          'ab-code':'68',
          'seq':''
 }
-j_data = json.dumps(data)
 # post数据包
-response = requests.post(url = url,data = j_data, headers = headers);
+response_content = requests.post(url = url,data = data, headers = headers).content;
+print(response_content)
 
-print(response.url)
+# 建立session方式获取
+data =  {'ue-mac':'78:02:F8:66:3E:A6',
+         'imei':'99000836929878',
+         'ab-code':'68',
+         'seq':''
+}
 
 
 # =============================================================================
@@ -65,8 +70,6 @@ data =  {'seq' : '0',
          'vendor' : '5869616f6d69',
          'model' : '4d49204d4158'
 }
-j_data = json.dumps(data)
-
 # post数据包
 response = requests.post(url = url,data = j_data, headers = headers);
 
@@ -91,7 +94,6 @@ data =  {'markid' : 'c839061bca1a434c98206bc400327c0b.xml.gzip',
          'imei' : '99000836929878',
          'ue-mac' : '78:02:F8:66:3E:A6'
 }
-j_data = json.dumps(data)
 # post数据包
 response = requests.get(url = url,data = j_data, headers = headers);
 
