@@ -24,7 +24,7 @@ line_list = []
 for file_name in java_file:
     with open(file_name,encoding = 'utf-8') as file_content:
         for line in file_content.readlines():
-            if  '42.99.18.27:9777' in line: 
+            if  'import java.net.URL' in line: 
                 line_list.append(line.replace('\n','') + ' ' + file_name + '\n')
 
 with open(out_path + '感知采集.txt' ,'w') as writer:
