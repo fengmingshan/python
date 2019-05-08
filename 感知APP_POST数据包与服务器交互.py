@@ -27,22 +27,40 @@ headers = {
 "Content-Length": '0'
 }
 url = 'http://42.99.18.27:9777/cfg/0'
-data =  {'ue-mac':'78:02:F8:66:3E:A6',
-         'imei':'99000836929878',
-         'ab-code':'68',
+data =  {'ue-mac':'AC:C1:EE:79:CD:13',
+         'imei':'862387037897970',
+         'ab-code':'14'
          'seq':''
 }
 # post数据包
 response_content = requests.post(url = url,data = data, headers = headers).content;
-print(response_content)
+print(response.headers)
+print(response.text)
+
 
 # 建立session方式获取
-data =  {'ue-mac':'78:02:F8:66:3E:A6',
-         'imei':'99000836929878',
-         'ab-code':'68',
+data =  {'ue-mac':'AC:C1:EE:79:CD:13',
+         'imei':'862387037897970',
+         'ab-code':'14'
          'seq':''
 }
 
+url = "http://42.99.18.27:9777/cfg/0"
+headers = {
+"Connection": "close",
+"Charset": 'UTF-8',
+"X-SECU":'9CF279BEE18C1689AD00000148047583',
+"Content-Type": 'application/X-cfg-upg-cache',
+"User-Agent": 'Dalvik/2.1.0 (Linux; U; Android 7.0; MI MAX MIUI/V10.2.1.0.NBDCNXM)',
+'Host': '42.99.18.27:9777',
+"Accept-Encoding": "gzip",
+"Content-Length": '0'
+}
+session = requests.session() # 实例化session
+response = session.post(url,data = data ,headers = headers)
+print(response.headers)
+print(response.text)
+session.close
 
 # =============================================================================
 # 第二个数据包
@@ -73,7 +91,8 @@ data =  {'seq' : '0',
 # post数据包
 response = requests.post(url = url,data = j_data, headers = headers);
 
-print(response)
+print(response.headers)
+print(response.text)
 
 # =============================================================================
 # 下载测试模板
