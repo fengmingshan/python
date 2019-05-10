@@ -206,14 +206,16 @@ for x in ['OMMB1','OMMB2','OMMB3']:
     df_normal_ommb = df_normal_ommb.reset_index()
     df_worse_ommb = df_worse_ommb.reset_index()
 
+    df_good_eNodeB = df_good_ommb.drop_duplicated('MEID',keep='first')
     with open(out_path + 'apply_right_' + x +'.txt','a') as f:
-        for i in range(0,len(df_good_ommb),1):
+        for i in range(0,len(df_good_eNodeB),1):
             line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
             .format(df_good_ommb.loc[i,'SubNetwork'],
                     df_good_ommb.loc[i,'MEID'],
     )
             f.write(line+'\n')         
     
+    df_normal_eNodeB = df_normal_ommb.drop_duplicated('MEID',keep='first')    
     with open(out_path + 'apply_right_'+ x + '.txt','a') as f:
         for i in range(0,len(df_normal_ommb),1):
             line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
@@ -221,7 +223,8 @@ for x in ['OMMB1','OMMB2','OMMB3']:
                     df_normal_ommb.loc[i,'MEID'],
     )
             f.write(line+'\n')         
-    
+
+    df_worse_eNodeB = df_worse_ommb.drop_duplicated('MEID',keep='first')        
     with open(out_path + 'apply_right_' + x + '.txt','a') as f:
         for i in range(0,len(df_worse_ommb),1):
             line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
