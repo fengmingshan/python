@@ -6,7 +6,7 @@ Created on Tue May  7 17:23:37 2019
 """
 import os
 
-data_path = r'd:\test\源文件中的所有类'+'\\'
+data_path = r'd:\test\省级插件源代码'+'\\'
 out_path = r'd:\test'+'\\'
 
 file_list = []
@@ -20,17 +20,24 @@ with open(out_path + 'java文件列表.txt' ,'w') as writer:
     for line in java_file:
         writer.writelines(line + '\n') 
 
-line_list = []    
+line_list = [] 
+file_name_set = set() 
+
 for file_name in java_file:
     with open(file_name,encoding = 'utf-8') as file_content:
         for line in file_content.readlines():
-            if  'import java.net.URL' in line: 
+            if  'curl_setopt' in line: 
                 line_list.append(line.replace('\n','') + ' ' + file_name + '\n')
-
-with open(out_path + '感知采集.txt' ,'w') as writer:
+                file_name_set.update(file_name)
+                
+with open(out_path + '插件源代码包含_' + 'curl_setopt'  + '.txt' ,'w') as writer:
     for line in line_list:
         writer.writelines(line)
 
+with open(out_path + '插件源代码包含_' + 'curl_setopt'  + '的文件名.txt' ,'w') as writer:
+    file_name_set = list(file_name_set)
+    for line in file_name_set:
+        writer.writelines(line)
 
             
             

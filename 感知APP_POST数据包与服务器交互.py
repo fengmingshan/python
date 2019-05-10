@@ -29,7 +29,7 @@ headers = {
 url = 'http://42.99.18.27:9777/cfg/0'
 data =  {'ue-mac':'AC:C1:EE:79:CD:13',
          'imei':'862387037897970',
-         'ab-code':'14'
+         'ab-code':'14',
          'seq':''
 }
 # post数据包
@@ -41,7 +41,7 @@ print(response.text)
 # 建立session方式获取
 data =  {'ue-mac':'AC:C1:EE:79:CD:13',
          'imei':'862387037897970',
-         'ab-code':'14'
+         'ab-code':'14',
          'seq':''
 }
 

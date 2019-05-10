@@ -92,7 +92,9 @@ df1 = df1.sort_values(by=['DO最大用户数','DO最大用户数'],ascending = F
 # =============================================================================
 # 行列重命名
 # =============================================================================
-df1.rename(columns={'呼叫话务量(Erl)':'话务量','DO最大用户数':'DO用户数'},inplace =True)
+df1.rename(columns={'呼叫话务量(Erl)':'话务量',
+                    'DO最大用户数':'DO用户数'
+},inplace =True)
 
 # =============================================================================
 # 删除行列
@@ -120,8 +122,8 @@ df6=pd.merge(df1,df2,how='inner',on='Cell')
 # =============================================================================
 # 去重复
 # =============================================================================
-df1 = df1.drop_duplicates()
-
+df1.drop_duplicates('eNodeB', keep='first', inplace = True)
+help(df1.drop_duplicates)
 #==============================================================================
 # 简单透视Groupby()
 #==============================================================================
@@ -208,17 +210,8 @@ df2.to_excel(writer,'Sheet2',index=False) # index=False不带row index输出
 writer.save()
 writer.close()
 
-writer = pd.ExcelWriter(r'd:\test\output.xls')
-df7.to_excel(writer,'123') 
-df1.to_excel(writer,'456') 
-df2.to_excel(writer,'sheet1') 
-
-df1.to_excel(writer,'Sheet1',startrow=5,sol=5) # 可以将两个df写入到一个sheet，指定写入的起始位置
-
-
 df_sum.to_csv(r'd:\data\计算结果.csv')
 df_cell_num.to_csv(r'd:\data\计算结果.csv',mode='a') # to_csv有追加写入模式不会覆盖原来的内容
-help(DataFrame.to_csv)
 
 # 但是上面的写法还是很麻烦，输出一个文件要写4行代码：最后还要save，close
 # Pythonic的写法是：
@@ -233,6 +226,6 @@ def Judge_MOD3(a,b,c,d): # 定义计算函数
 		return 1
 	else:
 		return 0
-
+    
 # 使用apply函数将表格的多列输入到Judge_MOD3进行计算，得到一个新的列
 df_all['Neighbor1_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(x.ServingCell_PCI,x.Neighbor1_PCI,x.Neighbor1_RSRP,x.ServingCell_RSRP),axis =1 )
