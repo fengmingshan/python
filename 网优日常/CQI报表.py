@@ -206,47 +206,50 @@ for x in ['OMMB1','OMMB2','OMMB3']:
     df_normal_ommb = df_normal_ommb.reset_index()
     df_worse_ommb = df_worse_ommb.reset_index()
 
-    df_good_eNodeB = df_good_ommb.drop_duplicated('MEID',keep='first')
-    with open(out_path + 'apply_right_' + x +'.txt','a') as f:
+    df_good_eNodeB = df_good_ommb.drop_duplicates('MEID',keep='first')
+    df_good_eNodeB = df_good_eNodeB.reset_index()
+    with open(out_path + 'apply_right_' + x +'.txt','w') as f:
         for i in range(0,len(df_good_eNodeB),1):
             line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
-            .format(df_good_ommb.loc[i,'SubNetwork'],
-                    df_good_ommb.loc[i,'MEID'],
+            .format(df_good_eNodeB.loc[i,'SubNetwork'],
+                    df_good_eNodeB.loc[i,'MEID'],
     )
             f.write(line+'\n')         
     
-    df_normal_eNodeB = df_normal_ommb.drop_duplicated('MEID',keep='first')    
-    with open(out_path + 'apply_right_'+ x + '.txt','a') as f:
-        for i in range(0,len(df_normal_ommb),1):
+    df_normal_eNodeB = df_normal_ommb.drop_duplicates('MEID',keep='first')   
+    df_normal_eNodeB = df_normal_eNodeB.reset_index()
+    with open(out_path + 'apply_right_'+ x + '.txt','w') as f:
+        for i in range(0,len(df_normal_eNodeB),1):
             line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
-            .format(df_normal_ommb.loc[i,'SubNetwork'],
-                    df_normal_ommb.loc[i,'MEID'],
+            .format(df_normal_eNodeB.loc[i,'SubNetwork'],
+                    df_normal_eNodeB.loc[i,'MEID'],
     )
             f.write(line+'\n')         
 
-    df_worse_eNodeB = df_worse_ommb.drop_duplicated('MEID',keep='first')        
-    with open(out_path + 'apply_right_' + x + '.txt','a') as f:
-        for i in range(0,len(df_worse_ommb),1):
+    df_worse_eNodeB = df_worse_ommb.drop_duplicates('MEID',keep='first')    
+    df_worse_eNodeB = df_worse_eNodeB.reset_index()
+    with open(out_path + 'apply_right_' + x + '.txt','w') as f:
+        for i in range(0,len(df_worse_eNodeB),1):
             line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\
-            .format(df_worse_ommb.loc[i,'SubNetwork'],
-                    df_worse_ommb.loc[i,'MEID'],
+            .format(df_worse_eNodeB.loc[i,'SubNetwork'],
+                    df_worse_eNodeB.loc[i,'MEID'],
     )
             f.write(line+'\n')         
     
-    with open(out_path + x + '_modify_CQI.txt','a') as f:
+    with open(out_path + x + '_modify_CQI.txt','w') as f:
         for i in range(0,len(df_good_ommb),1):
             line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"0;3;5\",cqiRptChNum=\"6;0;0\"",EXTENDS="";'\
             .format(df_good_ommb.loc[i,'MOI'])
             f.write(line+'\n') 
             
-    with open(out_path + x + '_modify_CQI.txt','a') as f:
+    with open(out_path + x + '_modify_CQI.txt','w') as f:
         for i in range(0,len(df_normal_ommb),1):
             line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"1;3;5\",cqiRptChNum=\"1;0;5\"",EXTENDS="";'\
             .format(df_normal_ommb.loc[i,'MOI'])
             f.write(line+'\n') 
     
     
-    with open(out_path + x + '_modify_CQI.txt','a') as f:
+    with open(out_path + x + '_modify_CQI.txt','w') as f:
         for i in range(0,len(df_worse_ommb),1):
             line = r'UPDATE:MOC="PhyChannel",MOI="{0}",ATTRIBUTES="cqiRptPeriod=\"1;3;5\",cqiRptChNum=\"1;0;5\"",EXTENDS="";'\
             .format(df_worse_ommb.loc[i,'MOI'])
