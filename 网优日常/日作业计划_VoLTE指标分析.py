@@ -67,19 +67,114 @@ for file in files:
 # 全市昨日VOLTE指标分析
 # =============================================================================
 
-# 画VOLTE用户数
+# 画VOLTE户数
 y1 = df_city['[LTE]下行QCI1最大激活用户数'].T.values
+y2 = df_city['[LTE]下行QCI2最大激活用户数'].T.values
 df_city['hour'] = df_city['开始时间'].map(lambda x:x[11:13])
 x1 = df_city['hour'].T.values
 plt.figure(figsize=(12, 4))
 plt.xticks(range(len(x1)), x1,fontsize=8)
-plt.plot(range(len(x1)),y1,label='VOLTE语音用户数',linewidth=3,color='r',marker='o',markerfacecolor='blue',markersize=6) 
+plt.plot(range(len(x1)),y1,label='VOLTE语音用户数',linewidth=2,color='r',marker='o',markerfacecolor='blue',markersize=4) 
+plt.plot(range(len(x1)),y2,label='VOLTE视频用户数',linewidth=2,color='g',marker='o',markerfacecolor='cyan',markersize=4) 
 for a,b in zip(range(len(x1)),y1):
-    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=9)
-plt.xlabel('日期')
-plt.ylabel('全市VOLTE语音用户数')
-plt.title('全市VOLTE语音用户数')
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+for a,b in zip(range(len(x1)),y2):
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+plt.xlabel('时间')
+plt.ylabel('全市VOLTE用户数')
+plt.title('全市VOLTE用户数')
 plt.legend(loc='center right')
-plt.savefig(pic_path + "全市VOLTE语音用户数.png",format='png', dpi=400)  
-plt.show
+plt.savefig(pic_path + "全市VOLTE用户数.png",format='png', dpi=400)  
+plt.close
+
+# 画VOLTE呼叫次数
+y1 = df_city['[LTE]E-RAB建立请求数目(QCI=1)'].T.values
+y2 = df_city['[LTE]E-RAB建立请求数目(QCI=2)'].T.values
+df_city['hour'] = df_city['开始时间'].map(lambda x:x[11:13])
+x1 = df_city['hour'].T.values
+plt.figure(figsize=(12, 4))
+plt.xticks(range(len(x1)), x1,fontsize=8)
+plt.plot(range(len(x1)),y1,label='VOLTE语音用户数',linewidth=2,color='r',marker='o',markerfacecolor='blue',markersize=4) 
+plt.plot(range(len(x1)),y2,label='VOLTE视频用户数',linewidth=2,color='g',marker='o',markerfacecolor='cyan',markersize=4) 
+for a,b in zip(range(len(x1)),y1):
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+for a,b in zip(range(len(x1)),y2):
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+plt.xlabel('时间')
+plt.ylabel('全市VOLTE用户数')
+plt.title('全市VOLTE用户数')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "全市VOLTE呼叫次数.png",format='png', dpi=400)  
+plt.close
+
+
+# 画VOLTE掉话率
+df_city['[FDD]E-RAB掉话率(QCI=1)'] = df_city['[FDD]E-RAB掉话率(QCI=1)'].map(lambda x:x[0:-1]).astype(float)
+df_city['[FDD]E-RAB掉话率(QCI=2)'] = df_city['[FDD]E-RAB掉话率(QCI=2)'].map(lambda x:x[0:-1]).astype(float)
+y1 = df_city['[FDD]E-RAB掉话率(QCI=1)'].T.values
+y2 = df_city['[FDD]E-RAB掉话率(QCI=2)'].T.values
+df_city['hour'] = df_city['开始时间'].map(lambda x:x[11:13])
+x1 = df_city['hour'].T.values
+plt.figure(figsize=(12, 4))
+plt.xticks(range(len(x1)), x1,fontsize=8)
+plt.plot(range(len(x1)),y1,label='VOLTE语音掉话率',linewidth=2,color='r',marker='o',markerfacecolor='blue',markersize=4) 
+plt.plot(range(len(x1)),y2,label='VOLTE视频掉话率',linewidth=2,color='g',marker='o',markerfacecolor='cyan',markersize=4) 
+for a,b in zip(range(len(x1)),y1):
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+for a,b in zip(range(len(x1)),y2):
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+plt.xlabel('时间')
+plt.ylabel('全市VOLTE掉话率')
+plt.title('全市VOLTE掉话率')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "全市VOLTE掉话率.png",format='png', dpi=400)  
+plt.close
+
+# 画VOLTE语音接通率
+df_city['[LTE]小区业务相关的无线接通率(QCI=1)'] = df_city['[LTE]小区业务相关的无线接通率(QCI=1)'].map(lambda x:x[0:-1]).astype(float)
+y1 = df_city['[LTE]小区业务相关的无线接通率(QCI=1)'].T.values
+df_city['hour'] = df_city['开始时间'].map(lambda x:x[11:13])
+x1 = df_city['hour'].T.values
+plt.figure(figsize=(12, 4))
+plt.xticks(range(len(x1)), x1,fontsize=8)
+plt.plot(range(len(x1)),y1,label='VOLTE语音接通率',linewidth=2,color='r',marker='o',markerfacecolor='blue',markersize=5) 
+for a,b in zip(range(len(x1)),y1):
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=10)
+plt.xlabel('时间')
+plt.ylabel('全市VOLTE掉话率')
+plt.title('全市VOLTE掉话率')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "全市VOLTE语音接通率.png",format='png', dpi=400)  
+plt.close
+
+# 画VOLTE视频接通率
+df_city['[LTE]小区业务相关的无线接通率(QCI=2)'] = df_city['[LTE]小区业务相关的无线接通率(QCI=2)'].map(lambda x:x[0:-1]).astype(float)
+y2 = df_city['[LTE]小区业务相关的无线接通率(QCI=2)'].T.values
+df_city['hour'] = df_city['开始时间'].map(lambda x:x[11:13])
+x1 = df_city['hour'].T.values
+plt.figure(figsize=(12, 4))
+plt.xticks(range(len(x1)), x1,fontsize=8)
+plt.plot(range(len(x1)),y2,label='VOLTE视频接通率',linewidth=2,color='g',marker='o',markerfacecolor='cyan',markersize=5) 
+for a,b in zip(range(len(x1)),y2):
+    plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=10)
+plt.xlabel('时间')
+plt.ylabel('全市VOLTE掉话率')
+plt.title('全市VOLTE掉话率')
+plt.legend(loc='center right')
+plt.savefig(pic_path + "全市VOLTE视频接通率.png",format='png', dpi=400)  
+plt.close
+
+with  pd.ExcelWriter(report_path + 'VOLTE指标分析(日)_' + current_date + '.xlsx')  as writer:  #输出到excel
+    book = writer.book 
+    sheet = book.add_worksheet('全市')
+    sheet.insert_image('A2' , pic_path + "全市VOLTE用户数.png")
+    sheet.insert_image('A23', pic_path + "全市VOLTE呼叫次数.png")
+    sheet.insert_image('A44', pic_path + "全市VOLTE掉话率.png")
+    sheet.insert_image('A65', pic_path + "全市VOLTE语音接通率.png")
+    sheet.insert_image('A86', pic_path + "全市VOLTE视频接通率.png")
+
+    
+
+
+
 
