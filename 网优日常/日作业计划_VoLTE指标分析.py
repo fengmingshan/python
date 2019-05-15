@@ -34,14 +34,27 @@ df_subnet = pd.DataFrame()
 df_city = pd.DataFrame() 
  
 for file in files:
-    df_tmp = pd.read_csv(data_path + file,engine = 'python',skiprows = 5 )
-    columns = list(df_tmp.columns)
-    if '小区名称' in columns:
-        df_cell.append(df_tmp)
-    elif '子网名称' in columns:
-        df_subnet.append(df_tmp)
-    else :
-        df_city = df_data.append(df_tmp)
+    with open(data_path + file) as tmpfile:
+        line = tmpfile.readline()
+        if '历史性能' in line:
+            df_tmp = pd.read_csv(data_path + file,engine = 'python',skiprows = 5 )
+            columns = list(df_tmp.columns)
+            if '小区名称' in columns:
+                df_cell = df_cell.append(df_tmp)
+            elif '子网名称' in columns and '小区名称' not in columns:
+                df_subnet = df_subnet.append(df_tmp)
+            else :
+                df_city = df_city.append(df_tmp)
+        else:
+            df_tmp = pd.read_csv(data_path + file,engine = 'python')
+            columns = list(df_tmp.columns)
+            if '小区名称' in columns:
+                df_cell = df_cell.append(df_tmp)
+            elif '子网名称' in columns and '小区名称' not in columns:
+                df_subnet = df_subnet.append(df_tmp)
+            else :
+                df_city = df_city.append(df_tmp)
+
 
 # =============================================================================
 # 全市昨日VOLTE指标分析
