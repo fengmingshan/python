@@ -1,12 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 13 09:47:10 2019
-
-@author: Administrator
-"""
-
 import sys
-from PyQt5.QtWidgets import QWidget, QPushButton, QApplication, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import (QWidget, QPushButton, QApplication, QVBoxLayout,QHBoxLayout)
 
 class Example(QWidget):
     def __init__(self):
@@ -20,16 +13,17 @@ class Example(QWidget):
         bt2 = QPushButton('石头', self)
         bt3 = QPushButton('布', self)
 
-        hbox = QHBoxLayout()
-        hbox.addStretch(1)
-
         vbox = QVBoxLayout()
         vbox.addStretch(1)
-        vbox.addWidget(bt1)
-        vbox.addWidget(bt2)
-        vbox.addWidget(bt3)
-        
-        
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addWidget(bt1)
+        hbox.addWidget(bt2)
+        hbox.addWidget(bt3)
+
+        vbox.addLayout(hbox)
+
         self.setLayout(vbox)
         self.show()
 if __name__ == '__main__':
