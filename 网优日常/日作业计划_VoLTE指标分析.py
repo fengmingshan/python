@@ -123,9 +123,9 @@ def draw_KPI(df,text):
     plt.plot(range(len(x1)),y1,label='VOLTE语音掉话率',linewidth=2,color='r',marker='o',markerfacecolor='blue',markersize=4) 
     plt.plot(range(len(x1)),y2,label='VOLTE视频掉话率',linewidth=2,color='g',marker='o',markerfacecolor='cyan',markersize=4) 
     for a,b in zip(range(len(x1)),y1):
-        plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+        plt.text(a,b*1.001, '%1.0f'% b, ha='center', va= 'bottom',fontsize=12)
     for a,b in zip(range(len(x1)),y2):
-        plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
+        plt.text(a,b*1.001, '%1.0f'% b, ha='center', va= 'bottom',fontsize=12)
     plt.xlabel('时间')
     plt.ylabel(text + '_VOLTE掉话率')
     plt.title(text + '_VOLTE掉话率')
