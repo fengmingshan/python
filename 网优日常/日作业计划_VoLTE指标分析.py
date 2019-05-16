@@ -83,7 +83,7 @@ def draw_KPI(df,text):
         plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
     for a,b in zip(range(len(x1)),y2):
         plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
-    plt.xlabel('时间')
+    plt.xlabel('小时')
     plt.ylabel(text + '_VOLTE用户数')
     plt.title(text + '_VOLTE用户数')
     plt.legend(loc='center right')
@@ -103,7 +103,7 @@ def draw_KPI(df,text):
         plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
     for a,b in zip(range(len(x1)),y2):
         plt.text(a,b*1.001, b, ha='center', va= 'bottom',fontsize=12)
-    plt.xlabel('时间')
+    plt.xlabel('小时')
     plt.ylabel(text + '_VOLTE呼叫数')
     plt.title(text + '_VOLTE呼叫数')
     plt.legend(loc='center right')
@@ -112,8 +112,8 @@ def draw_KPI(df,text):
     
     
     # 画VOLTE掉话率
-    df['[FDD]E-RAB掉话率(QCI=1)'] = df['[FDD]E-RAB掉话率(QCI=1)'].map(lambda x:x[0:-1]).astype(float)
-    df['[FDD]E-RAB掉话率(QCI=2)'] = df['[FDD]E-RAB掉话率(QCI=2)'].map(lambda x:x[0:-1]).astype(float)
+    df['[FDD]E-RAB掉话率(QCI=1)'] = df['[FDD]E-RAB掉话率(QCI=1)'].str.strip("%").astype(float)
+    df['[FDD]E-RAB掉话率(QCI=2)'] = df['[FDD]E-RAB掉话率(QCI=2)'].str.strip("%").astype(float)
     y1 = df['[FDD]E-RAB掉话率(QCI=1)'].T.values
     y2 = df['[FDD]E-RAB掉话率(QCI=2)'].T.values
     df['hour'] = df['开始时间'].map(lambda x:x[11:13])
@@ -123,10 +123,10 @@ def draw_KPI(df,text):
     plt.plot(range(len(x1)),y1,label='VOLTE语音掉话率',linewidth=2,color='r',marker='o',markerfacecolor='blue',markersize=4) 
     plt.plot(range(len(x1)),y2,label='VOLTE视频掉话率',linewidth=2,color='g',marker='o',markerfacecolor='cyan',markersize=4) 
     for a,b in zip(range(len(x1)),y1):
-        plt.text(a,b*1.001, '%1.0f'% b, ha='center', va= 'bottom',fontsize=12)
+        plt.text(a,b*1.001, '%.2f%%' % b, ha='center', va= 'bottom',fontsize=8)
     for a,b in zip(range(len(x1)),y2):
-        plt.text(a,b*1.001, '%1.0f'% b, ha='center', va= 'bottom',fontsize=12)
-    plt.xlabel('时间')
+        plt.text(a,b*1.001, '%.2f%%'% b, ha='center', va= 'bottom',fontsize=8)
+    plt.xlabel('小时')
     plt.ylabel(text + '_VOLTE掉话率')
     plt.title(text + '_VOLTE掉话率')
     plt.legend(loc='center right')
@@ -134,7 +134,7 @@ def draw_KPI(df,text):
     plt.close
     
     # 画VOLTE语音接通率
-    df['[LTE]小区业务相关的无线接通率(QCI=1)'] = df['[LTE]小区业务相关的无线接通率(QCI=1)'].map(lambda x:x[0:-1]).astype(float)
+    df['[LTE]小区业务相关的无线接通率(QCI=1)'] = df['[LTE]小区业务相关的无线接通率(QCI=1)'].str.strip("%").astype(float)
     y1 = df['[LTE]小区业务相关的无线接通率(QCI=1)'].T.values
     df['hour'] = df['开始时间'].map(lambda x:x[11:13])
     x1 = df['hour'].T.values
@@ -142,8 +142,8 @@ def draw_KPI(df,text):
     plt.xticks(range(len(x1)), x1,fontsize=8)
     plt.plot(range(len(x1)),y1,label='VOLTE语音接通率',linewidth=2,color='r',marker='o',markerfacecolor='blue',markersize=5) 
     for a,b in zip(range(len(x1)),y1):
-        plt.text(a,b*1.0001, b, ha='center', va= 'bottom',fontsize=8)
-    plt.xlabel('时间')
+        plt.text(a,b*1.0001,'%.2f%%' % b, ha='center', va= 'bottom',fontsize=8)
+    plt.xlabel('小时')
     plt.ylabel(text + '_VOLTE语音接通率')
     plt.title(text + '_VOLTE语音接通率')
     plt.legend(loc='center right')
@@ -151,7 +151,7 @@ def draw_KPI(df,text):
     plt.close
     
     # 画VOLTE视频接通率
-    df['[LTE]小区业务相关的无线接通率(QCI=2)'] = df['[LTE]小区业务相关的无线接通率(QCI=2)'].map(lambda x:x[0:-1]).astype(float)
+    df['[LTE]小区业务相关的无线接通率(QCI=2)'] = df['[LTE]小区业务相关的无线接通率(QCI=2)'].str.strip("%").astype(float)
     y2 = df['[LTE]小区业务相关的无线接通率(QCI=2)'].T.values
     df['hour'] = df['开始时间'].map(lambda x:x[11:13])
     x1 = df['hour'].T.values
@@ -159,8 +159,8 @@ def draw_KPI(df,text):
     plt.xticks(range(len(x1)), x1,fontsize=8)
     plt.plot(range(len(x1)),y2,label='VOLTE视频接通率',linewidth=2,color='g',marker='o',markerfacecolor='cyan',markersize=5) 
     for a,b in zip(range(len(x1)),y2):
-        plt.text(a,b*1.0001, b, ha='center', va= 'bottom',fontsize=8)
-    plt.xlabel('时间')
+        plt.text(a,b*1.0001, '%.2f%%' % b, ha='center', va= 'bottom',fontsize=8)
+    plt.xlabel('小时')
     plt.ylabel(text + '_VOLTE视频接通率')
     plt.title(text + '_VOLTE视频接通率')
     plt.legend(loc='center right')
@@ -183,15 +183,23 @@ for name in subnet_name:
 # =============================================================================
 df_cell['hour'] = df_cell['开始时间'].map(lambda x:x[11:13])
 df_cell['[LTE]E-RAB建立请求数目(QCI=1)'] = df_cell['[LTE]E-RAB建立请求数目(QCI=1)'].astype(int)
-df_cell['[LTE]小区业务相关的无线接通率(QCI=1)'] = df_cell['[LTE]小区业务相关的无线接通率(QCI=1)'].astype(float)
+df_cell['[LTE]小区业务相关的无线接通率(QCI=1)'] = df_cell['[LTE]小区业务相关的无线接通率(QCI=1)'].str.strip("%").astype(float)
+df_cell['RRC连接建立成功率_1498720732851-0-29'] = df_cell['RRC连接建立成功率_1498720732851-0-29'].str.strip("%").astype(float)
+df_cell['[FDD]E-RAB掉话率(QCI=1)'] = df_cell['[FDD]E-RAB掉话率(QCI=1)'].str.strip("%").astype(float)
+
 df_connect_top = df_cell[(df_cell['[LTE]E-RAB建立请求数目(QCI=1)'] > 3 ) & (df_cell['[LTE]小区业务相关的无线接通率(QCI=1)'] <= 0.98)]
-df_connect_top = df_connect_top[['网元','小区','小区名称','[LTE]小区业务相关的无线接通率(QCI=1)','[LTE]E-RAB建立请求数目(QCI=1)']]
+df_connect_top = df_connect_top[['网元','小区','小区名称','[LTE]小区业务相关的无线接通率(QCI=1)','[LTE]E-RAB建立请求数目(QCI=1)','RRC连接建立成功率_1498720732851-0-29']]
+df_connect_top = df_connect_top.sort_values(by=['[LTE]E-RAB建立请求数目(QCI=1)','[LTE]小区业务相关的无线接通率(QCI=1)'],ascending = [False,True]) # 按时间顺序升序排列  
+
+df_drop_top = df_cell[(df_cell['[FDD]E-RAB掉话率(QCI=1)'] > 0.002 ) & (df_cell['[LTE]E-RAB建立请求数目(QCI=1)'] > 3)]
+df_drop_top = df_drop_top[['网元','小区','小区名称','[FDD]E-RAB掉话率(QCI=1)','[LTE]E-RAB建立请求数目(QCI=1)']]
+df_drop_top = df_drop_top.sort_values(by=['[LTE]E-RAB建立请求数目(QCI=1)','[FDD]E-RAB掉话率(QCI=1)'],ascending = [False,False]) # 按时间顺序升序排列  
 
 
 # =============================================================================
 # 输出报表
 # =============================================================================
-with  pd.ExcelWriter(report_path + 'VOLTE指标分析(日)_' + KPI_date + '.xlsx')  as writer:  #输出到excel
+with  pd.ExcelWriter(report_path + 'VOLTE_指标分析(日)_' + KPI_date + '.xlsx')  as writer:  #输出到excel
     book = writer.book 
     sheet = book.add_worksheet('全市')
     sheet.insert_image('A2' , pic_path + "全市VOLTE语音接通率.png")
@@ -207,7 +215,9 @@ with  pd.ExcelWriter(report_path + 'VOLTE指标分析(日)_' + KPI_date + '.xlsx
         sheet.insert_image('A65', pic_path + name + "VOLTE用户数.png")
         sheet.insert_image('A86', pic_path + name + "VOLTE视频接通率.png")
 
-
+with  pd.ExcelWriter(report_path + 'VOLTE_TOP小区分析(日)_' + KPI_date + '.xlsx')  as writer:  #输出到excel
+    df_connect_top.to_excel(writer,'呼叫成功率',index = False)
+    df_drop_top.to_excel(writer,'掉话率',index = False)
 
     
 
