@@ -26,7 +26,7 @@ password = driver.find_element_by_name('password')
 password.click()
 password.send_keys('Ynctc$123')
 
-time.sleep(10)
+driver.implicitly_wait(10)
 
 report_url = driver.find_element_by_id('biCustom')
 report_url.click()
