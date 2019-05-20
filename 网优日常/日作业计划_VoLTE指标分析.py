@@ -242,7 +242,6 @@ df_connect_top['其他原因占比'] = (df_connect_top['QCI1 初始的E-RAB建�
                                    /df_connect_top['失败总次数']
 df_connect_top = df_connect_top.sort_values(by=['[LTE]E-RAB建立请求数目(QCI=1)','[LTE]小区E-RAB建立成功率，QCI=1'],ascending = [False,True]) # 按时间顺序升序排列
 df_connect_top.fillna(0,inplace = True)
-df_connect_top = df_connect_top.reset_index()
 
 def findmax(df):  # 定义找最大值的函数
     max_one = df.idxmax() # 得到最大值的index名
