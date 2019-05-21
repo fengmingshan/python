@@ -17,10 +17,10 @@ plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 
 current_date = str(datetime.now()).split('.')[0].split(' ')[0]
 data_path = r'D:\_VoLTE网络健康检查（日）' + '\\'
-expect_success_rate = 99
-expect_drop_rate = 0.3
-min_call_num = 3
-min_drop_num = 3
+expect_success_rate = 99.5
+expect_drop_rate = 0.2
+min_call_num = 2
+min_call_succ_num = 2
 
 # =============================================================================
 # 采集原始数据文件及创建所需工作目录
@@ -196,7 +196,8 @@ df_cell['[FDD]E-RAB掉话率(QCI=1)'] = df_cell['[FDD]E-RAB掉话率(QCI=1)'].st
 # =============================================================================
 # 呼叫成功率TOP分析
 # =============================================================================
-df_connect_top = df_cell[(df_cell['[LTE]E-RAB建立请求数目(QCI=1)'] > min_call_num ) & (df_cell['[LTE]小区E-RAB建立成功率，QCI=1'] <= expect_success_rate)]
+df_connect_top = df_cell[(df_cell['[LTE]E-RAB建立请求数目(QCI=1)'] >= min_call_num ) &
+                         (df_cell['[LTE]小区E-RAB建立成功率，QCI=1'] <= expect_success_rate)]
 df_connect_top['原因分析'] = ''
 df_connect_top = df_connect_top[['开始时间', '结束时间','子网名称','网元','小区','小区名称','原因分析',
                                  '[LTE]小区E-RAB建立成功率，QCI=1',
@@ -222,10 +223,11 @@ df_connect_top = df_connect_top[['开始时间', '结束时间','子网名称','
 df_connect_top['失败总次数'] = df_connect_top['[LTE]E-RAB建立请求数目(QCI=1)'] -\
                               df_connect_top['[LTE]E-RAB建立成功数目(QCI=1)']
 df_connect_top['空口问题占比'] = (df_connect_top['QCI1 初始的E-RAB建立失败次数，空口失败'] +
-                                 df_connect_top['QCI1 增加的E-RAB建立失败次数，空口失败'] +
-                                 df_connect_top['QCI1 初始的E-RAB建立失败次数，RRC重建立原因'] +
-                                 df_connect_top['QCI1 增加的E-RAB建立失败次数，RRC重建立原因'])\
+                                 df_connect_top['QCI1 增加的E-RAB建立失败次数，空口失败'])\
                                 /df_connect_top['失败总次数']
+df_connect_top['切换问题占比'] = (df_connect_top['QCI1 初始的E-RAB建立失败次数，RRC重建立原因'] +
+                                  df_connect_top['QCI1 增加的E-RAB建立失败次数，RRC重建立原因'])\
+                                  /df_connect_top['失败总次数']
 df_connect_top['拥塞占比'] = (df_connect_top['QCI1 初始的E-RAB建立失败次数，eNB接纳失败'] +
                               df_connect_top['QCI1 增加的E-RAB建立失败次数，eNB接纳失败'])\
                               /df_connect_top['失败总次数']
@@ -248,12 +250,13 @@ def findmax(df):  # 定义找最大值的函数
     maxindex = pd.Series(max_one) # 将每一行的最大值的index重组成一个Series
     return maxindex  # 返回这个Series
 
-df_tmp  = df_connect_top.iloc[:,28:37] # 只取我们需要的列构建一个零时的表
+df_tmp  = df_connect_top.iloc[:,27:38] # 只取我们需要的列构建一个零时的表
 
 df_tmp['问题主要原因'] = df_tmp.apply(lambda x:findmax(x),axis=1) # 将表按行输入找最大值的函数，得到最大值所在的列的index
 
 df_connect_top['原因分析'] = df_tmp['问题主要原因']
 fault_cause = {'空口问题占比':'无线环境差',
+               '切换问题占比':'切换问题',
                '拥塞占比':'基站资源拥塞',
                '传输故障占比':'传输故障',
                '参数或软件故障占比':'参数或软件版本故障',
@@ -267,7 +270,8 @@ df_connect_top['原因分析'] = df_connect_top['原因分析'].map(fault_cause)
 # =============================================================================
 # 掉话率TOP小区分析
 # =============================================================================
-df_drop_top = df_cell[(df_cell['[FDD]E-RAB掉话率(QCI=1)'] > expect_drop_rate ) & (df_cell['[LTE]E-RAB建立成功数目(QCI=1)'] > min_drop_num)]
+df_drop_top = df_cell[(df_cell['[FDD]E-RAB掉话率(QCI=1)'] >= expect_drop_rate ) &
+                      (df_cell['[LTE]E-RAB建立成功数目(QCI=1)'] >= min_call_succ_num)]
 df_drop_top['原因分析'] = ''
 df_drop_top = df_drop_top[['开始时间', '结束时间','子网名称','网元','小区','小区名称','原因分析',
                            '[FDD]E-RAB掉话率(QCI=1)',
