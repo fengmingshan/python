@@ -14,6 +14,45 @@ zte_eric800 = r'd:\_爱立信全网邻区核查\爱立信云南曲靖电信工�
 zte_bts800 = r'd:\_爱立信全网邻区核查\曲靖电信LTE工参(L800M)20190425.xls'
 zte_bts1800 = r'd:\_爱立信全网邻区核查\曲靖电信LTE工参(L1.8G)20190425.xls'
 
+def getDegree(latA, lonA, latB, lonB):
+    """
+    Args:
+        point p1(latA, lonA)
+        point p2(latB, lonB)
+    Returns:
+        bearing between the two GPS points,
+        default: the basis of heading direction is north
+    """
+    radLatA = radians(latA)
+    radLonA = radians(lonA)
+    radLatB = radians(latB)
+    radLonB = radians(lonB)
+    dLon = radLonB - radLonA
+    y = sin(dLon) * cos(radLatB)
+    x = cos(radLatA) * sin(radLatB) - sin(radLatA) * cos(radLatB) * cos(dLon)
+    brng = degrees(atan2(y, x))
+    brng = (brng + 360) % 360
+    return brng
+
+def getDistance(latA, lonA, latB, lonB):
+    ra = 6378140  # radius of equator: meter
+    rb = 6356755  # radius of polar: meter
+    flatten = (ra - rb) / ra  # Partial rate of the earth
+    # change angle to radians
+    radLatA = radians(latA)
+    radLonA = radians(lonA)
+    radLatB = radians(latB)
+    radLonB = radians(lonB)
+
+    pA = atan(rb / ra * tan(radLatA))
+    pB = atan(rb / ra * tan(radLatB))
+    x = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB) * cos(radLonA - radLonB))
+    c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
+    c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
+    dr = flatten / 8 * (c1 - c2)
+    distance = ra * (x + dr)
+    return distance
+
 df_eric = pd.read_csv(eric_neighbor,engine = 'python')
 
 df_eric_result = pd.DataFrame()
