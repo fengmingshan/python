@@ -4,7 +4,6 @@ Created on Wed May 22 11:32:01 2019
 
 @author: Administrator
 """
-
 import pandas as pd
 
 data_path = r'd:\_爱立信全网邻区核查' + '\\'
@@ -58,7 +57,7 @@ df_eric = pd.read_csv(eric_neighbor,engine = 'python')
 df_eric_result = pd.DataFrame()
 df_eric_result['Scell_index'] = df_eric['CELL'].map(lambda x:x.split('_')[0] + x.split('_')[1])
 df_eric_result['Ncell_index'] = df_eric['EUTRANCELLRELATIONID'].map(lambda x:x.replace('46011-','').replace('-',''))
-df_eric_result['relation'] = df_eric_result['Scell_index'] + '_' + df_eric_result['Ncell_index']
+df_eric_result['Relations'] = df_eric_result['Scell_index'] + '_' + df_eric_result['Ncell_index']
 
 df_zte_result = pd.read_excel(zte_neighbor)
 df_zte_result['relation'] = df_zte_result['Scell_index'].map(str) + '_' + df_zte_result['Ncell_index'].map(str)
@@ -99,10 +98,30 @@ df_eric800['network'] = df_tmp['channelBandwidth'].map({'5M':'L800M', '15M':'L1.
 df_eric800['manufacturers'] = 'ERIC'
 
 df_all_cells = df_zte800.append(df_zte1800).append(df_eric800)
+df_all_cells = df_all_cells.reset_index()
 
+df_distance = pd.DataFrame(columns = ['Scell_index','Ncell_index','Relations','Distance','Degree'])
+for i in range(len(df_eric800)):
+     n = 0
+     latA = df_eric800.loc[i,'LAT']
+     lonA = df_eric800.loc[i,'LON']
+     if i%100 = 0:
+          print('已完成：' + i + '个扇区。')
+     for j in range(len(df_all_cells)):
+          latB = df_all_cells.loc[j,'LAT']
+          lonB = df_all_cells.loc[j,'LON']
+          Distance = getDistance(latA,lonA,latB,latB)
+          Degree = getDegree(latA,lonA,latB,latB)
 
+          df_distance.loc[n,'Scell_index'] = df_eric800.loc[i,'Cell_index']
+          df_distance.loc[n,'Ncell_index'] = df_all_cells.loc[j,'Cell_index']
+          df_distance.loc[n,'Relations'] = str(df_eric800.loc[i,'Cell_index']) + '_' + str(df_all_cells.loc[j,'Cell_index'])
+          df_distance.loc[n,'Distance'] = Distance
+          df_distance.loc[n,'Degree'] = Degree
+          n += 1
+with pd.ExcelWriter(data_path + '邻区距离计算.xlsx') as writer: #不用保存和退出，系统自动会完成
+    df_distance.to_excel(writer,'邻区距离计算',index =False)
 
-with pd.ExcelWriter(data_path + '爱立信全网邻区输出.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_eric.to_excel(writer,'Sheet1',index =False)
+for i in range()：
 
 
