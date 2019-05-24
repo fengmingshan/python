@@ -6,6 +6,12 @@ Created on Wed May 22 11:32:01 2019
 """
 import pandas as pd
 import time
+from datetime import datetime
+from math import sin
+from math import cos
+from math import degrees
+from math import radians
+from math import atan2
 
 data_path = r'd:\_爱立信全网邻区核查' + '\\'
 eric_neighbor = r'd:\_爱立信全网邻区核查\PARA_ERBS_371.csv'
@@ -52,6 +58,8 @@ def getDistance(latA, lonA, latB, lonB):
     dr = flatten / 8 * (c1 - c2)
     distance = ra * (x + dr)
     return distance
+
+start_time = time.time()
 
 df_eric = pd.read_csv(eric_neighbor,engine = 'python')
 
@@ -101,6 +109,10 @@ df_eric800['manufacturers'] = 'ERIC'
 df_all_cells = df_zte800.append(df_zte1800).append(df_eric800)
 df_all_cells = df_all_cells.reset_index()
 
+cur_time = time.time()
+current_time = str(datetime.now()).split('.')[0]
+print(current_time,':','基站基础信息处理完成，开始生成邻区关系对。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+
 df_Scells = pd.DataFrame()
 df_Scells['Scell_index'] = df_eric800['Cell_index']
 df_Scells['Scell_azimuth'] = df_eric800['azimuth']
@@ -116,34 +128,20 @@ df_Ncells['Ncell_LAT'] = df_all_cells['LAT']
 df_Scells['assist'] = 'assist'
 df_Ncells['assist'] = 'assist'
 df_combined = pd.merge(df_Scells,df_Ncells,how = 'left',on ='assist' )
-df_combined.drop('assist',axis = 0,inplace = True)
+df_combined.drop('assist',axis = 1,inplace = True)
 
-print('开始计算距离和夹角:')
-start_time = time.time()
-for i in range(len(df_eric800)):
-     n = 0
-     latA = df_eric800.loc[i,'LAT']
-     lonA = df_eric800.loc[i,'LON']
-     if i % 10 == 0 and  i/10 > 1 :
-          current_time = time.time()
-          print('已完成：',i,'个扇区。','花费时间',current_time-start_time,'s !')
-          print('预计还需要：',round((current_time-start_time)*((len(df_eric800)/i)-1)/60,0),'分钟!')
-     for j in range(len(df_all_cells)):
-          if df_eric800.loc[i,'Cell_index'] != df_all_cells.loc[j,'Cell_index']:
-               latB = df_all_cells.loc[j,'LAT']
-               lonB = df_all_cells.loc[j,'LON']
-               df_distance.loc[n,'Scell_index'] = df_eric800.loc[i,'Cell_index']
-               df_distance.loc[n,'Scell_azimuth'] = df_eric800.loc[i,'azimuth']
-               df_distance.loc[n,'Ncell_index'] = df_all_cells.loc[j,'Cell_index']
-               df_distance.loc[n,'Ncell_azimuth'] = df_all_cells.loc[j,'azimuth']
-               df_distance.loc[n,'Relations'] = str(df_eric800.loc[i,'Cell_index']) + '_' + str(df_all_cells.loc[j,'Cell_index'])
-               n += 1
+cur_time = time.time()
+current_time = str(datetime.now()).split('.')[0]
+print(current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
-with pd.ExcelWriter(data_path + '邻区距离计算.xlsx') as writer: #不用保存和退出，系统自动会完成
-    df_distance.to_excel(writer,'邻区距离计算',index =False)
+df_combined['Degree'] = df_combined.apply(lambda x :getDegree(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+df_combined['Distance'] = df_combined.apply(lambda x :getDistance(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
 
-df_relations = df_distance[df_distance['Distance'] != 0]
-for i in range(len(df_distance)):
+cur_time = time.time()
+current_time = str(datetime.now()).split('.')[0]
+print(current_time,':','计算完成，开始筛选适合的邻区。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+
+df_combined.to_csv(data_path + '邻区距离计算结果.csv',index =False)
 
 
 
