@@ -9,9 +9,13 @@ import time
 from datetime import datetime
 from math import sin
 from math import cos
+from math import tan
 from math import degrees
 from math import radians
 from math import atan2
+from math import atan
+from math import acos
+
 
 data_path = r'd:\_爱立信全网邻区核查' + '\\'
 eric_neighbor = r'd:\_爱立信全网邻区核查\PARA_ERBS_371.csv'
@@ -37,7 +41,7 @@ def getDegree(latA, lonA, latB, lonB):
     y = sin(dLon) * cos(radLatB)
     x = cos(radLatA) * sin(radLatB) - sin(radLatA) * cos(radLatB) * cos(dLon)
     brng = degrees(atan2(y, x))
-    brng = (brng + 360) % 360
+    brng = round((brng + 360) % 360,0)
     return brng
 
 def getDistance(latA, lonA, latB, lonB):
@@ -56,7 +60,7 @@ def getDistance(latA, lonA, latB, lonB):
     c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
     c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
     dr = flatten / 8 * (c1 - c2)
-    distance = ra * (x + dr)
+    distance = round(ra * (x + dr),0)
     return distance
 
 start_time = time.time()
@@ -111,7 +115,7 @@ df_all_cells = df_all_cells.reset_index()
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
-print(current_time,':','基站基础信息处理完成，开始生成邻区关系对。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+print(' ',current_time,':','基站基础信息处理完成，开始生成邻区关系对。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
 df_Scells = pd.DataFrame()
 df_Scells['Scell_index'] = df_eric800['Cell_index']
@@ -132,24 +136,31 @@ df_combined.drop('assist',axis = 1,inplace = True)
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
-print(current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+print(' ',current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计花费时间:',round(cur_time-start_time,0),'s！')
 
+calc_time = time.time()
 df_calculated = pd.DataFrame()
-for i in range(len(df_eric800)):
-     df_tmp = df_combined[df_combined[Scell_index] == df_eric800.loc[i,'Cell_index']]
-     df_tmp['Degree'] = df_tmp.apply(lambda x :getDegree(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
-     df_tmp['Distance'] = df_tmp.apply(lambda x :getDistance(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
-     df_calculated = df_calculated.append(df_tmp)
-     if i%10 == 0 and i > 0 :
-          print('已完成：',i,'个扇区。','花费时间',current_time-start_time,'s !')
-          print('预计还需要：',round((current_time-start_time)*((len(df_eric800)/i)-1)/60,0),'分钟!')
+for i in range(10):
+     df_tmp = df_combined[df_combined['Scell_index'] == df_eric800.loc[i,'Cell_index']]
+     df_tmp1 = df_tmp[(df_tmp['Scell_LAT'] != df_tmp['Ncell_LAT']) &
+                      (df_tmp['Scell_LON'] != df_tmp['Ncell_LON'])]
+     df_tmp1['Degree'] = df_tmp1.apply(lambda x :getDegree(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+     df_tmp1['Distance'] = df_tmp1.apply(lambda x :getDistance(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+     df_tmp2 = df_tmp[(df_tmp['Scell_LAT'] == df_tmp['Ncell_LAT']) &
+                      (df_tmp['Scell_LON'] == df_tmp['Ncell_LON'])]
+     df_tmp2['Degree'] = 0
+     df_tmp2['Distance'] = 0
+
+     df_calculated = df_calculated.append(df_tmp1).append(df_tmp2)
+     cur_time = time.time()
+     if  i > 0 :
+          print('已完成：',i,'个扇区。','花费时间',round(cur_time-calc_time,0),'s !')
+          print('预计还需要：',round((cur_time-calc_time)*((len(df_eric800)/i)-1),0),'s!')
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
-print(current_time,':','计算完成，开始筛选适合的邻区。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+print(' ',current_time,':','计算完成，开始筛选适合的邻区。','\n','累计花费时间:',round(cur_time-start_time,0),'s！')
 
-df_combined.to_csv(data_path + '邻区距离计算结果.csv',index =False)
-
-
+df_calculated.to_csv(data_path + '邻区距离计算结果.csv',index =False)
 
 
