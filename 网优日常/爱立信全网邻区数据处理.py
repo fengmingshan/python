@@ -4,19 +4,20 @@ Created on Wed May 22 11:32:01 2019
 
 @author: Administrator
 """
+import os 
 import pandas as pd
 import time
 from datetime import datetime
 from math import sin
 from math import cos
 from math import tan
+from math import acos
 from math import degrees
 from math import radians
 from math import atan2
 from math import atan
-from math import acos
+from math import ceil
 
-max_neighbor_distance = 10000 # 单位为米
 
 data_path = r'd:\_爱立信全网邻区核查' + '\\'
 eric_neighbor = r'd:\_爱立信全网邻区核查\PARA_ERBS_371.csv'
@@ -42,7 +43,7 @@ def getDegree(latA, lonA, latB, lonB):
     y = sin(dLon) * cos(radLatB)
     x = cos(radLatA) * sin(radLatB) - sin(radLatA) * cos(radLatB) * cos(dLon)
     brng = degrees(atan2(y, x))
-    brng = round((brng + 360) % 360,0)
+    brng = (brng + 360) % 360
     return brng
 
 def getDistance(latA, lonA, latB, lonB):
@@ -61,7 +62,7 @@ def getDistance(latA, lonA, latB, lonB):
     c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
     c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
     dr = flatten / 8 * (c1 - c2)
-    distance = round(ra * (x + dr),0)
+    distance = ra * (x + dr)
     return distance
 
 start_time = time.time()
@@ -116,7 +117,7 @@ df_all_cells = df_all_cells.reset_index()
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
-print(' ',current_time,':','基站基础信息处理完成，开始生成邻区关系对。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+print(current_time,':','基站基础信息处理完成，开始生成邻区关系对。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
 df_Scells = pd.DataFrame()
 df_Scells['Scell_index'] = df_eric800['Cell_index']
@@ -137,38 +138,40 @@ df_combined.drop('assist',axis = 1,inplace = True)
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
-print(' ',current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计花费时间:',round(cur_time-start_time,0),'s！')
+print(current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+
+for i in range(ceil(len(df_combined)/1000000)):
+    df_combined.loc[i*1000000:(i+1)*1000000,].to_csv(data_path + '邻区关系对_'+ str(i) + '.csv',index =False)
+
+all_files= os.listdir(data_path)
+relation_files = [x for x  in all_files if '邻区关系对' in x ]
 
 calc_time = time.time()
-df_calculated = pd.DataFrame()
-for i in range(len(df_eric800)):
-     df_tmp = df_combined[df_combined['Scell_index'] == df_eric800.loc[i,'Cell_index']]
-     df_tmp1 = df_tmp[(df_tmp['Scell_LAT'] != df_tmp['Ncell_LAT']) &
-                      (df_tmp['Scell_LON'] != df_tmp['Ncell_LON'])]
-     df_tmp1['Degree'] = df_tmp1.apply(lambda x :getDegree(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
-     df_tmp1['Distance'] = df_tmp1.apply(lambda x :getDistance(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
-     df_tmp2 = df_tmp[(df_tmp['Scell_LAT'] == df_tmp['Ncell_LAT']) &
-                      (df_tmp['Scell_LON'] == df_tmp['Ncell_LON'])]
-     df_tmp2['Degree'] = 0
-     df_tmp2['Distance'] = 0
-
-     df_calculated = df_calculated.append(df_tmp1).append(df_tmp2)
-     cur_time = time.time()
-     if  i > 0 :
-          print('已完成：',i,'个扇区。','花费时间',round(cur_time-calc_time,0),'s !')
-          print('预计还需要：',round((cur_time-calc_time)*((len(df_eric800)/i)-1),0),'s!')
+for file in relation_files:
+    df_calculated = pd.DataFrame()
+    df_relation = pd.read_csv(data_path + file)
+    calc_cell = list(set(df_relation['Scell_index']))
+    for i in range(len(calc_cell)):
+         df_tmp = df_combined[df_combined['Scell_index'] == calc_cell[i]]
+         df_tmp1 = df_tmp[(df_tmp['Scell_LAT'] != df_tmp['Ncell_LAT'])&
+                          (df_tmp['Scell_LON'] != df_tmp['Ncell_LON'])]
+         df_tmp1['Degree'] = df_tmp1.apply(lambda x :getDegree(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+         df_tmp1['Distance'] = df_tmp1.apply(lambda x :getDistance(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+         df_tmp2 = df_tmp[(df_tmp['Scell_LAT'] == df_tmp['Ncell_LAT'])&
+                          (df_tmp['Scell_LON'] == df_tmp['Ncell_LON'])]
+         df_tmp2['Degree'] = 0
+         df_tmp2['Distance'] = 0
+         df_calculated = df_calculated.append(df_tmp1).append(df_tmp1)
+    df_calculated.to_csv(data_path  + '邻区距离计算结果_' + file.split('.')[0][-1:] + '.csv' , index =False)
+    cur_time = time.time()
+    current_time = str(datetime.now()).split('.')[0]
+    print(current_time,' 已完成：',file.split('.')[0][-1:],'个扇区。','花费时间',round(cur_time-calc_time,0),'s !')
+    print('预计还需要：',round((cur_time-calc_time)*(37/int(file.split('.')[0][-1:])-1),0),'s!')
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
-print(' ',current_time,':','计算完成，开始筛选适合的邻区。','\n','累计花费时间:',round(cur_time-start_time,0),'s！')
+print(current_time,':','计算完成，开始筛选适合的邻区。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
-df_calculated.to_csv(data_path + '邻区距离计算结果.csv',index =False)
 
-df_Distance =pd.read_csv(data_path + '邻区距离计算结果.csv',engine = 'python')
-
-df_neighbor =pd.DataFrame()
-plan_cells = list(set(df_Distance['Scell_index']))
-for cell in plan_cells:
-     df_cell = df_Distance[(df_Distance['Scell_index'] == cell)&(df_Distance['Distance'] <= max_neighbor_distance)]
 
 
