@@ -66,6 +66,31 @@ def getDistance(latA, lonA, latB, lonB):
     distance = ra * (x + dr)
     return distance
 
+def plan_neighbor(Distance,Degree,Scell_azimuth,Ncell_azimuth):
+     '''计算目标小区是否要添加为邻区
+        根据距离和方位角判断：
+        当基站距离小于2km时，源小区和目标基站所有小区都要添加为邻区;
+        当基站距离大于2km小于5km时，只有源小区正对目标小区的扇区和目标基站所有小区添加邻区;
+        当基站距离大于5km时，只有源小区正对目标小区的扇区和目标基站正对源小区的小区添加邻区;'''
+     Degree_detal = abs(Scell_azimuth - Degree) if abs(Scell_azimuth - Degree) < 180 \
+                    else 360 - abs(Scell_azimuth - Degree)
+     if Distance < 2000:
+          neighbor ='Yes'
+     elif 2000 < Distance < 5000:
+          if Degree_detal < 60:
+               neighbor ='Yes'
+          else :
+               neighbor ='No'
+     else:
+          neighbor_Degree_detal = abs(Ncell_azimuth - Degree) if abs(Ncell_azimuth - Degree) < 180 \
+                                   else 360 - abs(Ncell_azimuth - Degree)
+          if Degree_detal< 60 & neighbor_Degree_detal < 60:
+               neighbor ='Yes'
+          else:
+               neighbor ='No'
+     return neighbor
+
+
 start_time = time.time()
 
 df_eric = pd.read_csv(eric_neighbor,engine = 'python')
@@ -177,6 +202,7 @@ plan_files = [x for x  in all_files if '邻区距离计算结果' in x ]
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
 print(current_time,':','计算完成，开始筛选适合的邻区。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
+
 
 
 
