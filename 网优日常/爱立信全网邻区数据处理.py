@@ -16,6 +16,7 @@ from math import atan2
 from math import atan
 from math import acos
 
+max_neighbor_distance = 10000 # 单位为米
 
 data_path = r'd:\_爱立信全网邻区核查' + '\\'
 eric_neighbor = r'd:\_爱立信全网邻区核查\PARA_ERBS_371.csv'
@@ -140,7 +141,7 @@ print(' ',current_time,':','邻区关系对生成完成，开始计算邻区距�
 
 calc_time = time.time()
 df_calculated = pd.DataFrame()
-for i in range(10):
+for i in range(len(df_eric800)):
      df_tmp = df_combined[df_combined['Scell_index'] == df_eric800.loc[i,'Cell_index']]
      df_tmp1 = df_tmp[(df_tmp['Scell_LAT'] != df_tmp['Ncell_LAT']) &
                       (df_tmp['Scell_LON'] != df_tmp['Ncell_LON'])]
@@ -162,5 +163,12 @@ current_time = str(datetime.now()).split('.')[0]
 print(' ',current_time,':','计算完成，开始筛选适合的邻区。','\n','累计花费时间:',round(cur_time-start_time,0),'s！')
 
 df_calculated.to_csv(data_path + '邻区距离计算结果.csv',index =False)
+
+df_Distance =pd.read_csv(data_path + '邻区距离计算结果.csv',engine = 'python')
+
+df_neighbor =pd.DataFrame()
+plan_cells = list(set(df_Distance['Scell_index']))
+for cell in plan_cells:
+     df_cell = df_Distance[(df_Distance['Scell_index'] == cell)&(df_Distance['Distance'] <= max_neighbor_distance)]
 
 
