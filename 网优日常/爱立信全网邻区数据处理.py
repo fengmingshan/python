@@ -4,7 +4,7 @@ Created on Wed May 22 11:32:01 2019
 
 @author: Administrator
 """
-import os 
+import os
 import pandas as pd
 import time
 from datetime import datetime
@@ -136,12 +136,12 @@ df_Ncells['assist'] = 'assist'
 df_combined = pd.merge(df_Scells,df_Ncells,how = 'left',on ='assist' )
 df_combined.drop('assist',axis = 1,inplace = True)
 
+for i in range(ceil(len(df_combined)/1000000)):
+    df_combined.loc[i*1000000:(i+1)*1000000,].to_csv(data_path + '邻区关系对_'+ str(i) + '.csv',index =False)
+
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
 print(current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
-
-for i in range(ceil(len(df_combined)/1000000)):
-    df_combined.loc[i*1000000:(i+1)*1000000,].to_csv(data_path + '邻区关系对_'+ str(i) + '.csv',index =False)
 
 all_files= os.listdir(data_path)
 relation_files = [x for x  in all_files if '邻区关系对' in x ]
