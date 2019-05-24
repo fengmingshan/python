@@ -18,13 +18,14 @@ from math import atan2
 from math import atan
 from math import ceil
 
-
 data_path = r'd:\_爱立信全网邻区核查' + '\\'
 eric_neighbor = r'd:\_爱立信全网邻区核查\PARA_ERBS_371.csv'
 zte_neighbor = r'd:\_爱立信全网邻区核查\ZTE_neighbors.xlsx'
 zte_eric800 = r'd:\_爱立信全网邻区核查\爱立信云南曲靖电信工参表20190428.xlsx'
 zte_bts800 = r'd:\_爱立信全网邻区核查\曲靖电信LTE工参(L800M)20190425.xls'
 zte_bts1800 = r'd:\_爱立信全网邻区核查\曲靖电信LTE工参(L1.8G)20190425.xls'
+
+max_neighbor_distance = 10000
 
 def getDegree(latA, lonA, latB, lonB):
     """
@@ -147,7 +148,7 @@ all_files= os.listdir(data_path)
 relation_files = [x for x  in all_files if '邻区关系对' in x ]
 
 calc_time = time.time()
-for file in relation_files:
+for index, file in enumerate(relation_files):
     df_calculated = pd.DataFrame()
     df_relation = pd.read_csv(data_path + file)
     calc_cell = list(set(df_relation['Scell_index']))
@@ -162,11 +163,16 @@ for file in relation_files:
          df_tmp2['Degree'] = 0
          df_tmp2['Distance'] = 0
          df_calculated = df_calculated.append(df_tmp1).append(df_tmp1)
-    df_calculated.to_csv(data_path  + '邻区距离计算结果_' + file.split('.')[0][-1:] + '.csv' , index =False)
+    df_calculated.to_csv(data_path  + '邻区距离计算结果_' + str(index) + '.csv' , index =False)
+    with open(data_path + '已处理文件记录.txt') as f:
+         f.write(file + '\n')
     cur_time = time.time()
     current_time = str(datetime.now()).split('.')[0]
-    print(current_time,' 已完成：',file.split('.')[0][-1:],'个扇区。','花费时间',round(cur_time-calc_time,0),'s !')
-    print('预计还需要：',round((cur_time-calc_time)*(37/int(file.split('.')[0][-1:])-1),0),'s!')
+    print(current_time,' 已完成：', index + 1 ,'个文件。','花费时间',round(cur_time-calc_time,0),'s !')
+    print('预计还需要：',round((cur_time-calc_time)*(len(relation_files)/(index + 1),0),'s!'))
+
+all_files= os.listdir(data_path)
+plan_files = [x for x  in all_files if '邻区距离计算结果' in x ]
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
