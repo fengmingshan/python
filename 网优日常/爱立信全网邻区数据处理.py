@@ -134,8 +134,15 @@ cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
 print(current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
-df_combined['Degree'] = df_combined.apply(lambda x :getDegree(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
-df_combined['Distance'] = df_combined.apply(lambda x :getDistance(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+df_calculated = pd.DataFrame()
+for i in range(len(df_eric800)):
+     df_tmp = df_combined[df_combined[Scell_index] == df_eric800.loc[i,'Cell_index']]
+     df_tmp['Degree'] = df_tmp.apply(lambda x :getDegree(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+     df_tmp['Distance'] = df_tmp.apply(lambda x :getDistance(x.Scell_LAT,x.Scell_LON,x.Ncell_LAT,x.Ncell_LON),axis =1)
+     df_calculated = df_calculated.append(df_tmp)
+     if i%10 == 0 and i > 0 :
+          print('已完成：',i,'个扇区。','花费时间',current_time-start_time,'s !')
+          print('预计还需要：',round((current_time-start_time)*((len(df_eric800)/i)-1)/60,0),'分钟!')
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
