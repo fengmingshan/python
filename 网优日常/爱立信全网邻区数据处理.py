@@ -5,6 +5,7 @@ Created on Wed May 22 11:32:01 2019
 @author: Administrator
 """
 import pandas as pd
+import time
 
 data_path = r'd:\_爱立信全网邻区核查' + '\\'
 eric_neighbor = r'd:\_爱立信全网邻区核查\PARA_ERBS_371.csv'
@@ -100,28 +101,50 @@ df_eric800['manufacturers'] = 'ERIC'
 df_all_cells = df_zte800.append(df_zte1800).append(df_eric800)
 df_all_cells = df_all_cells.reset_index()
 
-df_distance = pd.DataFrame(columns = ['Scell_index','Ncell_index','Relations','Distance','Degree'])
+df_Scells = pd.DataFrame()
+df_Scells['Scell_index'] = df_eric800['Cell_index']
+df_Scells['Scell_azimuth'] = df_eric800['azimuth']
+df_Scells['Scell_LON'] = df_eric800['LON']
+df_Scells['Scell_LAT'] = df_eric800['LAT']
+
+df_Ncells = pd.DataFrame()
+df_Ncells['Ncell_index'] = df_all_cells['Cell_index']
+df_Ncells['Ncell_azimuth'] = df_all_cells['azimuth']
+df_Ncells['Ncell_LON'] = df_all_cells['LON']
+df_Ncells['Ncell_LAT'] = df_all_cells['LAT']
+
+df_Scells['assist'] = 'assist'
+df_Ncells['assist'] = 'assist'
+df_combined = pd.merge(df_Scells,df_Ncells,how = 'left',on ='assist' )
+df_combined.drop('assist',axis = 0,inplace = True)
+
+print('开始计算距离和夹角:')
+start_time = time.time()
 for i in range(len(df_eric800)):
      n = 0
      latA = df_eric800.loc[i,'LAT']
      lonA = df_eric800.loc[i,'LON']
-     if i%100 = 0:
-          print('已完成：' + i + '个扇区。')
+     if i % 10 == 0 and  i/10 > 1 :
+          current_time = time.time()
+          print('已完成：',i,'个扇区。','花费时间',current_time-start_time,'s !')
+          print('预计还需要：',round((current_time-start_time)*((len(df_eric800)/i)-1)/60,0),'分钟!')
      for j in range(len(df_all_cells)):
-          latB = df_all_cells.loc[j,'LAT']
-          lonB = df_all_cells.loc[j,'LON']
-          Distance = getDistance(latA,lonA,latB,latB)
-          Degree = getDegree(latA,lonA,latB,latB)
+          if df_eric800.loc[i,'Cell_index'] != df_all_cells.loc[j,'Cell_index']:
+               latB = df_all_cells.loc[j,'LAT']
+               lonB = df_all_cells.loc[j,'LON']
+               df_distance.loc[n,'Scell_index'] = df_eric800.loc[i,'Cell_index']
+               df_distance.loc[n,'Scell_azimuth'] = df_eric800.loc[i,'azimuth']
+               df_distance.loc[n,'Ncell_index'] = df_all_cells.loc[j,'Cell_index']
+               df_distance.loc[n,'Ncell_azimuth'] = df_all_cells.loc[j,'azimuth']
+               df_distance.loc[n,'Relations'] = str(df_eric800.loc[i,'Cell_index']) + '_' + str(df_all_cells.loc[j,'Cell_index'])
+               n += 1
 
-          df_distance.loc[n,'Scell_index'] = df_eric800.loc[i,'Cell_index']
-          df_distance.loc[n,'Ncell_index'] = df_all_cells.loc[j,'Cell_index']
-          df_distance.loc[n,'Relations'] = str(df_eric800.loc[i,'Cell_index']) + '_' + str(df_all_cells.loc[j,'Cell_index'])
-          df_distance.loc[n,'Distance'] = Distance
-          df_distance.loc[n,'Degree'] = Degree
-          n += 1
 with pd.ExcelWriter(data_path + '邻区距离计算.xlsx') as writer: #不用保存和退出，系统自动会完成
     df_distance.to_excel(writer,'邻区距离计算',index =False)
 
-for i in range()：
+df_relations = df_distance[df_distance['Distance'] != 0]
+for i in range(len(df_distance)):
+
+
 
 
