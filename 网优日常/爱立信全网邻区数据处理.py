@@ -84,7 +84,7 @@ def plan_neighbor(Distance,Degree,Scell_azimuth,Ncell_azimuth):
      else:
           neighbor_Degree_detal = abs(Ncell_azimuth - Degree) if abs(Ncell_azimuth - Degree) < 180 \
                                    else 360 - abs(Ncell_azimuth - Degree)
-          if Degree_detal< 60 & neighbor_Degree_detal < 60:
+          if Degree_detal< 60 and neighbor_Degree_detal < 60:
                neighbor ='Yes'
           else:
                neighbor ='No'
@@ -140,6 +140,9 @@ df_eric800['manufacturers'] = 'ERIC'
 
 df_all_cells = df_zte800.append(df_zte1800).append(df_eric800)
 df_all_cells = df_all_cells.reset_index()
+with open(data_path + '全网小区.csv','w') as  writer:
+     df_all_cells.to_csv(writer)
+
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
@@ -169,7 +172,7 @@ cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
 print(current_time,':','邻区关系对生成完成，开始计算邻区距离和夹角。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
-all_files= os.listdir(data_path)
+all_files= os.listdir(data_path + '中间过程数据')
 relation_files = [x for x  in all_files if '邻区关系对' in x ]
 
 calc_time = time.time()
@@ -188,56 +191,40 @@ for index, file in enumerate(relation_files):
          df_tmp2['Degree'] = 0
          df_tmp2['Distance'] = 0
          df_calculated = df_calculated.append(df_tmp1).append(df_tmp1)
-    df_calculated.to_csv(data_path  + '邻区距离计算结果_' + str(index) + '.csv' , index =False)
-    with open(data_path + '已处理文件记录.txt') as f:
+    with open(data_path + '规划结果输出' + '\\'+ + '邻区距离计算结果_' + str(index) + '.csv' ,'w') as writer:
+         df_calculated.to_csv(writer,index =False)
+    with open(data_path + '已处理文件记录.txt') as f: # 记录已处理文件，出问题后可以断点续处理
          f.write(file + '\n')
     cur_time = time.time()
     current_time = str(datetime.now()).split('.')[0]
     print(current_time,' 已完成：', index + 1 ,'个文件。','花费时间',round(cur_time-calc_time,0),'s !')
     print('预计还需要：',round((cur_time-calc_time)*(len(relation_files)/(index + 1),0),'s!'))
 
-all_files= os.listdir(data_path)
+all_files= os.listdir(data_path + '中间过程数据')
 plan_files = [x for x  in all_files if '邻区距离计算结果' in x ]
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
 print(current_time,':','计算完成，开始筛选适合的邻区。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
-def plan_neighbor(Distance,Degree,Scell_azimuth,Ncell_azimuth):
-     '''计算目标小区是否要添加为邻区
-        根据距离和方位角判断：
-        当基站距离小于2km时，源小区和目标基站所有小区都要添加为邻区;
-        当基站距离大于2km小于5km时，只有源小区正对目标小区的扇区和目标基站所有小区添加邻区;
-        当基站距离大于5km时，只有源小区正对目标小区的扇区和目标基站正对源小区的小区添加邻区;'''
-     Degree_detal = abs(Scell_azimuth - Degree) if abs(Scell_azimuth - Degree) < 180 \
-                    else 360 - abs(Scell_azimuth - Degree)
-     if Distance <= 2000:
-          neighbor ='Yes'
-     elif 2000 < Distance <= 5000:
-          if Degree_detal < 60:
-               neighbor ='Yes'
-          else :
-               neighbor ='No'
-     else:
-          neighbor_Degree_detal = abs(Ncell_azimuth - Degree) if abs(Ncell_azimuth - Degree) < 180 \
-                                   else 360 - abs(Ncell_azimuth - Degree)
-          if Degree_detal< 60 and neighbor_Degree_detal < 60:
-               neighbor ='Yes'
-          else:
-               neighbor ='No'
-     return neighbor
 
-for file in plan_files :
-#     df_relations = pd.read_csv(data_path + file ,engine = 'python')
-     df_relations = pd.read_csv(data_path + '邻区距离计算结果.csv',engine = 'python')
-     df_neighbor = df_relations[df_relations['Distance']<= max_neighbor_distance]
-     plan_cells =list(set(df_neighbor['Scell_index']))
-     df_planed = pd.DataFrame()
-     for cell in plan_cells:
-          df_plan = df_neighbor[df_neighbor['Scell_index'] == cell]
-          df_plan['add_neighbor'] = df_plan.apply(lambda x:plan_neighbor(x.Distance,x.Degree,x.Scell_azimuth,x.Ncell_azimuth),axis = 1)
-          df_planed = df_planed.append(df_plan)
+all_files= os.listdir(data_path + '中间过程数据')
+plan_files = [x for x  in all_files if '邻区距离计算结果' in x ]
 
+cur_time = time.time()
+current_time = str(datetime.now()).split('.')[0]
+print(current_time,':','计算完成，开始筛选适合的邻区。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
 
-
+for i,file in enumerate(plan_files):
+    df_relations = pd.read_csv(data_path + file ,engine = 'python')
+    df_neighbor = df_relations[df_relations['Distance']<= max_neighbor_distance]
+    plan_cells =list(set(df_neighbor['Scell_index']))
+    df_planed = pd.DataFrame()
+    for cell in plan_cells:
+        df_plan = df_neighbor[df_neighbor['Scell_index'] == cell]
+        df_plan['add_neighbor'] = df_plan.apply(lambda x:plan_neighbor(x.Distance,x.Degree,x.Scell_azimuth,x.Ncell_azimuth),axis = 1)
+        df_planed = df_planed.append(df_plan)
+    df_planed = df_planed[df_planed['add_neighbor'] =='Yes']
+    with open(data_path + '规划结果输出' + '\\'+ '邻区规划结果_'+ str(i) + '.csv','w') as writer:
+         df_planed.to_csv(writer,index =False)
 
