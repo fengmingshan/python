@@ -71,7 +71,7 @@ df_cell['x坐标'] = df_cell['LON'].map(lambda x:lon2x(x))
 df_cell['y坐标'] = df_cell['LAT'].map(lambda x:lon2x(x))
 df_cell['merdge_index'] = df_cell['x坐标'].map(str) + '_' + df_cell['y坐标'].map(str)
 df_cell = df_cell.reset_index()
-df_cell.drop('index',axis =0,inplace = True)
+df_cell.drop('index',axis =1,inplace = True)
 # 初始化种子点
 point_list = [x for x in df_cell['xy_coordinate']]
 points = np.array(point_list)
@@ -79,17 +79,16 @@ points = np.array(point_list)
 vor = Voronoi(points=points)
 
 seed_ponts = vor.points
-df_voronoi = pd.DataFrame(seed_points,columns=['x坐标','y坐标'])
-df_voronoi['merdge_index'] = df_voronoi['x坐标'].map(int).map(str) + '_' + df_cell['y坐标'].map(int).map(str)
-df_cell_info = df_cell[['merdge_index','eNodeB_ID','Cell_name']]
+df_cell['point_index'] = list(df_cell.index)
 
-df_voronoi = pd.merge(df_voronoi ,df_cell_info,how = 'left' , on = 'merdge_index' )
-df_voronoi['']
 point_region = vor.point_region
-regions = vor.regions
+df_cell['regions_index'] = point_region
 
-points[0]
-regions[3228]
+regions = vor.regions
+df_regions = pd.DataFrame()
+df_regions['regions_index'] = range(len(regions))
+df_regions['regions'] = regions
+df_cell = pd.merge(df_cell,df_regions,on = 'regions_index',how = 'left' )
 
 ridge_vertices =vor.ridge_vertices
 ridge_points = vor.ridge_points
@@ -101,8 +100,8 @@ ridge_points[6554]
 #     npoints: 种子点数量
 #     point_region: 种子点所对应的区域index
 #     points: 种子点
-#     regions: Voronoi区域
+#     regions: Voronoi区域,一个regions对应多个 vertices_index,-1表示顶点超出图的范围
 #     ridge_dict: 分界线字典
-#     ridge_points: 分界线段
-#     ridge_vertices:
+#     ridge_points: 分界点
+#     ridge_vertices:分界线段
 #     vertices: 多边形分界线的交点，顶点
