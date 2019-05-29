@@ -86,7 +86,11 @@ df_all_cells.drop('index',axis =1,inplace =True)
 with open(data_path + '全网小区汇总.csv','w') as  writer:
      df_all_cells.to_csv(writer,index = False)
 
-df_all_cells = pd.read_csv(data_path + 'test.csv',engine = 'python')
+
+# =============================================================================
+# 规划
+# =============================================================================
+#df_all_cells = pd.read_csv(data_path + 'test.csv',engine = 'python')
 df_cell = df_all_cells.drop_duplicates('name', keep='first')
 df_cell = df_cell[~df_cell['Cell_name'].str.contains('室分') ]
 df_cell['xy_coordinate'] = df_cell.apply(lambda x:millerToXY(x.LON , x.LAT) , axis = 1 )

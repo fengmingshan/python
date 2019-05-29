@@ -140,8 +140,9 @@ df_eric800['manufacturers'] = 'ERIC'
 
 df_all_cells = df_zte800.append(df_zte1800).append(df_eric800)
 df_all_cells = df_all_cells.reset_index()
+df_all_cells.drop('index',axis = 1,inplace =True)
 with open(data_path + '全网小区.csv','w') as  writer:
-     df_all_cells.to_csv(writer)
+     df_all_cells.to_csv(writer.index = False)
 
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
