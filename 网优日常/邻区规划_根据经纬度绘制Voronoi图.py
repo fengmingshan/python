@@ -86,13 +86,13 @@ df_all_cells.drop('index',axis =1,inplace =True)
 with open(data_path + '全网小区汇总.csv','w') as  writer:
      df_all_cells.to_csv(writer,index = False)
 
-#df_all_cells = pd.read_csv(data_path + 'test.csv',engine = 'python')
+df_all_cells = pd.read_csv(data_path + 'test.csv',engine = 'python')
 df_cell = df_all_cells.drop_duplicates('name', keep='first')
 df_cell = df_cell[~df_cell['Cell_name'].str.contains('室分') ]
-df = pd.DataFrame({"A": ["Hello", "
 df_cell['xy_coordinate'] = df_cell.apply(lambda x:millerToXY(x.LON , x.LAT) , axis = 1 )
 df_cell = df_cell.reset_index()
 df_cell.drop('index',axis =1,inplace = True)
+
 # 初始化种子点
 point_list = [x for x in df_cell['xy_coordinate']]
 points = np.array(point_list)
@@ -117,48 +117,43 @@ df_cell = pd.merge(df_cell,df_regions,on = 'regions_index',how = 'left' )
 # 规划第一层邻区
 # =============================================================================
 layer1_neighbor_name_dict = dict()
-layer1_neighbor_index_dict = dict()
 layer1_regions_dict = dict()
 for i in range(10):
      neighbors_name_layer1 = []
      neighbors_index_layer1 = []
      regions_layer1 = []
-     cell_name = df_cell.loc[i,'Cell_name']
+     cell_name = df_cell.loc[i,'name']
      cell_index = df_cell.loc[i,'Cell_index']
      cell_region = df_cell.loc[i,'regions']
      for j in range(0,len(df_cell)):
           if len(set(cell_region) & set(df_cell.loc[j,'regions'])) > 0 \
-               and df_cell.loc[j,'Cell_name'] != cell_name:
-                    neighbors_name_layer1.append(df_cell.loc[j,'Cell_name'])
-                    neighbors_index_layer1.append(df_cell.loc[j,'Cell_index'])
+               and df_cell.loc[j,'name'] != cell_name:
+                    neighbors_name_layer1.append(df_cell.loc[j,'name'])
                     regions_layer1.append(df_cell.loc[j,'regions'])
      layer1_neighbor_name_dict[cell_name]= neighbors_name_layer1
-     layer1_neighbor_index_dict[cell_index] = neighbors_index_layer1
      layer1_regions_dict[cell_index] = regions_layer1
 
 # =============================================================================
 # 规划第二层邻区
 # =============================================================================
 layer2_neighbor_name_dict = dict()
-layer2_neighbor_index_dict = dict()
-layer2_regions_dict = dict()
 for i in range(10):
      neighbors_name_layer2 = []
-     neighbors_index_layer2 = []
-     cell_name = df_cell.loc[i,'Cell_name']
+     cell_name = df_cell.loc[i,'name']
      cell_index = df_cell.loc[i,'Cell_index']
      for layer1_region in layer1_regions_dict[cell_index]:
           for j in range(0,len(df_cell)):
                if len(set(layer1_region) & set(df_cell.loc[j,'regions'])) > 0 \
                     and df_cell.loc[j,'regions'] not in layer1_regions_dict[cell_index]\
                     and df_cell.loc[j,'regions'] != df_cell.loc[i,'regions']:
-                         neighbors_name_layer2.append(df_cell.loc[j,'Cell_name'])
-                         neighbors_index_layer2.append(df_cell.loc[j,'Cell_index'])
+                         neighbors_name_layer2.append(df_cell.loc[j,'name'])
      layer2_neighbor_name_dict[cell_name]= list(set(neighbors_name_layer2))
-     layer2_neighbor_index_dict[cell_index] =  list(set(neighbors_index_layer2))
 
-#with open(data_path + '全网layer规划.xlsx','w') as  writer:
-#     df_all_cells.to_csv(writer,index = False)
+df_cell['layer1_neighbor'] = df_cell['name'].map(layer1_neighbor_name_dict)
+df_cell['layer2_neighbor'] = df_cell['name'].map(layer2_neighbor_name_dict)
+
+with open(data_path + '全网layer规划.xlsx','w') as  writer:
+     df_cell.to_csv(writer,index = False)
 
 # max_bound: 种子点的最大边界
 # min_bound: 种子点的最小边界

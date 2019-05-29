@@ -143,7 +143,6 @@ df_all_cells = df_all_cells.reset_index()
 with open(data_path + '全网小区.csv','w') as  writer:
      df_all_cells.to_csv(writer)
 
-
 cur_time = time.time()
 current_time = str(datetime.now()).split('.')[0]
 print(current_time,':','基站基础信息处理完成，开始生成邻区关系对。','\n','累计额花费时间:',round(cur_time-start_time,0),'s！')
