@@ -18,6 +18,11 @@ from math import atan2
 from math import atan
 from math import ceil
 
+L800_max_distance = 10000
+L1800_max_distance = 3000
+mix_max_distance = 5000
+
+
 data_path = r'd:\_邻区自动规划' + '\\'
 cell_info = '全网小区.csv'
 
@@ -62,7 +67,7 @@ def getDistance(latA, lonA, latB, lonB):
 
 df_cell_info = pd.read_csv(data_path + cell_info, engine = 'python' )
 df_bts =  df_cell_info.drop_duplicates('name' ,keep = 'first')
-df_bts = df_bts[['name','LON','LAT','azimuth']]
+df_bts = df_bts[['name','network','LON','LAT','azimuth']]
 df_bts = df_bts.reset_index().drop('index',axis =1)
 
 result = []
@@ -71,10 +76,12 @@ for i in range(len(df_bts)):
      df_tmp['S_bts_name'] = df_bts.loc[i,'name']
      df_tmp['S_LON'] = df_bts.loc[i,'LON']
      df_tmp['S_LAT'] = df_bts.loc[i,'LAT']
+     df_tmp['S_network'] = df_bts.loc[i,'network']
      df_tmp['S_azimuth'] = df_bts.loc[i,'azimuth']
      df_tmp['N_bts_name'] = df_bts['name']
      df_tmp['N_LON'] = df_bts['LON']
      df_tmp['N_LAT'] = df_bts['LAT']
+     df_tmp['N_network'] = df_bts['network']
      df_tmp['S_azimuth'] = df_bts['azimuth']
      df_tmp['Degree'] = df_tmp.apply(lambda x :getDegree(x.S_LAT,x.S_LON,x.N_LAT,x.N_LON)\
            if (x.S_LAT != x.N_LAT) and (x.S_LON != x.N_LON) else 0,axis =1)
@@ -82,17 +89,24 @@ for i in range(len(df_bts)):
            if (x.S_LAT != x.N_LAT) and (x.S_LON != x.N_LON) else 0,axis =1)
      df_tmp['relation'] = df_tmp['S_bts_name'] + '_' + df_tmp['N_bts_name']
      result.append(df_tmp)
+
      df_Degree = df_tmp[['relation','Degree']].set_index('relation')
-     Degree_dict = dict(df_Degree)
+     Degree_dict = df_Degree.to_dict()['Degree']
+     if df_bts.loc[i,'network'] == 'L1.8'
+          df_neighbor = df_tmp[()&(df_tmp['Distance'] <= max_neighbor_distance)]
+     elif df_bts.loc[i,'network'] == 'L800'
+
      if i > 0 and i % 100 == 0:
           current_time = str(datetime.now()).split('.')[0]
           print(current_time,' 总共：', str(len(df_bts)) , '个小区 ，已完成：', str(i + 1) ,'个小区。')
+     elif i == len(df_bts)-1:
+          current_time = str(datetime.now()).split('.')[0]
+          print(current_time, '全部规划完成!')
 
 df_distance =pd.concat(result,axis = 0)
 df_distance = df_distance.reset_index().drop('index',axis=1)
 with open(data_path + '全网基站距离计算结果.csv','w') as witer:
      df_distance.to_csv(witer,index = False)
-
 
 
 
