@@ -31,17 +31,6 @@ reader  = pd.read_csv(path + file , engine = 'python', iterator=True)
                print("Iteration is stopped.")
      df_tmp = pd.concat(chunks, ignore_index=True)
 
-chunksize = 10 ** 6
-for chunk in pd.read_csv(filename, chunksize=chunksize):
-    loop = True
-    chunkSize = 10000
-    chunks = []
-    while loop:
-         process(chunk)
-         chunks.append(chunk)
-    df_tmp = pd.concat(chunks , ignore_index=True)
-
-
 #==============================================================================
 # 单元格的选取.loc与.iloc与.at
 #==============================================================================

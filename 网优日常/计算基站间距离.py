@@ -83,9 +83,10 @@ for i in range(len(df_bts)):
      df_tmp['relation'] = df_tmp['S_bts_name'] + '_' + df_tmp['N_bts_name']
      df_tmp = df_tmp[['relation','Degree','Distance']]
      result.append(df_tmp)
-     if i > 0 and i % 100 = 0
+     if i > 0 and i % 100 == 0:
           current_time = str(datetime.now()).split('.')[0]
           print(current_time,' 总共：'+ len(df_bts) + '个小区 ，已完成：', i + 1 ,'个小区。')
+
 df_distance =pd.concat(result,axis = 0)
 df_distance = df_distance.reset_index().drop('index',axis=1)
 with open(data_path + '全网基站距离计算结果.csv','w') as witer:
