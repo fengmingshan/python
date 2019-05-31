@@ -65,10 +65,8 @@ df_bts =  df_cell_info.drop_duplicates('name' ,keep = 'first')
 df_bts = df_bts[['name','LON','LAT','azimuth']]
 df_bts = df_bts.reset_index().drop('index',axis =1)
 
-df_distance = pd.DataFrame(columns = ['S_bts_name','N_bts_name','Degree','Distance'])
-#for i in range(len(df_bts)):
 result = []
-for i in range(2):
+for i in range(len(df_bts)):
      df_tmp = pd.DataFrame(index = range(len(df_bts)))
      df_tmp['S_bts_name'] = df_bts.loc[i,'name']
      df_tmp['S_LON'] = df_bts.loc[i,'LON']
@@ -82,8 +80,13 @@ for i in range(2):
            if (x.S_LAT != x.N_LAT) and (x.S_LON != x.N_LON) else 0,axis =1)
      df_tmp['Distance'] = df_tmp.apply(lambda x :getDistance(x.S_LAT,x.S_LON,x.N_LAT,x.N_LON)\
            if (x.S_LAT != x.N_LAT) and (x.S_LON != x.N_LON) else 0,axis =1)
+     df_tmp['relation'] = df_tmp['S_bts_name'] + '_' + df_tmp['N_bts_name']
+     df_tmp = df_tmp[['relation','Degree','Distance']]
      result.append(df_tmp)
-
+df_distance =pd.concat(result,axis = 0)
+df_distance = df_distance.reset_index().drop('index',axis=1)
+with open(data_path + '全网基站距离计算结果.csv','w') as witer:
+     df_distance.to_csv(witer,index = False)
 
 
 

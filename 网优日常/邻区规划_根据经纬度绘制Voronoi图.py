@@ -156,7 +156,7 @@ for i in range(10):
 df_cell['layer1_neighbor'] = df_cell['name'].map(layer1_neighbor_name_dict)
 df_cell['layer2_neighbor'] = df_cell['name'].map(layer2_neighbor_name_dict)
 
-with open(data_path + '全网layer规划.xlsx','w') as  writer:
+with open(data_path + '全网layer规划.csv','w') as  writer:
      df_cell.to_csv(writer,index = False)
 
 # max_bound: 种子点的最大边界
