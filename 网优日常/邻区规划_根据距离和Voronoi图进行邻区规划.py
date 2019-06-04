@@ -95,55 +95,59 @@ def plan_neighbor_bts(df_bts):
      df_bts['xy_coordinate'] = df_bts.apply(lambda x:millerToXY(x.N_LON , x.N_LAT) , axis = 1 )
      # 初始化种子点
      point_list = [x for x in df_bts['xy_coordinate']]
-     points = np.array(point_list)
-     # 计算Voronoi图
-     vor = Voronoi(points=points)
-
-     seed_ponts = vor.points
-     df_bts['point_index'] = list(df_bts.index)
-
-     point_region = vor.point_region
-     df_bts['regions_index'] = point_region
-
-     regions = vor.regions
-     df_regions = pd.DataFrame()
-     df_regions['regions_index'] = range(len(regions))
-     df_regions['regions'] = regions
-     df_bts = pd.merge(df_bts,df_regions,on = 'regions_index',how = 'left' )
-     # =============================================================================
-     # 规划第一层邻区
-     # =============================================================================
-     layer1_neighbor_name_dict = dict()
-     layer1_regions_dict = dict()
-     for i in range(len(df_bts)):
-          neighbors_name_layer1 = []
-          neighbors_index_layer1 = []
-          regions_layer1 = []
-          cell_name = df_bts.loc[i,'N_bts_name']
-          cell_region = df_cell.loc[i,'regions']
-          for j in range(0,len(df_cell)):
-               if len(set(cell_region) & set(df_bts.loc[j,'regions'])) > 0 \
-                    and df_bts.loc[j,'N_bts_name'] != cell_name:
-                    neighbors_name_layer1.append(df_bts.loc[j,'N_bts_name'])
-                    regions_layer1.append(df_bts.loc[j,'regions'])
-          layer1_neighbor_name_dict[cell_name]= neighbors_name_layer1
-          layer1_regions_dict[cell_name] = regions_layer1
-     # =============================================================================
-     # 规划第二层邻区
-     # =============================================================================
-     layer2_neighbor_name_dict = dict()
-     for i in range(len(df_bts)):
-          neighbors_name_layer2 = []
-          cell_name = df_bts.loc[i,'N_bts_name']
-          for layer1_region in layer1_regions_dict[cell_name]:
-               for j in range(0,len(df_bts)):
-                    if len(set(layer1_region) & set(df_cell.loc[j,'regions'])) > 0 \
-                         and df_bts.loc[j,'regions'] not in layer1_regions_dict[cell_name]\
-                         and df_bts.loc[j,'regions'] != df_bts.loc[i,'regions']:
-                         neighbors_name_layer2.append(df_cell.loc[j,'N_bts_name'])
-          layer2_neighbor_name_dict[cell_name]= list(set(neighbors_name_layer2))
-     df_bts['layer1_neighbor'] = df_bts['S_bts_name'].map(layer1_neighbor_name_dict)
-     df_bts['layer2_neighbor'] = df_bts['S_bts_name'].map(layer2_neighbor_name_dict)
+     if len(point_list) >=4:
+         points = np.array(point_list)
+         # 计算Voronoi图
+         vor = Voronoi(points=points)
+    
+         seed_ponts = vor.points
+         df_bts['point_index'] = list(df_bts.index)
+    
+         point_region = vor.point_region
+         df_bts['regions_index'] = point_region
+    
+         regions = vor.regions
+         df_regions = pd.DataFrame()
+         df_regions['regions_index'] = range(len(regions))
+         df_regions['regions'] = regions
+         df_bts = pd.merge(df_bts,df_regions,on = 'regions_index',how = 'left' )
+         # =============================================================================
+         # 规划第一层邻区
+         # =============================================================================
+         layer1_neighbor_name_dict = dict()
+         layer1_regions_dict = dict()
+         for i in range(len(df_bts)):
+              neighbors_name_layer1 = []
+              neighbors_index_layer1 = []
+              regions_layer1 = []
+              cell_name = df_bts.loc[i,'N_bts_name']
+              cell_region = df_bts.loc[i,'regions']
+              for j in range(0,len(df_bts)):
+                   if len(set(cell_region) & set(df_bts.loc[j,'regions'])) > 0 \
+                        and df_bts.loc[j,'N_bts_name'] != cell_name:
+                        neighbors_name_layer1.append(df_bts.loc[j,'N_bts_name'])
+                        regions_layer1.append(df_bts.loc[j,'regions'])
+              layer1_neighbor_name_dict[cell_name]= neighbors_name_layer1
+              layer1_regions_dict[cell_name] = regions_layer1
+         # =============================================================================
+         # 规划第二层邻区
+         # =============================================================================
+         layer2_neighbor_name_dict = dict()
+         for i in range(len(df_bts)):
+              neighbors_name_layer2 = []
+              cell_name = df_bts.loc[i,'N_bts_name']
+              for layer1_region in layer1_regions_dict[cell_name]:
+                   for j in range(0,len(df_bts)):
+                        if len(set(layer1_region) & set(df_bts.loc[j,'regions'])) > 0 \
+                             and df_bts.loc[j,'regions'] not in layer1_regions_dict[cell_name]\
+                             and df_bts.loc[j,'regions'] != df_bts.loc[i,'regions']:
+                             neighbors_name_layer2.append(df_bts.loc[j,'N_bts_name'])
+              layer2_neighbor_name_dict[cell_name]= list(set(neighbors_name_layer2))
+         df_bts['layer1_neighbor'] = df_bts['S_bts_name'].map(layer1_neighbor_name_dict)
+         df_bts['layer2_neighbor'] = df_bts['S_bts_name'].map(layer2_neighbor_name_dict)
+     elif len(point_list) <4:
+         df_bts['layer1_neighbor'] = list(df_bts['N_bts_name'])
+         df_bts['layer2_neighbor'] = list(df_bts['N_bts_name'])     
      return df_bts
 
 def plan_neighbor_cell(Degree,Scell_azimuth,Ncell_azimuth):
@@ -174,8 +178,9 @@ df_bts = df_bts.reset_index().drop('index',axis =1)
 print('开始规划邻区，共',len(df_bts),'个基站需要规划！')
 plan_result = []
 start_time = time.time()
-#for i in range(len(df_bts)):
-for i in range(4):
+for i in range(len(df_bts)):
+#for i in range(4):
+     i =3644
      df_tmp = pd.DataFrame(index = range(len(df_bts)))
      df_tmp['S_bts_name'] = df_bts.loc[i,'name']
      df_tmp['S_LON'] = df_bts.loc[i,'LON']
@@ -190,7 +195,7 @@ for i in range(4):
      df_tmp['Distance'] = df_tmp.apply(lambda x :getDistance(x.S_LAT,x.S_LON,x.N_LAT,x.N_LON)\
            if (x.S_LAT != x.N_LAT) and (x.S_LON != x.N_LON) else 0,axis =1)
      df_tmp['relation'] = df_tmp['S_bts_name'] + '_' + df_tmp['N_bts_name']
-     result.append(df_tmp)
+
      df_Degree = df_tmp[['relation','Degree']].set_index('relation')
      Degree_dict = df_Degree.to_dict()['Degree']
 # =============================================================================
@@ -198,11 +203,13 @@ for i in range(4):
 # =============================================================================
      if df_bts.loc[i,'network'] == 'L1.8':
           df_neighbor_bts1 = df_tmp[(df_tmp['N_network'] == 'L1.8')&(df_tmp['Distance'] <= L1800_max_distance)]
-          df_neighbor_bts1 = plan_neighbor(df_neighbor_bts1)
+          df_neighbor_bts1 = plan_neighbor_bts(df_neighbor_bts1)
+          df_neighbor_bts1 = df_neighbor_bts1.reset_index().drop('index',axis = 1)
 
           df_neighbor_bts2 = df_tmp[((df_tmp['N_bts_name'] == df_bts.loc[i,'name'])|(df_tmp['N_network'] == 'L800'))
                                         &(df_tmp['Distance'] <= mix_max_distance)]
-          df_neighbor_bts2 = plan_neighbor(df_neighbor_bts2)
+          df_neighbor_bts2 = plan_neighbor_bts(df_neighbor_bts2)
+          df_neighbor_bts2 = df_neighbor_bts2.reset_index().drop('index',axis = 1)
 
           layer1_neighbor_bts = df_neighbor_bts1.loc[0,'layer1_neighbor'] + df_neighbor_bts2.loc[0,'layer1_neighbor']
           layer2_neighbor_bts = df_neighbor_bts1.loc[0,'layer2_neighbor'] + df_neighbor_bts2.loc[0,'layer2_neighbor']
@@ -210,13 +217,28 @@ for i in range(4):
      elif df_bts.loc[i,'network'] == 'L800':
           df_neighbor_bts1 = df_tmp[((df_tmp['N_bts_name'] == df_bts.loc[i,'name'])|(df_tmp['N_network'] == 'L1.8'))
                                         &(df_tmp['Distance'] <= mix_max_distance)]
-          df_neighbor_bts1 = plan_neighbor(df_neighbor_bts1)
-
+          df_neighbor_bts1 = plan_neighbor_bts(df_neighbor_bts1)
+          df_neighbor_bts1 = df_neighbor_bts1.reset_index().drop('index',axis = 1)
+          
           df_neighbor_bts2 = df_tmp[(df_tmp['N_network'] == 'L800')&(df_tmp['Distance'] <= L800_max_distance)]
-          df_neighbor_bts2 = plan_neighbor(df_neighbor_bts2)
+          df_neighbor_bts2 = plan_neighbor_bts(df_neighbor_bts2)
+          df_neighbor_bts2 = df_neighbor_bts2.reset_index().drop('index',axis = 1)
 
-          layer1_neighbor_bts = df_neighbor_bts1.loc[0,'layer1_neighbor'] + df_neighbor_bts2.loc[0,'layer1_neighbor']
-          layer2_neighbor_bts = df_neighbor_bts1.loc[0,'layer2_neighbor'] + df_neighbor_bts2.loc[0,'layer2_neighbor']
+          layer1_neighbor_bts = []
+          layer2_neighbor_bts = []
+          if isinstance(df_neighbor_bts1.loc[0,'layer1_neighbor'],list) :
+              layer1_neighbor_bts.extend(df_neighbor_bts1.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.extend(df_neighbor_bts1.loc[0,'layer2_neighbor'])
+          else:
+              layer1_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer2_neighbor'])
+              
+          if isinstance(df_neighbor_bts2.loc[0,'layer1_neighbor'],list):
+              layer1_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer2_neighbor'])
+          else:
+              layer1_neighbor_bts.append(df_neighbor_bts2.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.append(df_neighbor_bts2.loc[0,'layer2_neighbor'])
 
 # =============================================================================
 # 开始规划邻区
@@ -269,13 +291,15 @@ for i in range(4):
           current_time = str(datetime.now()).split('.')[0]
           cur_time = time.time()
           print(current_time,' 总共：', str(len(df_bts)), '个小区 ，已完成：', str(i) ,'个小区。','花费时间',round(cur_time-start_time,0),'s !')
-          print('预计还需要：',round((cur_time-start_time)*(len(df_bts)/(i+1),0),'s!'))
+          print('预计还需要：',round((cur_time-start_time)*len(df_bts)/(i+1),0),'s!')
      elif i == len(df_bts)-1:
           current_time = str(datetime.now()).split('.')[0]
-          print(current_time, '全部规划完成!')
+          print(current_time, '全部规划完成! 输出结果到文件。')
 df_result = pd.concat(plan_result,axis = 0)
 with open(data_path + '邻区规划结果.csv','w') as writer:
-     df_result.to_csv(writer,index = False)
+    df_result.to_csv(writer,index = False,chunksize = 10000)
+print(current_time, '结果已输出到：',data_path,'邻区规划结果.csv')
+
 
 
 
