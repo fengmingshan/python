@@ -178,9 +178,8 @@ df_bts = df_bts.reset_index().drop('index',axis =1)
 print('开始规划邻区，共',len(df_bts),'个基站需要规划！')
 plan_result = []
 start_time = time.time()
-for i in range(len(df_bts)):
-#for i in range(4):
-     i =3644
+#for i in range(len(df_bts)):
+for i in range(801,len(df_bts)):
      df_tmp = pd.DataFrame(index = range(len(df_bts)))
      df_tmp['S_bts_name'] = df_bts.loc[i,'name']
      df_tmp['S_LON'] = df_bts.loc[i,'LON']
@@ -211,8 +210,22 @@ for i in range(len(df_bts)):
           df_neighbor_bts2 = plan_neighbor_bts(df_neighbor_bts2)
           df_neighbor_bts2 = df_neighbor_bts2.reset_index().drop('index',axis = 1)
 
-          layer1_neighbor_bts = df_neighbor_bts1.loc[0,'layer1_neighbor'] + df_neighbor_bts2.loc[0,'layer1_neighbor']
-          layer2_neighbor_bts = df_neighbor_bts1.loc[0,'layer2_neighbor'] + df_neighbor_bts2.loc[0,'layer2_neighbor']
+          layer1_neighbor_bts = []
+          layer2_neighbor_bts = []
+          if isinstance(df_neighbor_bts1.loc[0,'layer1_neighbor'],list) :
+              layer1_neighbor_bts.extend(df_neighbor_bts1.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.extend(df_neighbor_bts1.loc[0,'layer2_neighbor'])
+          else:
+              layer1_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer2_neighbor'])
+              
+          if isinstance(df_neighbor_bts2.loc[0,'layer1_neighbor'],list):
+              layer1_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer2_neighbor'])
+          else:
+              layer1_neighbor_bts.append(df_neighbor_bts2.loc[0,'layer1_neighbor'])
+              layer2_neighbor_bts.append(df_neighbor_bts2.loc[0,'layer2_neighbor'])
+
 
      elif df_bts.loc[i,'network'] == 'L800':
           df_neighbor_bts1 = df_tmp[((df_tmp['N_bts_name'] == df_bts.loc[i,'name'])|(df_tmp['N_network'] == 'L1.8'))
@@ -291,7 +304,7 @@ for i in range(len(df_bts)):
           current_time = str(datetime.now()).split('.')[0]
           cur_time = time.time()
           print(current_time,' 总共：', str(len(df_bts)), '个小区 ，已完成：', str(i) ,'个小区。','花费时间',round(cur_time-start_time,0),'s !')
-          print('预计还需要：',round((cur_time-start_time)*len(df_bts)/(i+1),0),'s!')
+          print('预计还需要：',round((cur_time-start_time)*(len(df_bts)/(i+1) -1) ,0),'s!')
      elif i == len(df_bts)-1:
           current_time = str(datetime.now()).split('.')[0]
           print(current_time, '全部规划完成! 输出结果到文件。')
