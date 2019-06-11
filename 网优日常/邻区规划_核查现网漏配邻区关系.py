@@ -114,19 +114,19 @@ tac_dict = df_whole_network.to_dict()['TAC']
 NeighboreNBIP_dict = df_whole_network.to_dict()['SiteIP']
 
 df_eric_add['Neighbor Site ID'] = df_eric_check['Ncell_index'].map(NeighborSiteID_dict)
-df_eric_add['Neighbor eNBId'] = df_eric_check['Scell_index'].map(NeighboreNBId_dict)
-df_eric_add['Neighbor Cell Name'] = df_eric_check['Scell_index'].map(NeighborCellName_dict)
-df_eric_add['DL EARFCN'] = df_eric_check['Scell_index'].map(DLEARFCN_dict)
-df_eric_add['UL EARFCN'] = df_eric_check['Scell_index'].map(ULEARFCN_dict)
-df_eric_add['Neighbor cellId'] = df_eric_check['Scell_index'].map(NeighborCellId_dict)
-df_eric_add['Neighbor PhysicalLayerCellIdGroup'] = df_eric_check['Scell_index'].map(NeighborPCIGroup_dict)
-df_eric_add['Neighbor physicalLayerSubCellId'] = df_eric_check['Scell_index'].map(NeighborPCISubCellId_dict)
+df_eric_add['Neighbor eNBId'] = df_eric_check['Ncell_index'].map(NeighboreNBId_dict)
+df_eric_add['Neighbor Cell Name'] = df_eric_check['Ncell_index'].map(NeighborCellName_dict)
+df_eric_add['DL EARFCN'] = df_eric_check['Ncell_index'].map(DLEARFCN_dict)
+df_eric_add['UL EARFCN'] = df_eric_check['Ncell_index'].map(ULEARFCN_dict)
+df_eric_add['Neighbor cellId'] = df_eric_check['Ncell_index'].map(NeighborCellId_dict)
+df_eric_add['Neighbor PhysicalLayerCellIdGroup'] = df_eric_check['Ncell_index'].map(NeighborPCIGroup_dict)
+df_eric_add['Neighbor physicalLayerSubCellId'] = df_eric_check['Ncell_index'].map(NeighborPCISubCellId_dict)
 df_eric_add['plmnId'] = 46011
-df_eric_add['tac'] = df_eric_check['Scell_index'].map(tac_dict)
-df_eric_add['Neighbor eNB IP'] = df_eric_check['Scell_index'].map(NeighboreNBIP_dict)
+df_eric_add['tac'] = df_eric_check['Ncell_index'].map(tac_dict)
+df_eric_add['Neighbor eNB IP'] = df_eric_check['Ncell_index'].map(NeighboreNBIP_dict)
 
-with open(data_path + '爱立信邻区漏配检查结果.csv','w') as writer:
-     df_eric_check.to_csv(writer,index =False)
+with pd.ExcelWriter(data_path + '爱立信邻区漏配检查结果.xlsx') as writer:
+     df_eric_check.to_excel(writer,index =False)
 
 with pd.ExcelWriter(data_path + '爱立信邻区添加.xlsx') as writer:
      df_eric_add.to_excel(writer,index =False)
