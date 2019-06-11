@@ -3,7 +3,7 @@ import  os
 
 data_path = r'd:\_邻区自动规划' + '\\'
 cell_info ='全网小区.csv'
-neighbor_file = '邻区规划结果(合并).xlsx'
+neighbor_file = '邻区规划结果.xlsx'
 eric_nieghbor = 'PARA_ERBS_371.csv'
 zte_nieghbor = '中兴LTE全量邻区导出.xlsx'
 whole_network ='全网工程参数(合).xlsx'
@@ -52,6 +52,9 @@ df_neighbor['源小区厂家'] = df_neighbor['Scell_index'].map(dict_manufacture
 df_neighbor['目标小区厂家'] = df_neighbor['Ncell_index'].map(dict_manufacturers)
 
 
+# =============================================================================
+# 检查爱立信的邻区
+# =============================================================================
 df_eric = pd.read_csv(data_path + eric_nieghbor,engine = 'python')
 df_eric['Scell_index'] = df_eric['ENBCELL'].map(lambda x:x.split('_')[4] + x.split('_')[5])
 df_eric['Ncell_index'] = df_eric['EUTRANCELLRELATIONID'].map(lambda x:x.split('-')[1] + x.split('-')[2])
@@ -110,10 +113,27 @@ NeighborPCISubCellId_dict = df_whole_network.to_dict()['Neighbor physicalLayerSu
 tac_dict = df_whole_network.to_dict()['TAC']
 NeighboreNBIP_dict = df_whole_network.to_dict()['SiteIP']
 
+df_eric_add['Neighbor Site ID'] = df_eric_check['Ncell_index'].map(NeighborSiteID_dict)
+df_eric_add['Neighbor eNBId'] = df_eric_check['Scell_index'].map(NeighboreNBId_dict)
+df_eric_add['Neighbor Cell Name'] = df_eric_check['Scell_index'].map(NeighborCellName_dict)
+df_eric_add['DL EARFCN'] = df_eric_check['Scell_index'].map(DLEARFCN_dict)
+df_eric_add['UL EARFCN'] = df_eric_check['Scell_index'].map(ULEARFCN_dict)
+df_eric_add['Neighbor cellId'] = df_eric_check['Scell_index'].map(NeighborCellId_dict)
+df_eric_add['Neighbor PhysicalLayerCellIdGroup'] = df_eric_check['Scell_index'].map(NeighborPCIGroup_dict)
+df_eric_add['Neighbor physicalLayerSubCellId'] = df_eric_check['Scell_index'].map(NeighborPCISubCellId_dict)
+df_eric_add['plmnId'] = 46011
+df_eric_add['tac'] = df_eric_check['Scell_index'].map(tac_dict)
+df_eric_add['Neighbor eNB IP'] = df_eric_check['Scell_index'].map(NeighboreNBIP_dict)
 
 with open(data_path + '爱立信邻区漏配检查结果.csv','w') as writer:
      df_eric_check.to_csv(writer,index =False)
 
+with pd.ExcelWriter(data_path + '爱立信邻区添加.xlsx') as writer:
+     df_eric_add.to_excel(writer,index =False)
+
+# =============================================================================
+# 检查中兴的邻区
+# =============================================================================
 df_zte = pd.read_excel(data_path + zte_nieghbor)
 df_zte['relations'] = df_zte['Scell_index'].map(str) + '_' + df_zte['Ncell_index'].map(str)
 df_zte['neighbor_check'] = 'YES'
@@ -123,6 +143,23 @@ df_zte_neighbor = df_neighbor[df_neighbor['源小区厂家'] == 'ZTE']
 
 df_zte_check = pd.merge(df_zte_neighbor,df_zte, how ='left', on = 'relations')
 df_zte_check = df_zte_check[df_zte_check['neighbor_check'].isnull()]
+
+df_zte_add = pd.DataFrame(columns= ['MODIND','SubNetwork','MEID','mcc','mnc',
+                                     'eNBId','cellLocalId','plmnIdList',
+                                     'userLabel','freqBandInd','earfcnUl','earfcnDl',
+                                     'pci','tac','bandWidthDl','bandWidthUl','antPort1',
+                                     'cellType','addiFreqBand'
+                                     ])
+
+SubNetwork_dict = df_whole_network.to_dict()['SubNetwork']
+MEID_dict = df_whole_network.to_dict()['eNodeB_ID']
+ServingCellName_dict = df_whole_network.to_dict()['CELLNAME']
+ServingCellId_dict = df_whole_network.to_dict()['CELL_id']
+ServingPCIGroup_dict = df_whole_network.to_dict()['physicalLayerCellIdGroup']
+ServingPCISubCellId_dict = df_whole_network.to_dict()['physicalLayerSubCellId']
+ServingeNBIP_dict = df_whole_network.to_dict()['eNb_IP']
+
+df_zte_add['MODIND'] = 'A'
 
 with open(data_path + '中兴邻区漏配检查结果.csv','w') as writer:
      df_zte_check.to_csv(writer,index =False)
