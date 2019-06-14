@@ -47,8 +47,8 @@ def fill_Index(a,b,c,d):
 
 current_date = str(datetime.now()).split('.')[0].split(' ')[0]
 
-data_path = r'D:\2019年工作\2019年4月小区退服指标计算（新）' + '\\'
-out_path = r'D:\2019年工作\2019年4月小区退服指标计算（新）\报表输出' + '\\'
+data_path = r'D:\_4G小区退服计算(新)' + '\\'
+out_path = r'D:\_4G小区退服计算(新)\报表输出' + '\\'
 exempt_file  = '免责站点.xlsx'
 df_exempt = pd.read_excel(data_path + exempt_file)
 df_eric = pd.read_excel(r'D:\2019年工作\2019年4月小区退服指标计算（新）'+ '\\' + '爱立信基站信息.xlsx' )
@@ -67,9 +67,8 @@ df_ALL.drop('index',axis = 1,inplace = True)
 
 df_LTE = df_ALL[(df_ALL['是否NB小区'] == '否') | (df_ALL['是否NB小区'].isnull() == True) ]
 
-df_LTE.columns
 df_LTE['退服小区标识'] = df_LTE.apply(lambda x : 填写退服小区(x.关联小区标识,x.告警对象名称),axis = 1)
-df_LTE['LTE小区个数'] = df_LTE['LTE小区个数'].map(lambda x : 1 if pd.isnull(x) else x)
+#df_LTE['LTE小区个数'] = df_LTE['LTE小区个数'].map(lambda x : 1 if pd.isnull(x) else x)
 df_LTE.rename(columns={'退服时长(分钟)':'总退服时长',
                        '告警清除时间':'告警恢复时间',
                        '6-8点退服时长（分钟）':'总6至8点退服时长',
@@ -79,10 +78,10 @@ df_LTE.rename(columns={'退服时长(分钟)':'总退服时长',
                        'LTE8-22点退服时长（分钟）':'LTE8至22点退服时长',
                        'LTE22-24点退服时长（分钟）':'LTE22至24点退服时长'},inplace =True)
 
-df_LTE['LTE退服总时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE退服总时长,x.总退服时长),axis = 1)
-df_LTE['LTE6至8点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE6至8点退服时长,x.总6至8点退服时长),axis = 1)
-df_LTE['LTE8至22点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE8至22点退服时长,x.总8至22点退服时长),axis = 1)
-df_LTE['LTE22至24点退服时长'] = df_LTE.apply(lambda x : 填写退服时长(x.LTE22至24点退服时长,x.总22至24点退服时长),axis = 1)
+df_LTE['LTE退服总时长'] = df_LTE['总退服时长']
+df_LTE['LTE6至8点退服时长'] = df_LTE['总6至8点退服时长']
+df_LTE['LTE8至22点退服时长'] = df_LTE['总8至22点退服时长']
+df_LTE['LTE22至24点退服时长'] = df_LTE['总22至24点退服时长']
 df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('Heartbeat Failure','基站中断'))
 df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('PLMN Service Unavailable','小区退服'))
 df_LTE['告警标题'] = df_LTE['告警标题'].map(lambda x:x.replace('Service Unavailable','小区退服'))
