@@ -8,6 +8,7 @@ eric_nieghbor = 'PARA_ERBS_371.csv'
 zte_nieghbor = '中兴LTE全量邻区导出.xlsx'
 whole_network ='全网工程参数(合).xlsx'
 eric_info = '爱立信云南曲靖电信工参表20190428.xlsx'
+zte_info = 'EUtranCellFDD.xlsx'
 
 def calc_PCI_group(pci):
      if pci % 3 == 0:
@@ -96,11 +97,11 @@ df_eric_add['S_FDD_TDD'] = 'FDD'
 df_eric_add['E_FDD_TDD'] = 'FDD'
 df_eric_add['Serving eNB IP'] = df_eric_check['Scell_index'].map(ServingeNBIP_dict)
 
+
 df_whole_network = pd.read_excel(data_path + whole_network,sheet_name = '邻区基础信息')
 df_whole_network.set_index('CELLID',inplace =True)
 df_whole_network['Neighbor PhysicalLayerCellIdGroup'] = df_whole_network['pci'].map(lambda x:calc_PCI_group(x))
 df_whole_network['Neighbor physicalLayerSubCellId'] = df_whole_network['pci'].map(lambda x:calc_PCI_SubCellId(x))
-
 
 NeighborSiteID_dict = df_whole_network.to_dict()['SiteID']
 NeighboreNBId_dict = df_whole_network.to_dict()['eNodeB_ID']
@@ -151,17 +152,79 @@ df_zte_add = pd.DataFrame(columns= ['MODIND','SubNetwork','MEID','mcc','mnc',
                                      'cellType','addiFreqBand'
                                      ])
 
-SubNetwork_dict = df_whole_network.to_dict()['SubNetwork']
-MEID_dict = df_whole_network.to_dict()['eNodeB_ID']
-ServingCellName_dict = df_whole_network.to_dict()['CELLNAME']
-ServingCellId_dict = df_whole_network.to_dict()['CELL_id']
-ServingPCIGroup_dict = df_whole_network.to_dict()['physicalLayerCellIdGroup']
-ServingPCISubCellId_dict = df_whole_network.to_dict()['physicalLayerSubCellId']
-ServingeNBIP_dict = df_whole_network.to_dict()['eNb_IP']
+df_zte_info = pd.read_excel(data_path + zte_info)
+df_zte_info.set_index('CELLID',inplace =True)
 
+SubNetwork_dict = df_zte_info.to_dict()['SubNetwork']
+MEID_dict = df_zte_info.to_dict()['MEID']
+CELLID_dict = df_zte_info.to_dict()['cellLocalId']
+
+
+freqBandInd_dict = df_whole_network.to_dict()['频段指示']
+earfcnUl_dict = df_whole_network.to_dict()['上行频点']
+earfcnDl_dict = df_whole_network.to_dict()['下行频点']
+pci_dict = df_whole_network.to_dict()['pci']
+tac_dict = df_whole_network.to_dict()['TAC']
+bandWidthDl_dict = df_whole_network.to_dict()['bandWidthDl']
+bandWidthUl_dict = df_whole_network.to_dict()['bandWidthUl']
+
+df_zte_add['SubNetwork'] = df_zte_check['Scell_index'].map(SubNetwork_dict)
+df_zte_add['MEID'] = df_zte_check['Scell_index'].map(MEID_dict)
+df_zte_add['mcc'] = 460
+df_zte_add['mnc'] = 11
+
+df_zte_add['eNBId'] = df_zte_check['Ncell_index'].map(NeighboreNBId_dict)
+df_zte_add['cellLocalId'] = df_zte_check['Ncell_index'].map(NeighborCellId_dict)
+df_zte_add['plmnIdList'] = '460,11'
+df_zte_add['userLabel'] = df_zte_check['Ncell_index'].map(NeighborCellName_dict)
+df_zte_add['freqBandInd'] = df_zte_check['Ncell_index'].map(freqBandInd_dict)
+df_zte_add['earfcnUl'] = df_zte_check['Ncell_index'].map(earfcnUl_dict)
+df_zte_add['earfcnDl'] = df_zte_check['Ncell_index'].map(earfcnDl_dict)
+df_zte_add['pci'] = df_zte_check['Ncell_index'].map(pci_dict)
+df_zte_add['tac'] = df_zte_check['Ncell_index'].map(tac_dict)
+df_zte_add['bandWidthDl'] = df_zte_check['Ncell_index'].map(bandWidthDl_dict)
+df_zte_add['bandWidthUl'] = df_zte_check['Ncell_index'].map(bandWidthUl_dict)
+df_zte_add['antPort1'] = 1
+df_zte_add['cellType'] = 0
+df_zte_add['addiFreqBand'] = '0;0;0;0;0;0;0;0'
 df_zte_add['MODIND'] = 'A'
 
-with open(data_path + '中兴邻区漏配检查结果.csv','w') as writer:
-     df_zte_check.to_csv(writer,index =False)
+df_zte_relation = pd.DataFrame(columns= ['MODIND','SubNetwork','MEID','CellId','srcENBId',
+                                          'mcc','mnc','eNBId','NCellId','userLabel',
+                                          'isRemoveAllowed','isX2HOAllowed','isHOAllowed','shareCover','qofStCell',
+                                          'isAnrCreated','nCelPriority','s1DataFwdFlag','cellIndivOffset',
+                                          'stateInd','coperType','radioMode','overlapCoverage'
+                                          ])
+
+df_zte_relation['SubNetwork'] = df_zte_check['Scell_index'].map(SubNetwork_dict)
+df_zte_relation['MEID'] = df_zte_check['Scell_index'].map(MEID_dict)
+df_zte_relation['CellId'] = df_zte_check['Scell_index'].map(CELLID_dict)
+df_zte_relation['srcENBId'] = df_zte_check['Scell_index'].map(MEID_dict)
+df_zte_relation['mcc'] = 460
+df_zte_relation['mnc'] = 11
+
+df_zte_relation['eNBId'] = df_zte_check['Ncell_index'].map(NeighboreNBId_dict)
+df_zte_relation['NCellId'] = df_zte_check['Ncell_index'].map(NeighborCellId_dict)
+df_zte_relation['userLabel'] = df_zte_check['Ncell_index'].map(NeighborCellName_dict)
+df_zte_relation['isRemoveAllowed'] = 1
+df_zte_relation['isX2HOAllowed'] = 1
+df_zte_relation['isHOAllowed'] = 1
+df_zte_relation['shareCover'] = 0
+df_zte_relation['qofStCell'] = 15
+df_zte_relation['isAnrCreated'] = 0
+df_zte_relation['nCelPriority'] = 2
+df_zte_relation['s1DataFwdFlag'] = 0
+df_zte_relation['cellIndivOffset'] = 15
+df_zte_relation['stateInd'] = 2
+df_zte_relation['coperType'] = 0
+df_zte_relation['radioMode'] = 'LTE FDD'
+df_zte_relation['overlapCoverage'] = 50
+
+with pd.ExcelWriter(data_path + '中兴邻区漏配检查结果.xlsx') as writer:
+     df_zte_check.to_excel(writer,index =False)
+
+with pd.ExcelWriter(data_path + '中兴邻区添加模板.xlsx') as writer:
+     df_zte_add.to_excel(writer,'外部邻区',index =False)
+     df_zte_relation.to_excel(writer,'邻接关系',index =False)
 
 
