@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project demo -->
-<!-- Saved: 2019-05-13, 11:26:35 -->
+<!-- Saved: 2019-06-20, 14:25:36 -->
 <!-- Copyright (C) 2019 fms,  -->
 <Project version="5.1">
   <Language>en_US</Language>
@@ -13,6 +13,7 @@
   <Email></Email>
   <Eol index="0"/>
   <Sources>
+    <Source>Ui_main.py</Source>
     <Source>__init__.py</Source>
   </Sources>
   <Forms>
