@@ -13,33 +13,42 @@ import re
 data_path = r'D:\test' + '\\'
 all_files = os.listdir(data_path)
 files = [x for x in all_files if '.txt' in x ]
-content = []
+content_all = ''
 for file in files:
      file_tmp = open(data_path + file)
-     lines = file_tmp.readlines()
-for line in lines:
-     content.append(line)
+     content = file_tmp.read()
+     content_all = content_all + content
+
 
 df_alarm =pd.DataFrame()
 df_alarm['网元'] = ''
 df_alarm['告警名称'] = ''
 df_alarm['告警级别'] = ''
+df_alarm['告警当前状态'] = ''
 df_alarm['发生时间'] = ''
 df_alarm['恢复时间'] = ''
 df_alarm['故障原因'] = ''
 
-p1 = r'Critical(.*[\s\S]+?)*?FDN2:'  # 匹配一条告警的正则表达式正则表达式
-pattern1 = re.compile(p1) # 编译
-ls1 = re.findall(pattern1,file_tmp)
+p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 匹配一条告警的正则表达式正则表达式
+alarm_list = re.findall(p1,content_all)
+
 i = 0
-for j in range(0,len(content)):
-     if '===========' in content[j]:
-          df_alarm.loc[i,'网元'] = content[j-1].split('=')[3].replace('\n','')
-          df_alarm.loc[i,'告警名称'] = content[j+30].split(':')[1].replace('\n','')
-          df_alarm.loc[i,'告警级别'] = content[j+3].split(':')[1].replace('\n','')
-          df_alarm.loc[i,'发生时间'] = content[j+18].split(':')[1].replace('\n','')
-          df_alarm.loc[i,'恢复时间'] = content[j+13].split(':')[1].replace('\n','')
-          df_alarm.loc[i,'故障原因'] = content[j+24].split(':')[1].replace('\n','')
+j = 1
+for j in range(0,len(alarm_list)):
+     lines = alarm_list[j].split('\n')
+     for line in lines:
+          if 'ObjectOfReference:' in line:
+               df_alarm.loc[i,'网元'] = line.split('=')[3].replace('\n','')
+          if 'SpecificProblem:' in line:
+               df_alarm.loc[i,'告警名称'] = line.split(':')[1].replace('\n','')
+          if 'PerceivedSeverity:' in line:
+               df_alarm.loc[i,'告警级别'] = line.split(':')[1].replace('\n','')
+          if 'EventTime:' in line:
+               df_alarm.loc[i,'发生时间'] = line.split(':')[1].replace('\n','')
+          if 'CeaseTime:' in line:
+               df_alarm.loc[i,'恢复时间'] = line.split(':')[1].replace('\n','')
+          if 'ProbableCause:' in line:
+               df_alarm.loc[i,'故障原因'] = line.split(':')[1].replace('\n','')
           i +=1
 
 current_time = str(datetime.now()).split(' ')[0]
