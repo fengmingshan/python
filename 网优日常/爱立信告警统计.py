@@ -30,6 +30,28 @@ df_alarm['恢复时间'] = ''
 df_alarm['故障原因'] = ''
 df_alarm['附加信息'] = ''
 
+alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
+                    'Service Unavailable':'小区服务不可用',
+                    'No Connection':'',
+                    'RET Failure':'',
+                    'RET Not Calibrated':'',
+                    'Service Degraded':'小区服务质量下降',
+                    'VSWR Over Threshold':'',
+                    'Link Failure':'',
+                    'Power Loss':'',
+                    'TimeSyncIO Reference Failed':''，
+                    'Calendar Clock Misaligned':'',
+                    'Synchronization End':'',
+                    'Synchronization Start':'',
+                    'PLMN Service Unavailable':'',
+                    'SFP Stability Problem':''}
+
+alarm_class_dict ={ 'Critical':'紧急告警',
+                    'Major':'主要告警',
+                    'Minor':'次要告警',
+                    'Warning':'警告告警',
+                    'Indeterminate':'不确定告警',
+                    'Cleared':'已恢复告警'}
 
 p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 正则表达式，匹配一条完整的告警记录文件
 alarm_list = re.findall(p1,content_all) # 通过正则匹配分割所有的告警记录
@@ -53,6 +75,9 @@ for j in range(0,len(alarm_list)):
           if 'eriAlarmNObjAdditionalText:' in line:
                df_alarm.loc[i,'附加信息'] = line.split(':')[1].replace('\n','')
      i +=1
+
+df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
+df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
 
 current_time = str(datetime.now()).split(' ')[0]
 
