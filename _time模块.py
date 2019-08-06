@@ -10,7 +10,7 @@ time.sleep(5)   #等待一定时间
 for i in range(0,10,1):
     print(i)
     time.sleep(1)
-    
+
 #时间戳timestamp是一种时间表示形式
 time.time()     #时间戳，从1970年1月1日至今，经过的秒数，
 type(time.time())   #时间戳是float格式的小数
@@ -25,18 +25,18 @@ time.mktime(time.localtime())
 # 将时间表示形式转为asctime形式：
 time.asctime(time.localtime()) #这里将得到一个空格分隔的字符串
 type(time.asctime(time.localtime()))   #这里的格式是str
-x=time.asctime(time.localtime()) 
+x=time.asctime(time.localtime())
 y=x.split(' ',)     #将字符串以空格拆分，得到一个list
 
 # 将时间戳转为asctime形式：
-a = time.ctime(1519545859.0) 
+a = time.ctime(1519545859.0)
 b=a[-4:]
 type(time.ctime(1519545859.0))
 
 
 # 把一个元组或者struct_time转化为自定义格式的时间字符串
 time.localtime()
-time.strftime('%Y-%m-%d %X',time.localtime())   
+time.strftime('%Y-%m-%d %X',time.localtime())
 type(time.strftime('%Y-%m-%d %X',time.localtime()))     # 转换后时间是string格式
 
 #上面的操作也可以逆操作
@@ -61,17 +61,21 @@ otherstyletime4=time.strftime('%Y/%m/%d %H:%M:%S',c)    # 转换为其他格式
 # time.strftime()可以把任意格式时间字符串转换成自定义格式的时间字符串str
 # time.strptime()可以把任意自定义格式的时间字符串，转换成time模块的标准格式struct_time
 time1 ='2018-03-19 20:07:02'
-time2 ='2018-03-19 22:07:02'  
-a = time.strptime(time1,'%Y-%m-%d %H:%M:%S') 
-b = time.strptime(time2,'%Y-%m-%d %H:%M:%S') 
+time2 ='2018-03-19 22:07:02'
+a = time.strptime(time1,'%Y-%m-%d %H:%M:%S')
+b = time.strptime(time2,'%Y-%m-%d %H:%M:%S')
 c=time.mktime(a)
 d=time.mktime(b)
 
 detal_time =(d-c)/60
 
 
+# =============================================================================
+# 将时间装换成周
+# =============================================================================
+datetime.now().isocalendar()[1]
 
-
+datetime(2018,6,30).isocalendar()[1]
 
 # =============================================================================
 # 函数取当前时间并转换成strftime
