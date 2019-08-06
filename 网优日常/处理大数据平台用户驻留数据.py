@@ -28,10 +28,10 @@ df_normal_user = df_normal.append(df_valid_user)
 df_3G_user = df_normal_user[(~df_normal_user['IMSI码'].isnull())&(df_normal_user['LTE_4GIMSI'].isnull())]
 df_4G_user = df_normal_user[~df_normal_user['LTE_4GIMSI'].isnull()]
 df_noIMSI_user = df_normal_user[df_normal_user['IMSI码'].isnull()]
-user_ALL = set(df_normal_user['ACC_NBR'])
-user_3G = set(df_3G_user['ACC_NBR'])
-user_4G = set(df_4G_user['ACC_NBR'])
-user_noIMSI = set(df_noIMSI_user['ACC_NBR'])
+billing_user_ALL = set(list(df_normal_user['ACC_NBR']))
+billing_user_3G = set(list(df_3G_user['ACC_NBR']))
+billing_user_4G = set(list(df_4G_user['ACC_NBR']))
+billing_user_noIMSI = set(list(df_noIMSI_user['ACC_NBR']))
 
 
 
@@ -64,33 +64,31 @@ df_800 =  df_user_record[df_user_record['net_type'] == 'L800']
 df_1800['brand_product'] = df_1800['brand'] + '_' +  df_1800['product']
 df_800['brand_product'] = df_800['brand'] + '_' +  df_800['product']
 
-
-all_active_uesr = set(df_user_record['rmk1'])
-L1800_user = set(df_1800['rmk1'])
-L800_user = set(df_800['rmk1'])
-ALL_phone = set(df_user_record['brand_product'])
-L1800_phone = set(df_1800['brand_product'])
-L800_phone = set(df_800['brand_product'])
+all_active_uesr = set(list(df_user_record['rmk1']))
+L1800_user = set(list(df_1800['rmk1']))
+L800_user = set(list(df_800['rmk1']))
+ALL_phone = set(list(df_user_record['brand_product']))
+L1800_phone = set(list(df_1800['brand_product']))
+L800_phone = set(list(df_800['brand_product']))
 non_L800_phone = ALL_phone - L800_phone
-
+error_phone =  L800_phone|non_L800_phone
 
 non_L800_user = (L1800_user - L800_user) & user_4G
-non_4G_user = user_ALL - all_active_uesr
+non_4G_user = billing_user_ALL - all_active_uesr
 
 df_non_L800 = df_user_record[df_user_record['rmk1'].isin(non_L800_user)]
 df_non_4G = df_normal_user[df_normal_user['ACC_NBR'].isin(non_4G_user)]
 
 df_L800_phone = pd.DataFrame()
 df_NonL800_phone = pd.DataFrame()
-df_L800_phone['800M终端'] = L800_phone
-df_NonL800_phone['非800M终端'] = non_L800_phone
+df_L800_phone['800M终端'] = list(L800_phone)
+df_NonL800_phone['非800M终端'] = list(non_L800_phone)
 
-with pd.ExcelWriter(out_path + '用户清单输出.xlsx') as writer: #不用保存和退出，系统自动会完成
+with pd.ExcelWriter(out_path + '用户清单输出.xlsx') as writer:
     df_non_L800.to_excel(writer,'Non_L800',index = False)
-    df_non_4G.to_excel(writer,'Non_4G',index = False)
+    df_non_4G.to_excel(writer,'non_4G_user',index = False)
 
-with pd.ExcelWriter(out_path + '手机型号清单输出.xlsx') as writer: #不用保存和退出，系统自动会完成
+with pd.ExcelWriter(out_path + '手机型号清单输出.xlsx') as writer:
     df_L800_phone.to_excel(writer,'800M终端',index = False)
     df_NonL800_phone.to_excel(writer,'非800M终端',index = False)
-
 
