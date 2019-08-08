@@ -67,7 +67,37 @@ df_1X_call['用户号码'] = df_1X_call['imsi'].map(imsi_dict)
 
 df_1X_has_number = df_1X_call[df_1X_call['用户号码'].notnull()]
 df_1X_no_number = df_1X_call[df_1X_call['用户号码'].isnull()]
+
+df_number_pivot = pd.pivot_table(df_1X_has_number, index=['用户号码'],
+                                                 values =['通话次数'],
+                                                 aggfunc = {'通话次数':np.sum})
+number_calls_dict = df_number_pivot['通话次数'].to_dict()
+
+df_imsi_pivot = pd.pivot_table(df_1X_no_number, index=['imsi'],
+                                                 values =['通话次数'],
+                                                 aggfunc = {'通话次数':np.sum})
+imsi_calls_dict = df_imsi_pivot['通话次数'].to_dict()
+
+df_1X_has_number['通话总次数'] = df_1X_has_number['用户号码'].map(number_calls_dict)
+df_1X_has_number['占比'] = round(df_1X_has_number['通话次数']/df_1X_has_number['通话总次数'],4)
+df_1X_has_number = df_1X_has_number.sort_values(by='占比',ascending = False) # 按时间顺序升序排列
+
+df_1X_no_number['通话总次数'] = df_1X_no_number['imsi'].map(imsi_calls_dict)
+df_1X_no_number['占比'] = round(df_1X_no_number['通话次数']/df_1X_no_number['通话总次数'],4)
+df_1X_no_number = df_1X_no_number.sort_values(by='占比',ascending = False) # 按时间顺序升序排列
+
 user_number_set = set(df_1X_has_number['用户号码'])
+no_number_user_set =  set(df_1X_no_number['imsi'])
+
+df_uesr_home_all = pd.DataFrame()
+for number in user_number_set:
+     df_uesr_home = pd.DataFrame(columns = ['号码','通话总次数','常驻小区1','小区1占比','常驻小区2','小区2占比','常驻小区3','小区3占比'])
+     number = '18987402766'
+     df_user_calls = df_1X_has_number[df_1X_has_number['用户号码'] == number]
+     df_user_calls.reset_index(inplace =True)
+     df_user_calls.drop('index',axis =1 ,inplace =True)
+     df_uesr_home.loc[0,'常驻小区1'] = df_user_calls.loc[0,'cell_name']
+
 
 
 with pd.ExcelWriter(out_path + '用户1X通话记录.xlsx') as writer:
