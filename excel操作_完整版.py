@@ -108,7 +108,7 @@ df1 = df1.sort_values(by=['DO最大用户数','DO最大用户数'],ascending = [
 # =============================================================================
 df1.rename(columns={'呼叫话务量(Erl)':'话务量',
                     'DO最大用户数':'DO用户数'
-},inplace =True)
+                    },inplace =True)
 
 # =============================================================================
 # 删除行列
@@ -244,4 +244,4 @@ def Judge_MOD3(a,b,c,d): # 定义计算函数
 	else:
 		return 0
 # 使用apply函数将表格的多列输入到Judge_MOD3进行计算，得到一个新的列
-df_all['Neighbor1_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(x.ServingCell_PCI,x.Neighbor1_PCI,x.Neighbor1_RSRP,x.ServingCell_RSRP),axis =1 )
+df_all['Neighbor1_IS_MOD3'] = df_all.apply(lambda x:Judge_MOD3(x.ServingCell_PCI,x.Neighbor1_PCI,x.Neighbor1_RSRP,x.ServingCell_RSRP),axis =1 )
