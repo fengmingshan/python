@@ -11,6 +11,24 @@ import numpy as np
 
 out_path = r'd:\2019年工作\2019年8月4G网络扩频方案\结果输出' + '\\'
 
+user_data_traffic = r'd:\2019年工作\2019年8月4G网络扩频方案\计费系统导出\曲靖存量纯3G用户上网清单_2019-07.xlsx'
+df_user_data_traffic = pd.read_excel(user_data_traffic)
+def judge_uesr_type(voice,data,avg_data):
+     if voice == 0 & data == 0:
+          uesr_type = '双零用户',lever = '无'
+     elif voice == 0 & data != 0 & avg_data <30:
+          uesr_type = '数据卡用户',lever = '轻度'
+     elif voice == 0 & data != 0 & avg_data >=30:
+          uesr_type = '数据卡用户',lever = '重度'
+     elif voice != 0 & data < 31457280:
+          uesr_type = '纯语音用户',lever = '无'
+     elif voice != 0 & data > 31457280:
+          uesr_type = '语音数据用户'
+
+
+
+
+
 call_file_1X = r'd:\2019年工作\2019年8月4G网络扩频方案\网优平台导出1X通话数据\小区下面用户通话次数(不分释放原因).csv'
 df_1X_call = pd.read_csv(call_file_1X ,engine = 'python')
 df_1X_call = df_1X_call[(df_1X_call['cell_name'].str.contains('QJ'))&(~df_1X_call['cell_name'].str.contains('六螺蛳'))]
@@ -79,25 +97,76 @@ df_imsi_pivot = pd.pivot_table(df_1X_no_number, index=['imsi'],
 imsi_calls_dict = df_imsi_pivot['通话次数'].to_dict()
 
 df_1X_has_number['通话总次数'] = df_1X_has_number['用户号码'].map(number_calls_dict)
-df_1X_has_number['占比'] = round(df_1X_has_number['通话次数']/df_1X_has_number['通话总次数'],4)
-df_1X_has_number = df_1X_has_number.sort_values(by='占比',ascending = False) # 按时间顺序升序排列
+df_1X_has_number_pivot = pd.pivot_table(df_1X_has_number,
+                                       index=['用户号码','imsi','用户状态','区县','乡镇','通话总次数'],
+                                       values =['通话次数'],
+                                       aggfunc = {'通话次数':np.sum})
+df_1X_has_number_pivot.reset_index(inplace = True)
+df_1X_has_number_pivot['占比'] = round(df_1X_has_number_pivot['通话次数']/df_1X_has_number_pivot['通话总次数'],4)
 
 df_1X_no_number['通话总次数'] = df_1X_no_number['imsi'].map(imsi_calls_dict)
-df_1X_no_number['占比'] = round(df_1X_no_number['通话次数']/df_1X_no_number['通话总次数'],4)
-df_1X_no_number = df_1X_no_number.sort_values(by='占比',ascending = False) # 按时间顺序升序排列
+df_1X_no_number_pivot = pd.pivot_table(df_1X_no_number,
+                                       index=['imsi','区县','乡镇','通话总次数'],
+                                       values =['通话次数'],
+                                       aggfunc = {'通话次数':np.sum})
+df_1X_no_number_pivot.reset_index(inplace = True)
+df_1X_no_number_pivot['占比'] = round(df_1X_no_number_pivot['通话次数']/df_1X_no_number_pivot['通话总次数'],4)
+df_1X_no_number_pivot['用户号码'] = ''
+df_1X_no_number_pivot['用户状态'] = ''
+df_1X_no_number_pivot = df_1X_no_number_pivot[['用户号码','imsi','用户状态','区县','乡镇','通话总次数','通话次数','占比']]
 
 user_number_set = set(df_1X_has_number['用户号码'])
 no_number_user_set =  set(df_1X_no_number['imsi'])
 
 df_uesr_home_all = pd.DataFrame()
+Reset_index = pd.DataFrame.reset_index
+Drop = pd.DataFrame.drop
+Append = pd.DataFrame.append
+i = 0
 for number in user_number_set:
-     df_uesr_home = pd.DataFrame(columns = ['号码','通话总次数','常驻小区1','小区1占比','常驻小区2','小区2占比','常驻小区3','小区3占比'])
-     number = '18987402766'
-     df_user_calls = df_1X_has_number[df_1X_has_number['用户号码'] == number]
-     df_user_calls.reset_index(inplace =True)
-     df_user_calls.drop('index',axis =1 ,inplace =True)
-     df_uesr_home.loc[0,'常驻小区1'] = df_user_calls.loc[0,'cell_name']
+     i += 1
+     df_user_calls = df_1X_has_number_pivot[df_1X_has_number_pivot['用户号码'] == number]
+     max_call_number = df_user_calls['通话次数'].max()
+     df_uesr_home_all = Append(df_uesr_home_all,df_user_calls[df_user_calls['通话次数'] == max_call_number])
+     if i%100 == 0:
+          print('finished: ', i ,' tatla: ', len(user_number_set))
 
+j = 0
+for imsi in no_number_user_set:
+     j += 1
+     df_user_calls = df_1X_no_number_pivot[df_1X_no_number_pivot['imsi'] == imsi]
+     max_call_number = df_user_calls['通话次数'].max()
+     df_uesr_home_all = Append(df_uesr_home_all,df_user_calls[df_user_calls['通话次数'] == max_call_number])
+     if j%100 == 0:
+          print('finished: ', j ,' tatla: ', len(user_number_set))
+
+country_set = set(df_uesr_home_all['区县'])
+for country in country_set:
+     df_country = df_uesr_home_all[df_uesr_home_all['区县'] == country]
+     with pd.ExcelWriter(out_path + '常驻用户'+ '\\' +country + '_常驻纯3G用户清单.xlsx') as writer:
+          town_set = set(df_country['乡镇'])
+          for town in town_set:
+               df_town = df_country[df_country['乡镇'] == town]
+               df_town.to_excel(writer,town,index = False)
+
+df_country_provit = pd.pivot_table(df_uesr_home_all,
+                                  index=['区县'],
+                                  values =['imsi'],
+                                  aggfunc = {'imsi':len})
+df_country_provit.reset_index(inplace = True)
+
+df_town_provit_= pd.pivot_table(df_uesr_home_all,
+                                  index=['区县','乡镇'],
+                                  values =['imsi'],
+                                  aggfunc = {'imsi':len})
+df_town_provit_.reset_index(inplace = True)
+
+
+
+with pd.ExcelWriter(out_path + '常驻3G用户清单.xlsx') as writer:
+    df_uesr_home_all.to_excel(writer,'常驻3G用户清单',index =False)
+    df_country_provit.to_excel(writer,'按县统计',index =False)
+    df_town_provit_.to_excel(writer,'按乡镇统计',index =False)
 
 
 with pd.ExcelWriter(out_path + '用户1X通话记录.xlsx') as writer:
