@@ -9,24 +9,42 @@ import pandas as pd
 import os
 import numpy as np
 
-out_path = r'd:\2019年工作\2019年8月4G网络扩频方案\结果输出' + '\\'
+def judge_uesr_type(voice,data,avg_data):
+     user_info_list = []
+     if voice == 0 & data == 0:
+          uesr_type = '双零用户'
+          uesr_level = '无'
+     elif voice == 0 & data > 0 & avg_data <20:
+          uesr_type = '数据卡用户'
+          uesr_level = '轻度'
+     elif voice == 0 & data > 0 & avg_data >=20:
+          uesr_type = '数据卡用户'
+          uesr_level = '重度'
+     elif voice > 0 & data > 0 & data < 31457280:
+          uesr_type = '纯语音用户'
+          uesr_level = '无'
+     elif voice > 0 & data > 31457280 & avg_data <20:
+          uesr_type = '语音数据用户'
+          uesr_level = '轻度'
+     elif voice > 0 & data > 31457280 & avg_data >=20:
+          uesr_type = '语音数据用户'
+          uesr_level = '重度'
+     user_info_list = [uesr_type,uesr_level]
+     return user_info_list
 
+out_path = r'd:\2019年工作\2019年8月4G网络扩频方案\结果输出' + '\\'
 user_data_traffic = r'd:\2019年工作\2019年8月4G网络扩频方案\计费系统导出\曲靖存量纯3G用户上网清单_2019-07.xlsx'
 df_user_data_traffic = pd.read_excel(user_data_traffic)
-def judge_uesr_type(voice,data,avg_data):
-     if voice == 0 & data == 0:
-          uesr_type = '双零用户',lever = '无'
-     elif voice == 0 & data != 0 & avg_data <30:
-          uesr_type = '数据卡用户',lever = '轻度'
-     elif voice == 0 & data != 0 & avg_data >=30:
-          uesr_type = '数据卡用户',lever = '重度'
-     elif voice != 0 & data < 31457280:
-          uesr_type = '纯语音用户',lever = '无'
-     elif voice != 0 & data > 31457280:
-          uesr_type = '语音数据用户'
-
-
-
+df_user_data_traffic['user_info'] =  df_user_data_traffic.apply(lambda x:judge_uesr_type(x.通话次数,x.上网流量_字节,x.日均流量_MB),axis = 1)
+df_user_data_traffic['user_type'] = df_user_data_traffic['user_info'].map(lambda x:x[0])
+df_user_data_traffic['user_level'] = df_user_data_traffic['user_info'].map(lambda x:x[1])
+df_user_type = df_user_data_traffic[['ACC_NBR','user_type']]
+df_user_type.set_index('ACC_NBR',inplace =True)
+user_type_dict = df_user_type['user_type'].to_dict()
+df_user_level = df_user_data_traffic[['ACC_NBR','user_level']]
+df_user_level.set_index('ACC_NBR',inplace =True)
+user_level_dict = df_user_level['user_level'].to_dict()
+df_user_data_traffic.dtypes
 
 
 call_file_1X = r'd:\2019年工作\2019年8月4G网络扩频方案\网优平台导出1X通话数据\小区下面用户通话次数(不分释放原因).csv'
@@ -130,7 +148,6 @@ for number in user_number_set:
      df_uesr_home_all = Append(df_uesr_home_all,df_user_calls[df_user_calls['通话次数'] == max_call_number])
      if i%100 == 0:
           print('finished: ', i ,' tatla: ', len(user_number_set))
-
 j = 0
 for imsi in no_number_user_set:
      j += 1
@@ -140,31 +157,42 @@ for imsi in no_number_user_set:
      if j%100 == 0:
           print('finished: ', j ,' tatla: ', len(user_number_set))
 
-country_set = set(df_uesr_home_all['区县'])
+df_uesr_home_has_number = df_uesr_home_all[df_uesr_home_all['用户号码'] != '']
+df_uesr_home_has_number['user_type'] = df_uesr_home_has_number['用户号码'].map(user_type_dict)
+df_uesr_home_has_number['user_level'] = df_uesr_home_has_number['用户号码'].map(user_level_dict)
+df_uesr_home_high_data = df_uesr_home_has_number[(df_uesr_home_has_number['user_type'].str in ['数据卡用户','语音数据用户'])& \
+                                                 (df_uesr_home_has_number['user_level'] == '重度')]
+
+country_set = set(df_uesr_home_has_number['区县'])
 for country in country_set:
-     df_country = df_uesr_home_all[df_uesr_home_all['区县'] == country]
+     df_country = df_uesr_home_has_number[df_uesr_home_has_number['区县'] == country]
      with pd.ExcelWriter(out_path + '常驻用户'+ '\\' +country + '_常驻纯3G用户清单.xlsx') as writer:
           town_set = set(df_country['乡镇'])
           for town in town_set:
                df_town = df_country[df_country['乡镇'] == town]
                df_town.to_excel(writer,town,index = False)
 
-df_country_provit = pd.pivot_table(df_uesr_home_all,
+df_country_provit = pd.pivot_table(df_uesr_home_has_number,
                                   index=['区县'],
                                   values =['imsi'],
                                   aggfunc = {'imsi':len})
 df_country_provit.reset_index(inplace = True)
 
-df_town_provit_= pd.pivot_table(df_uesr_home_all,
+df_town_provit_= pd.pivot_table(df_uesr_home_has_number,
                                   index=['区县','乡镇'],
                                   values =['imsi'],
                                   aggfunc = {'imsi':len})
 df_town_provit_.reset_index(inplace = True)
 
 
+with pd.ExcelWriter(out_path + '3G用流量清单.xlsx') as writer:
+    df_user_data_traffic.to_excel(writer,'高流量3G用户',index =False)
 
-with pd.ExcelWriter(out_path + '常驻3G用户清单.xlsx') as writer:
-    df_uesr_home_all.to_excel(writer,'常驻3G用户清单',index =False)
+
+with pd.ExcelWriter(out_path + '高流量3G用户清单.xlsx') as writer:
+    df_uesr_home_has_number.to_excel(writer,'高流量3G用户',index =False)
+    df_user_type.reset_index().to_excel(writer,'用户类型',index =False)
+    df_user_level.reset_index().to_excel(writer,'用户等级',index =False)
     df_country_provit.to_excel(writer,'按县统计',index =False)
     df_town_provit_.to_excel(writer,'按乡镇统计',index =False)
 
