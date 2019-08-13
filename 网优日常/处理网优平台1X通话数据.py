@@ -202,7 +202,6 @@ df_uesr_home_all['上网时长_秒_月'] = df_uesr_home_all['用户号码'].map(
 df_uesr_home_all['上网次数_月'] = df_uesr_home_all['用户号码'].map(user_times_dict)
 df_uesr_home_all['平均网速_KBps'] = df_uesr_home_all['用户号码'].map(user_speed_dict)
 
-
 df_uesr_home_high_data = df_uesr_home_all[((df_uesr_home_all['user_type'] == '数据卡用户')|(df_uesr_home_all['user_type'] == '语音数据用户'))& \
                                           (df_uesr_home_all['user_level'] == '重度')]
 
@@ -226,7 +225,6 @@ df_town_provit_= pd.pivot_table(df_uesr_home_high_data,
                                   values =['imsi'],
                                   aggfunc = {'imsi':len})
 df_town_provit_.reset_index(inplace = True)
-
 
 with pd.ExcelWriter(out_path + '原始数据.xlsx') as writer:
     df_uesr_home_all.to_excel(writer,'3G用户原始数据',index =False)
