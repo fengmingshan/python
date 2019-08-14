@@ -4,14 +4,14 @@ Created on Wed Jul  3 15:51:14 2019
 
 @author: Administrator
 """
-
-import pandas as pd
-import os
+from pandas import ExcelWriter,DataFrame
+from os import listdir
 from datetime import datetime
 import re
+from re import findall
 
-data_path = r'D:\test' + '\\'
-all_files = os.listdir(data_path)
+data_path = r'd:\_小程序\爱立信告警统计' + '\\'
+all_files = listdir(data_path)
 files = [x for x in all_files if '.txt' in x ]
 content_all = ''
 for file in files:
@@ -20,7 +20,7 @@ for file in files:
      content_all = content_all + content
 
 
-df_alarm =pd.DataFrame()
+df_alarm = DataFrame()
 df_alarm['网元'] = ''
 df_alarm['告警名称'] = ''
 df_alarm['告警级别'] = ''
@@ -39,7 +39,7 @@ alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
                     'VSWR Over Threshold':'',
                     'Link Failure':'',
                     'Power Loss':'',
-                    'TimeSyncIO Reference Failed':''，
+                    'TimeSyncIO Reference Failed':'',
                     'Calendar Clock Misaligned':'',
                     'Synchronization End':'',
                     'Synchronization Start':'',
@@ -54,7 +54,7 @@ alarm_class_dict ={ 'Critical':'紧急告警',
                     'Cleared':'已恢复告警'}
 
 p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 正则表达式，匹配一条完整的告警记录文件
-alarm_list = re.findall(p1,content_all) # 通过正则匹配分割所有的告警记录
+alarm_list = findall(p1,content_all) # 通过正则匹配分割所有的告警记录
 
 i = 0
 for j in range(0,len(alarm_list)):
@@ -79,10 +79,10 @@ for j in range(0,len(alarm_list)):
 df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
 df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
 
-current_time = str(datetime.now()).split(' ')[0]
+current_time = str(datetime.now()).split('.')[0].replace(':','.')
 
-with pd.ExcelWriter(data_path + '爱立信存留告警' + current_time + '.xlsx' ) as writer:
-     df_alarm.to_excel(writer,'爱立信存留告警',index = False)
+with ExcelWriter(data_path + '爱立信当前告警' + current_time + '.xlsx' ) as writer:
+     df_alarm.to_excel(writer,'当前告警',index = False)
 
 
 
