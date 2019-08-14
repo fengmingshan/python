@@ -50,7 +50,8 @@ i = 0
 for df_tmp in user_data:
      i += 1
      df_user_record = df_user_record.append(df_tmp)
-     print(i)
+     if i%100 == 0:
+          print('finished: ', i )
 
 df_user_record['town'] = df_user_record['wirelessid'].map(town_dict)
 df_user_record['net_type'] = df_user_record['wirelessid'].map(net_type_dict)
