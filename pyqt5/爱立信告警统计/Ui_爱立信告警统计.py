@@ -9,12 +9,13 @@
 from pandas import ExcelWriter,DataFrame
 from os import listdir
 from os import startfile
+from os import system
 from datetime import datetime
 from re import findall
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
-    fname = []
+    fname = ''
     data_path = ''
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -71,13 +72,13 @@ class Ui_MainWindow(object):
         self.pushButton_4.setText(_translate("MainWindow", "打开结果目录"))
 
     def open_singlefile(self):
-        Ui_MainWindow.fname = QtWidgets.QFileDialog.getOpenFileName(None,
+        Ui_MainWindow.fname,filetype = QtWidgets.QFileDialog.getOpenFileName(None,
                                 '打开单个文件',
                                 './',
                                 ("Text (*.txt *.log)"))
         if Ui_MainWindow.fname[0]:
             self.textBrowser.append('打开1个文件')
-            self.textBrowser.append(Ui_MainWindow.fname[0])
+            self.textBrowser.append(Ui_MainWindow.fname)
 
     def open_multifile(self):
         Ui_MainWindow.fname,filetype  = QtWidgets.QFileDialog.getOpenFileNames(None,
@@ -91,8 +92,13 @@ class Ui_MainWindow(object):
 
     def static_file(self):
         content_all = ''
-        for file in Ui_MainWindow.fname:
-            file_tmp = open(file)
+        if isinstance(Ui_MainWindow.fname,list):
+            for file in Ui_MainWindow.fname:
+                file_tmp = open(file)
+                content = file_tmp.read()
+                content_all = content_all + content
+        else :
+            file_tmp = open(Ui_MainWindow.fname)
             content = file_tmp.read()
             content_all = content_all + content
         self.textBrowser.append('打开文件成功')
@@ -157,18 +163,21 @@ class Ui_MainWindow(object):
         df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
 
         current_time = str(datetime.now()).split('.')[0].replace(':','.')
+        if isinstance(Ui_MainWindow.fname,list):
+            path_list = Ui_MainWindow.fname[0].split('/')
+        else:
+            path_list = Ui_MainWindow.fname.split('/')
+            del(path_list[-1])
+            for name in path_list:
+                Ui_MainWindow.data_path = Ui_MainWindow.data_path + name + '\\'
 
-        path_list = Ui_MainWindow.fname[0].split('/')
-        del(path_list[-1])
-        for name in path_list:
-            Ui_MainWindow.data_path = Ui_MainWindow.data_path + name + '\\'
         with ExcelWriter(Ui_MainWindow.data_path + '爱立信当前告警' + current_time + '.xlsx' ) as writer:
             df_alarm.to_excel(writer,'当前告警',index = False)
         self.textBrowser.append('分析完成！')
 
     def open_result(self):
-        startfile(Ui_MainWindow.data_path)
-
+        result_path = Ui_MainWindow.data_path
+        startfile(result_path)
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
