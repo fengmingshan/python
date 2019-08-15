@@ -1,189 +1,170 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\_python\python\pyqt5\爱立信告警统计\爱立信告警统计.ui'
-#
-# Created by: PyQt5 UI code generator 5.11.3
-#
-# WARNING! All changes made in this file will be lost!
-
+import pandas as pd
+import os
 from pandas import ExcelWriter,DataFrame
 from os import listdir
-from os import startfile
-from os import system
 from datetime import datetime
+import re
 from re import findall
-from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_MainWindow(object):
-    fname = ''
-    data_path = ''
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(486, 288)
-        self.centralWidget = QtWidgets.QWidget(MainWindow)
-        self.centralWidget.setObjectName("centralWidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.centralWidget)
-        self.gridLayout.setObjectName("gridLayout")
-        self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
-        self.gridLayout.addLayout(self.verticalLayout, 1, 1, 1, 1)
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.pushButton = QtWidgets.QPushButton(self.centralWidget)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout_2.addWidget(self.pushButton)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem1)
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralWidget)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.verticalLayout_2.addWidget(self.pushButton_2)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem2)
-        self.pushButton_3 = QtWidgets.QPushButton(self.centralWidget)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.verticalLayout_2.addWidget(self.pushButton_3)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem3)
-        self.pushButton_4 = QtWidgets.QPushButton(self.centralWidget)
-        self.pushButton_4.setObjectName("pushButton_4")
-        self.verticalLayout_2.addWidget(self.pushButton_4)
-        self.gridLayout.addLayout(self.verticalLayout_2, 0, 1, 1, 1)
-        self.textBrowser = QtWidgets.QTextBrowser(self.centralWidget)
-        self.textBrowser.setObjectName("textBrowser")
-        self.gridLayout.addWidget(self.textBrowser, 0, 0, 2, 1)
-        MainWindow.setCentralWidget(self.centralWidget)
+data_path = r'd:\_小程序\爱立信告警统计' + '\\'
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+def trans_AlarmUnit(df):
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SubNetwork=QuJing',''))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('ENodeBFunction=1',''))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Cabinet=1',''))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Equipment=1',''))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Equipment=1',''))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.strip())
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('ManagedElement=','基站:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('EUtranCellFDD=','小区:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('FanGroup=','风扇单元:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('FieldReplaceableUnit=SUP','电源模块'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('CapacityState=CXC4010608 GracePeriod=CXC4010608','无'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaNearUnit=','天线端口:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('RetSubUnit=','电调单元:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaUnitGroup=','天线:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaNearUnit=','天线:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('FieldReplaceableUnit=RRU-','RRU:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('RfPort=','RRU发射端口:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaNearUnit=','天线:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('NbIotCell=','NBIoT小区:'))
 
-        self.pushButton.clicked.connect(self.open_singlefile)
-        self.pushButton_2.clicked.connect(self.open_multifile)
-        self.pushButton_3.clicked.connect(self.static_file)
-        self.pushButton_4.clicked.connect(self.open_result)
+    return df
 
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "打开单个文件"))
-        self.pushButton_2.setText(_translate("MainWindow", "打开多个文件"))
-        self.pushButton_3.setText(_translate("MainWindow", "开始统计"))
-        self.pushButton_4.setText(_translate("MainWindow", "打开结果目录"))
+def trans_AdditionalText(df,colname):
+    pass
 
-    def open_singlefile(self):
-        Ui_MainWindow.fname,filetype = QtWidgets.QFileDialog.getOpenFileName(None,
-                                '打开单个文件',
-                                './',
-                                ("Text (*.txt *.log)"))
-        if Ui_MainWindow.fname[0]:
-            self.textBrowser.append('打开1个文件')
-            self.textBrowser.append(Ui_MainWindow.fname)
+all_files = listdir(data_path)
+files = [x for x in all_files if '.txt' in x ]
+content_all = ''
+for file in files:
+    file_tmp = open(data_path + file)
+    content = file_tmp.read()
+    content_all = content_all + content
 
-    def open_multifile(self):
-        Ui_MainWindow.fname,filetype  = QtWidgets.QFileDialog.getOpenFileNames(None,
-                                 '打开多个文件',
-                                 './',
-                                 ("Text (*.txt *.log )"))
-        if Ui_MainWindow.fname[0]:
-            self.textBrowser.append('打开{0}个文件'.format(len(Ui_MainWindow.fname)))
-            for file in Ui_MainWindow.fname:
-                self.textBrowser.append(file)
+df_alarm = DataFrame()
+df_alarm['网元'] = ''
+df_alarm['告警名称'] = ''
+df_alarm['告警单元'] = ''
+df_alarm['告警级别'] = ''
+df_alarm['告警处理优先级'] = ''
+df_alarm['告警当前状态'] = ''
+df_alarm['发生时间'] = ''
+df_alarm['恢复时间'] = ''
+df_alarm['故障原因'] = ''
+df_alarm['附加信息'] = ''
 
-    def static_file(self):
-        content_all = ''
-        if isinstance(Ui_MainWindow.fname,list):
-            for file in Ui_MainWindow.fname:
-                file_tmp = open(file)
-                content = file_tmp.read()
-                content_all = content_all + content
-        else :
-            file_tmp = open(Ui_MainWindow.fname)
-            content = file_tmp.read()
-            content_all = content_all + content
-        self.textBrowser.append('打开文件成功')
-        self.textBrowser.append('=======================')
-        df_alarm = DataFrame()
-        df_alarm['网元'] = ''
-        df_alarm['告警名称'] = ''
-        df_alarm['告警级别'] = ''
-        df_alarm['告警当前状态'] = ''
-        df_alarm['发生时间'] = ''
-        df_alarm['恢复时间'] = ''
-        df_alarm['故障原因'] = ''
-        df_alarm['附加信息'] = ''
+alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
+                    'Service Unavailable':'小区服务不可用',
+                    'Resource Activation Timeout':'资源激活超时',
+                    'Fan Failure':'风扇故障',
+                    'No Connection':'连接丢失',
+                    'Grace Period Activated':'激活弹性容量功能',
+                    'Inconsistent Configuration':'配小区资源置不一致',
+                    'RET Failure':'电调天线故障',
+                    'RET Not Calibrated':'电调天线校准失败',
+                    'Link Degraded':'BBU至RRU传输质量下降',
+                    'Service Degraded':'小区服务质量下降',
+                    'VSWR Over Threshold':'驻波比超限',
+                    'HW Fault':'硬件故障',
+                    'SW Fault':'软件故障',
+                    'Link Failure':'BBU至RRU光纤故障',
+                    'Power Loss':'RRU掉电',
+                    'Resource Allocation Failure Service Degraded':'资源分配失败,服务质量下降',
+                    'TimeSyncIO Reference Failed':'参考时钟故障',
+                    'Calendar Clock Misaligned':'时钟校准失败',
+                    'Synchronization End':'同步结束',
+                    'Synchronization Start':'同步开始',
+                    'PLMN Service Unavailable':'小区退出服务',
+                    'SFP Stability Problem':'光模块故障',
+                    'Calendar Clock NTP Server Unavailable':'NTP服务器不可用',
+                    'Current Too High':'功率过载'}
 
-        alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
-                            'Service Unavailable':'小区服务不可用',
-                            'No Connection':'',
-                            'RET Failure':'',
-                            'RET Not Calibrated':'',
-                            'Service Degraded':'小区服务质量下降',
-                            'VSWR Over Threshold':'',
-                            'Link Failure':'',
-                            'Power Loss':'',
-                            'TimeSyncIO Reference Failed':'',
-                            'Calendar Clock Misaligned':'',
-                            'Synchronization End':'',
-                            'Synchronization Start':'',
-                            'PLMN Service Unavailable':'',
-                            'SFP Stability Problem':''}
+alarm_priority_dict ={ 'Heartbeat Failure':'影响业务_需优先处理',
+                    'Service Unavailable':'影响业务_需优先处理',
+                    'Resource Activation Timeout':'不影响业务_无需处理',
+                    'Fan Failure':'影响业务_需处理',
+                    'No Connection':'不影响业务_无需处理',
+                    'Grace Period Activated':'不影响业务_无需处理',
+                    'Inconsistent Configuration':'影响业务_需处理',
+                    'RET Failure':'影响业务_需处理',
+                    'RET Not Calibrated':'不影响业务_无需处理',
+                    'Link Degraded':'影响业务_需优先处理',
+                    'Service Degraded':'不影响业务_无需处理',
+                    'VSWR Over Threshold':'影响业务_需优先处理',
+                    'HW Fault':'影响业务_需优先处理',
+                    'SW Fault':'影响业务_需优先处理',
+                    'Link Failure':'影响业务_需优先处理',
+                    'Power Loss':'影响业务_需优先处理',
+                    'Resource Allocation Failure Service Degraded':'不影响业务_无需处理降',
+                    'TimeSyncIO Reference Failed':'影响业务_需优先处理',
+                    'Calendar Clock Misaligned':'不影响业务_无需处理',
+                    'Synchronization End':'不影响业务_无需处理',
+                    'Synchronization Start':'不影响业务_无需处理',
+                    'PLMN Service Unavailable':'影响业务_需优先处理',
+                    'SFP Stability Problem':'影响业务_需优先处理',
+                    'Calendar Clock NTP Server Unavailable':'不影响业务_无需处理',
+                    'Current Too High':'影响业务_需处理'}
 
-        alarm_class_dict ={ 'Critical':'紧急告警',
-                            'Major':'主要告警',
-                            'Minor':'次要告警',
-                            'Warning':'警告告警',
-                            'Indeterminate':'不确定告警',
-                            'Cleared':'已恢复告警'}
+alarm_class_dict ={ 'Critical':'紧急告警',
+                    'Major':'主要告警',
+                    'Minor':'次要告警',
+                    'Warning':'警告告警',
+                    'Indeterminate':'不确定告警',
+                    'Cleared':'已恢复告警'}
 
-        p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 正则表达式，匹配一条完整的告警记录文件
-        alarm_list = findall(p1,content_all) # 通过正则匹配分割所有的告警记录
+alarm_cause_dict ={ 'LAN Error/Communication Error':'传输故障',
+                    'x733UnderlyingResourceUnavailable':'x733基础资源不可用',
+                    'gsm1211TimeoutExpired':'gsm1211超时',
+                    'x733EquipmentMalfunction':'x733设备故障',
+                    'x733ThresholdCrossed':'x733超过阈值',
+                    'x733ConfigurationOrCustomizationError':'x733配置错误',
+                    'gsm1211PowerSupplyFailure':'gsm1211供电故障',
+                    'x733PerformanceDegraded':'x733性能下降',
+                    'x733SoftwareError':'软件故障',
+                    'm3100Unavailable':'m3100不可用'}
 
-        i = 0
-        for j in range(0,len(alarm_list)):
-             lines = alarm_list[j].split('\n')
-             for line in lines:
-                  if 'ObjectOfReference:' in line:
-                       df_alarm.loc[i,'网元'] = line.split(',')[2].split('=')[1]
-                  if 'SpecificProblem:' in line:
-                       df_alarm.loc[i,'告警名称'] = line.split(':')[1].replace('\n','')
-                  if 'PerceivedSeverity:' in line:
-                       df_alarm.loc[i,'告警级别'] = line.split(':')[1].replace('\n','')
-                  if 'EventTime:' in line:
-                       df_alarm.loc[i,'发生时间'] = line.split('EventTime:')[1].replace('\n','')
-                  if 'CeaseTime:' in line:
-                       df_alarm.loc[i,'恢复时间'] = line.split('CeaseTime:')[1].replace('\n','')
-                  if 'ProbableCause:' in line:
-                       df_alarm.loc[i,'故障原因'] = line.split(':')[1].replace('\n','')
-                  if 'eriAlarmNObjAdditionalText:' in line:
-                       df_alarm.loc[i,'附加信息'] = line.split(':')[1].replace('\n','')
-             i +=1
 
-        df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
-        df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
+p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 正则表达式，匹配一条完整的告警记录文件
+alarm_list = re.findall(p1,content_all) # 通过正则匹配分割所有的告警记录
+alarm_list = findall(p1,content_all) # 通过正则匹配分割所有的告警记录
 
-        current_time = str(datetime.now()).split('.')[0].replace(':','.')
-        if isinstance(Ui_MainWindow.fname,list):
-            path_list = Ui_MainWindow.fname[0].split('/')
-        else:
-            path_list = Ui_MainWindow.fname.split('/')
-            del(path_list[-1])
-            for name in path_list:
-                Ui_MainWindow.data_path = Ui_MainWindow.data_path + name + '\\'
+i = 0
+for j in range(0,len(alarm_list)):
+    i += 1
+    lines = alarm_list[j].split('\n')
+    for line in lines:
+        if 'ObjectOfReference:' in line:
+            df_alarm.loc[i,'网元'] = line.split(',')[2].split('=')[1].strip()
+        if 'SpecificProblem:' in line:
+            df_alarm.loc[i,'告警名称'] = line.split(':')[1].replace('\n','').strip()
+        if 'ObjectOfReference:' in line:
+            df_alarm.loc[i,'告警单元'] = line.split(':')[1].split(',')[-3]\
+                                        + line.split(':')[1].split(',')[-2]\
+                                        + ' '\
+                                        + line.split(':')[1].split(',')[-1]
+        if 'PerceivedSeverity:' in line:
+            df_alarm.loc[i,'告警级别'] = line.split(':')[1].replace('\n','').strip()
+        if 'EventTime:'in line:
+            df_alarm.loc[i,'发生时间'] = line.split('EventTime:')[1].replace('\n','').strip()
+        if 'CeaseTime:'in line:
+            df_alarm.loc[i,'恢复时间'] = line.split('CeaseTime:')[1].replace('\n','').strip()
+        if 'ProbableCause:'in line:
+            df_alarm.loc[i,'故障原因'] = line.split(':')[1].replace('\n','').strip()
+        if 'eriAlarmNObjAdditionalText:' in line:
+            df_alarm.loc[i,'附加信息'] = line.split(':')[1].replace('\n','').strip()
 
-        with ExcelWriter(Ui_MainWindow.data_path + '爱立信当前告警' + current_time + '.xlsx' ) as writer:
-            df_alarm.to_excel(writer,'当前告警',index = False)
-        self.textBrowser.append('分析完成！')
+#df_alarm['处理优先级'] = df_alarm['告警名称'].map(alarm_priority_dict)
+#df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
+#df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
+#df_alarm['故障原因'] = df_alarm['故障原因'].map(alarm_cause_dict)
 
-    def open_result(self):
-        result_path = Ui_MainWindow.data_path
-        startfile(result_path)
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+df_alarm = trans_AlarmUnit(df_alarm)
 
+
+current_time = str(datetime.now()).split('.')[0].replace(':','.')
+
+with pd.ExcelWriter(data_path + '爱立信存留告警' + current_time + '.xlsx' ) as writer:
+     df_alarm.to_excel(writer,'爱立信存留告警',index = False)
