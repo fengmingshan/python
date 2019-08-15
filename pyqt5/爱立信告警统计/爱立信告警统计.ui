@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>631</width>
-    <height>369</height>
+    <width>486</width>
+    <height>288</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,20 +15,10 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+    <item row="1" column="1">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-      </item>
-     </layout>
-    </item>
-    <item row="0" column="1" rowspan="2">
-     <widget class="QTextBrowser" name="textBrowser"/>
-    </item>
-    <item row="0" column="2">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <spacer name="verticalSpacer_2">
+       <spacer name="verticalSpacer_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -40,10 +30,14 @@
         </property>
        </spacer>
       </item>
+     </layout>
+    </item>
+    <item row="0" column="1">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="pushButton">
         <property name="text">
-         <string>打开文件</string>
+         <string>打开单个文件</string>
         </property>
        </widget>
       </item>
@@ -61,9 +55,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_2">
         <property name="text">
-         <string>选择字体</string>
+         <string>打开多个文件</string>
         </property>
        </widget>
       </item>
@@ -83,12 +77,12 @@
       <item>
        <widget class="QPushButton" name="pushButton_3">
         <property name="text">
-         <string>选择颜色</string>
+         <string>开始统计</string>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="verticalSpacer_3">
+       <spacer name="verticalSpacer_6">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -99,25 +93,18 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="text">
+         <string>打开结果目录</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
-    <item row="1" column="2">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <spacer name="verticalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
+    <item row="0" column="0" rowspan="2">
+     <widget class="QTextBrowser" name="textBrowser"/>
     </item>
    </layout>
   </widget>
