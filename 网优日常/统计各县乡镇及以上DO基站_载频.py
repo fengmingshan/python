@@ -70,13 +70,14 @@ df_city_town['cellid'] = df_city_town['cellid'].astype(str)
 df_city_town['carrierid'] = df_city_town['carrierid'].astype(str)
 
 df_city_town['载频'] =  df_city_town['system'] + '_' + df_city_town['cellid'] + '_' + df_city_town['carrierid']
+df_city_town = df_city_town[['system','cellid','bts_alias','载频','区县','乡镇']]
 
-df_city_town_pivot = pd.pivot_table(df_city_town, index=['区县'],
+df_country_pivot = pd.pivot_table(df_city_town, index=['区县'],
                                        values =['载频'],
                                        aggfunc = {'载频':len})
-df_city_town_pivot.reset_index(inplace =True)
+df_country_pivot.reset_index(inplace =True)
 
-df_bts = df_city_town.drop_duplicates('system', keep='first')
+df_bts = df_city_town.drop_duplicates('bts_alias', keep='first')
 df_bts_pivot = pd.pivot_table(df_bts, index=['区县'],
                                        values =['system'],
                                        aggfunc = {'system':len})
@@ -96,9 +97,29 @@ df_hardware_pivot.reset_index(inplace =True)
 df_hardware_pivot = df_hardware_pivot.set_index('区县')
 board_num_dict = df_hardware_pivot['boardname'].to_dict()
 
-df_city_town_pivot['基站数量'] = df_city_town_pivot['区县'].map(bts_num_dict)
-df_city_town_pivot['DO信道板数量'] = df_city_town_pivot['区县'].map(board_num_dict)
+df_country_pivot['基站数量'] = df_country_pivot['区县'].map(bts_num_dict)
+df_country_pivot['DO信道板数量'] = df_country_pivot['区县'].map(board_num_dict)
+
+df_town_pivot = pd.pivot_table(df_city_town, index=['区县','乡镇'],
+                                       values =['载频'],
+                                       aggfunc = {'载频':len})
+df_town_pivot.reset_index(inplace =True)
 
 
-with  open(data_path  + '乡镇以上DO资源数据.csv','w')  as writer:  #输出到excel
-   df_city_town_pivot.to_csv(writer, index = False)
+df_bts_town_pivot = pd.pivot_table(df_bts, index=['区县','乡镇'],
+                                       values =['system'],
+                                       aggfunc = {'system':len})
+df_bts_town_pivot.reset_index(inplace =True)
+df_bts_town_pivot['区县-乡镇'] = df_bts_town_pivot['区县'] + '_' +  df_bts_town_pivot['乡镇']
+df_bts_town_pivot = df_bts_town_pivot.set_index('区县-乡镇')
+town_bts_num_dict = df_bts_town_pivot['system'].to_dict()
+
+df_town_pivot['区县-乡镇'] = df_town_pivot['区县'] + '_' +  df_town_pivot['乡镇']
+df_town_pivot['基站数量'] = df_town_pivot['区县-乡镇'].map(town_bts_num_dict)
+df_town_pivot = df_town_pivot[['区县','乡镇','区县-乡镇','基站数量','载频']]
+
+
+with  pd.ExcelWriter(data_path  + '乡镇以上DO资源数据.xlsx')  as writer:  #输出到excel
+    df_country_pivot.to_excel(writer,'按县透视', index = False)
+    df_town_pivot.to_excel(writer,'按乡镇透视',index = False)
+    df_city_town.to_excel(writer,'原始数据',index = False)

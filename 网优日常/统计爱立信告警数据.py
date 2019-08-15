@@ -12,6 +12,8 @@ data_path = r'd:\_小程序\爱立信告警统计' + '\\'
 
 def trans_AlarmUnit(df):
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SubNetwork=QuJing',''))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SubNetwork=ONRM_ROOT_MO',''))
+
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('ENodeBFunction=1',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Cabinet=1',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Equipment=1',''))
@@ -21,16 +23,16 @@ def trans_AlarmUnit(df):
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('EUtranCellFDD=','小区:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('FanGroup=','风扇单元:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('FieldReplaceableUnit=SUP','电源模块'))
-    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('CapacityState=CXC4010608 GracePeriod=CXC4010608','无'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Lm=1 CapacityState=CXC4010608 GracePeriod=CXC4010608','无'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaNearUnit=','天线端口:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('RetSubUnit=','电调单元:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaUnitGroup=','天线:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaNearUnit=','天线:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('FieldReplaceableUnit=RRU-','RRU:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('RfPort=','RRU发射端口:'))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('RiLink=','BBU光口:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('AntennaNearUnit=','天线:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('NbIotCell=','NBIoT小区:'))
-
     return df
 
 def trans_AdditionalText(df,colname):
@@ -61,7 +63,7 @@ alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
                     'Resource Activation Timeout':'资源激活超时',
                     'Fan Failure':'风扇故障',
                     'No Connection':'连接丢失',
-                    'Grace Period Activated':'激活弹性容量功能',
+                    'Grace Period Activated':'自动扩容激活',
                     'Inconsistent Configuration':'配小区资源置不一致',
                     'RET Failure':'电调天线故障',
                     'RET Not Calibrated':'电调天线校准失败',
@@ -86,7 +88,7 @@ alarm_priority_dict ={ 'Heartbeat Failure':'影响业务_需优先处理',
                     'Service Unavailable':'影响业务_需优先处理',
                     'Resource Activation Timeout':'不影响业务_无需处理',
                     'Fan Failure':'影响业务_需处理',
-                    'No Connection':'不影响业务_无需处理',
+                    'No Connection':'影响业务_需处理',
                     'Grace Period Activated':'不影响业务_无需处理',
                     'Inconsistent Configuration':'影响业务_需处理',
                     'RET Failure':'影响业务_需处理',
@@ -98,7 +100,7 @@ alarm_priority_dict ={ 'Heartbeat Failure':'影响业务_需优先处理',
                     'SW Fault':'影响业务_需优先处理',
                     'Link Failure':'影响业务_需优先处理',
                     'Power Loss':'影响业务_需优先处理',
-                    'Resource Allocation Failure Service Degraded':'不影响业务_无需处理降',
+                    'Resource Allocation Failure Service Degraded':'不影响业务_无需处理',
                     'TimeSyncIO Reference Failed':'影响业务_需优先处理',
                     'Calendar Clock Misaligned':'不影响业务_无需处理',
                     'Synchronization End':'不影响业务_无需处理',
@@ -142,6 +144,7 @@ for j in range(0,len(alarm_list)):
             df_alarm.loc[i,'告警名称'] = line.split(':')[1].replace('\n','').strip()
         if 'ObjectOfReference:' in line:
             df_alarm.loc[i,'告警单元'] = line.split(':')[1].split(',')[-3]\
+                                        + ' '\
                                         + line.split(':')[1].split(',')[-2]\
                                         + ' '\
                                         + line.split(':')[1].split(',')[-1]
@@ -156,10 +159,10 @@ for j in range(0,len(alarm_list)):
         if 'eriAlarmNObjAdditionalText:' in line:
             df_alarm.loc[i,'附加信息'] = line.split(':')[1].replace('\n','').strip()
 
-#df_alarm['处理优先级'] = df_alarm['告警名称'].map(alarm_priority_dict)
-#df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
-#df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
-#df_alarm['故障原因'] = df_alarm['故障原因'].map(alarm_cause_dict)
+df_alarm['告警处理优先级'] = df_alarm['告警名称'].map(alarm_priority_dict)
+df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
+df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
+df_alarm['故障原因'] = df_alarm['故障原因'].map(alarm_cause_dict)
 
 df_alarm = trans_AlarmUnit(df_alarm)
 
