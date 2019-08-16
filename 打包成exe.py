@@ -11,5 +11,8 @@ pyinstaller -F -c -i GRAPH.ICO Ui_文件编辑器.py
 # =============================================================================
 pyinstaller --hidden-import PyQt5.sip -F -w -i GRAPH.ICO Ui_文件编辑器.py
 
+
+pyinstaller --hidden-import PyQt5.sip -F -w -i warning.ico Ui_Alarm.py
+
 cd D:\test\
 

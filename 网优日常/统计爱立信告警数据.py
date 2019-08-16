@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
-import os
-from pandas import ExcelWriter,DataFrame
+from pandas import ExcelWriter,DataFrame,pivot_table
 from os import listdir
 from datetime import datetime
-import re
 from re import findall
+from numba import jit
 
 data_path = r'd:\_小程序\爱立信告警统计' + '\\'
 
 def trans_AlarmUnit(df):
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SubNetwork=QuJing',''))
+    df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SystemFunctions=1 SysM=1',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SubNetwork=ONRM_ROOT_MO',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('ENodeBFunction=1',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Cabinet=1',''))
@@ -34,23 +33,66 @@ def trans_AlarmUnit(df):
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('TimeM=1 Ntp=1 NtpServer=','NTP服务器:'))
     return df
 
+@jit()
 def trans_AdditionalText(df):
     for i in range(0,len(df)):
         if df.loc[i,'告警名称'] == '驻波比超限':
-            df.loc[i,'附加信息'] = df.loc[i,'附加信息'].map(lambda x:x.split(',')[1].replace('VSWR','驻波比'))
+            df.loc[i,'附加信息'] = df.loc[i,'附加信息'].split(',')[1].strip().replace('VSWR','驻波比:')
+        elif df.loc[i,'告警名称'] == 'BBU至RRU光纤故障':
+            if 'No signal detected' in df.loc[i,'附加信息']:
+                df.loc[i,'附加信息'] = '光口无光'
         elif df.loc[i,'告警名称'] == 'BBU至RRU传输质量下降':
             if 'SFP value' in df.loc[i,'附加信息']:
                 df.loc[i,'附加信息'] = '光路误帧率过高,收光功率低'
-            else 'SFP value' in df.loc[i,'附加信息']:
+            else :
                 df.loc[i,'附加信息'] = '光路误帧率过高'
-        elif df.loc[i,'告警名称'] == '驻波比超限':
-            df.loc[i,'附加信息'] = df.loc[i,'附加信息'].map(lambda x:x.split(',')[1].replace('VSWR','驻波比'))
-        elif df.loc[i,'告警名称'] == '驻波比超限':
-            df.loc[i,'附加信息'] = df.loc[i,'附加信息'].map(lambda x:x.split(',')[1].replace('VSWR','驻波比'))
-        elif df.loc[i,'告警名称'] == '驻波比超限':
-            df.loc[i,'附加信息'] = df.loc[i,'附加信息'].map(lambda x:x.split(',')[1].replace('VSWR','驻波比'))
-        else:
-            df.loc[i,'附加信息'] = ''
+        if 'ANTP_ANU_ERROR_ACTUATOR_JAM' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '电调调节装置卡住'
+        elif 'ANTP_ANU_ERROR_NOT_CONFIGURED' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '电调单元未配置'
+        elif 'Not functional carrier HW resources' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '载频硬件失效'
+        elif 'ANTP_ANU_ERROR_MOTOR_JAM' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '电动机卡住'
+        elif 'ANTP_ANU_ERROR_OUT_OF_RANGE' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '电下倾角超范围'
+        elif 'ANTP_ANU_ERROR_NOT_CALIBRATED' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '电调天线未校准'
+        elif 'Insufficient RF power' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '射频功率不足'
+        elif 'Parameter out of range' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '参数超范围'
+        elif 'Parameter out of range' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '参数超范围'
+        elif 'Voltage out of range' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '电压超范围'
+        elif 'Power overload' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '功率过载'
+        elif 'Clock was adjusted by more than 300 seconds' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '时钟校准超时'
+        elif 'Configured NTP server is not used' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = 'NTP 服务器不可用'
+        elif 'Cyclic Resetup detected' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '检查到反复重启'
+        elif 'No hardware detected' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '未探测到硬件单板'
+        elif 'Contact lost' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '对象连接失败'
+        elif 'Power Failure' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '供电故障'
+        elif 'High BER at' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '误帧率高'
+        elif ('High BER at' in df.loc[i,'附加信息']) and ('SFP value (RX-LOW PWR)' in df.loc[i,'附加信息']) :
+            df.loc[i,'附加信息'] = '误帧率高,收光功率低'
+        elif 'Timeout' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '超时'
+        elif 'Resource Activation Timeout' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '资源激活超时'
+        elif 'Grace period' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '自动扩容激活'
+        elif 'Not in operation' in df.loc[i,'附加信息']:
+            df.loc[i,'附加信息'] = '工作状态异常'
+    return df
 
 all_files = listdir(data_path)
 files = [x for x in all_files if '.txt' in x ]
@@ -63,15 +105,16 @@ for file in files:
 df_alarm = DataFrame()
 df_alarm['网元'] = ''
 df_alarm['eNodeB_ID'] = ''
+df_alarm['区县'] = ''
+df_alarm['乡镇'] = ''
 df_alarm['告警名称'] = ''
 df_alarm['告警单元'] = ''
 df_alarm['告警级别'] = ''
 df_alarm['告警处理优先级'] = ''
-df_alarm['告警当前状态'] = ''
 df_alarm['发生时间'] = ''
 df_alarm['恢复时间'] = ''
-df_alarm['故障原因'] = ''
 df_alarm['附加信息'] = ''
+df_alarm['故障原因'] = ''
 
 alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
                     'Service Unavailable':'小区服务不可用',
@@ -79,7 +122,7 @@ alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
                     'Fan Failure':'风扇故障',
                     'No Connection':'连接丢失',
                     'Grace Period Activated':'自动扩容激活',
-                    'Inconsistent Configuration':'配小区资源置不一致',
+                    'Inconsistent Configuration':'小区资源配置不一致',
                     'RET Failure':'电调天线故障',
                     'RET Not Calibrated':'电调天线校准失败',
                     'Link Degraded':'BBU至RRU传输质量下降',
@@ -147,12 +190,10 @@ alarm_cause_dict ={ 'LAN Error/Communication Error':'传输故障',
 
 
 p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 正则表达式，匹配一条完整的告警记录文件
-alarm_list = re.findall(p1,content_all) # 通过正则匹配分割所有的告警记录
 alarm_list = findall(p1,content_all) # 通过正则匹配分割所有的告警记录
 
 i = 0
 for j in range(0,len(alarm_list)):
-    i += 1
     lines = alarm_list[j].split('\n')
     for line in lines:
         if 'ObjectOfReference:' in line:
@@ -175,15 +216,16 @@ for j in range(0,len(alarm_list)):
             df_alarm.loc[i,'故障原因'] = line.split(':')[1].replace('\n','').strip()
         if 'eriAlarmNObjAdditionalText:' in line:
             df_alarm.loc[i,'附加信息'] = line.split(':')[1].replace('\n','').strip()
+    i += 1
 
-
-
+df_alarm['附加信息'] = df_alarm['附加信息'].fillna('')
+df_alarm['附加信息'] = df_alarm['附加信息'].astype(str)
 df_alarm['告警处理优先级'] = df_alarm['告警名称'].map(alarm_priority_dict)
 df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
 df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
 df_alarm['故障原因'] = df_alarm['故障原因'].map(alarm_cause_dict)
 df_alarm = trans_AlarmUnit(df_alarm)
-
+df_alarm = trans_AdditionalText(df_alarm)
 
 BTS_name_dict = {'GCTCRBS6601_QJFYFC5133_WCTT_EFT':'富源县富村镇业外小学',
                     'GCTCRBS6601_QJFYLC5143_WCTT_EFT':'富源县老厂镇小马街',
@@ -2331,8 +2373,42 @@ eNodeBID_dict = {'GCTCRBS6601_QJFYFC5133_WCTT_EFT':'731316',
 
 df_alarm['eNodeB_ID'] = df_alarm['网元'].map(eNodeBID_dict)
 df_alarm['网元'] = df_alarm['网元'].map(BTS_name_dict)
+df_alarm['网元'] = df_alarm['网元'].map(lambda x:x.replace('县',''))
+df_alarm['网元'] = df_alarm['网元'].map(lambda x:x.replace('市',''))
+df_alarm['网元'] = df_alarm['网元'].map(lambda x:x.replace('区',''))
+df_alarm['区县'] = df_alarm['网元'].map(lambda x:x[0:2])
+df_alarm['乡镇'] = df_alarm['网元'].map(lambda x:x[2:4])
+def completion_town_name(df,col_name):
+     df[col_name] = df[col_name].map(lambda x:x.replace('十八','十八连山'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('黄泥','黄泥河'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('大莫','大莫古'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('小百','小百户'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('三岔','三岔河'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('八大','八大河'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('大水','大水井'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('旧屋','旧屋基'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('鲁布','鲁布革'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('王家','王家庄'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('马过','马过河'))
+     df[col_name] = df[col_name].map(lambda x:x.replace('白石','白石江'))
+     return df
+df_alarm = completion_town_name(df_alarm,'乡镇')
+
+df_alarm_importance = df_alarm[(df_alarm['告警处理优先级'] =='需处理')
+                                |(df_alarm['告警处理优先级'] =='需处理,爱立信后台处理') ]
+df_alarm_pivot = pivot_table(df_alarm_importance, index=['区县'],
+                                  values =['网元'],
+                                  aggfunc = {'网元':len})
+df_alarm_pivot.reset_index(inplace = True )
+df_alarm_pivot.rename(columns={'网元':'重要告数量',
+                               },inplace =True)
 
 current_time = str(datetime.now()).split('.')[0].replace(':','.')
 
-with pd.ExcelWriter(data_path + '爱立信存留告警' + current_time + '.xlsx' ) as writer:
+country_set  = set(df_alarm['区县'])
+with ExcelWriter(data_path + '爱立信存留告警' + current_time + '.xlsx' ) as writer:
      df_alarm.to_excel(writer,'爱立信存留告警',index = False)
+     df_alarm_pivot.to_excel(writer,'按县统计',index = False)
+     for country in country_set:
+         df_country = df_alarm_importance[df_alarm_importance['区县']== country]
+         df_country.to_excel(writer,country,index = False)
