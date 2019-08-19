@@ -38,4 +38,4 @@ for df_tmp in user_data:
      i += 1
      df_user_4G_record = df_user_record.append(df_tmp)
      if i%100 == 0:
-          print('finished: ', i )
+         print('finished: ', i ,' total: ', len(user_number_set))
