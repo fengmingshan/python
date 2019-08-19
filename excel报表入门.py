@@ -1,11 +1,10 @@
+import pandas as pd      #导入pandas库
 '''
 excel表格相关操作#1       
 F:/test 目录下有两张表格A,B,分别是几个基站的3G流量和4G流量
 要求把两张表按基站名称合并，生成一张基站3/4G流量表
 格式如下’’基站名称‘，’3g流量‘，’3g用户数‘，’4g流量‘，’4g用户数’，
 '''
-import pandas as pd      #导入pandas库
-
 A=r'f:\test\A.xls'
 B=r'f:\test\B.xls'
 df1 = pd.read_excel(A,encoding='utf-8')    #导入一张excel97,2003表格赋值给df1
