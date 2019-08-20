@@ -65,7 +65,7 @@ df_busy_cell_800 = df_high_Data_800.append(df_massive_users_800)
 df_res_800 = pd.DataFrame()
 for week in list(set(df_busy_cell_800['week'])):
      df_800 =  df_busy_cell_800[df_busy_cell_800['week'] == week]
-     df_pivot_800 = pd.pivot_table(df_800, index=['DATE_ID','eNodeB','cell','EUTRANCELLFDD'],
+     df_pivot_800 = pd.pivot_table(df_800, index=['DATE_ID','eNodeB','cell','EUTRANCELLFDD','week'],
                                             values =['Total_throughput' ,
                                                      'DL_Util_of_PRB',
                                                      'Max number of UE in RRc'],
@@ -74,18 +74,35 @@ for week in list(set(df_busy_cell_800['week'])):
                                                        'Max number of UE in RRc':np.max})
      df_pivot_800 = df_pivot_800.reset_index()
 
-     df_busy_day_count_800 = pd.pivot_table(df_pivot_800, index=['eNodeB','cell','EUTRANCELLFDD'],
-                                                           values =['DATE_ID'],
-                                                           aggfunc = {'DATE_ID':'count'})
+     df_busy_day_count_800 = pd.pivot_table(df_pivot_800, index=['eNodeB','cell','EUTRANCELLFDD','week'],
+                                                           values =['DATE_ID',
+                                                                   'Total_throughput' ,
+                                                                   'DL_Util_of_PRB',
+                                                                   'Max number of UE in RRc'],
+                                                           aggfunc = {'DATE_ID':len,
+                                                                   'Total_throughput':np.max,
+                                                                   'DL_Util_of_PRB':np.max,
+                                                                   'Max number of UE in RRc':np.max})
      df_busy_day_count_800  = df_busy_day_count_800.reset_index()
      df_busy_day_count_800 = df_busy_day_count_800[df_busy_day_count_800['DATE_ID'] >= 4]
      df_busy_day_count_800.drop_duplicates('EUTRANCELLFDD', keep='first', inplace = True)
      df_res_800 = df_res_800.append(df_busy_day_count_800)
 
-df_res_800 = pd.pivot_table(df_res_800, index=['country'],
-                            values =['EUTRANCELLFDD'],
-                            aggfunc = {'EUTRANCELLFDD':'count'})
+df_res_800.sort_values(by='eNodeB',ascending = False,inplace = True) # 按时间顺序降序排列
+
+df_res_800 = pd.pivot_table(df_res_800, index=['eNodeB','cell','EUTRANCELLFDD',],
+                            values =['week',
+                                   'Total_throughput' ,
+                                   'DL_Util_of_PRB',
+                                   'Max number of UE in RRc'],
+                            aggfunc = {'week':len,
+                                       'Total_throughput':np.max,
+                                       'DL_Util_of_PRB':np.max,
+                                       'Max number of UE in RRc':np.max})
+df_res_800.rename(columns={'week':'busy_week_count','Total_throughput':'Total_throughput_GB'},inplace =True)
+df_res_800.reset_index(inplace = True)
 df_res_800.drop_duplicates('EUTRANCELLFDD', keep='first', inplace = True)
+df_res_800['country'] = df_res_800['EUTRANCELLFDD'].map(lambda x:x.split('QJ')[1][:2])
 
 df_country_800 = pd.pivot_table(df_res_800, index=['country'],
                                             values =['EUTRANCELLFDD'],

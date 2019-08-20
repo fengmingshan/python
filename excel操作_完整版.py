@@ -97,10 +97,10 @@ df2['区县'] = df2['小区名称'].split('_')[0:2] #可以直接对整列切片
 # =============================================================================
 # 排序 ：默认升序，ascending = False 降序
 # =============================================================================
-df1 = df1.sort_values(by='呼叫话务量(Erl)',ascending = True) # 按时间顺序升序排列
-df1 = df1.sort_values(by='DO最大用户数',ascending = False) # 按时间顺序降序排列
-df1 = df1.sort_index(axis = 0,ascending = True)     # 按行号升序排列
-df1 = df1.sort_index(axis = 1,ascending = True)     # 按列名进行升序排列
+df1.sort_values(by='呼叫话务量(Erl)',ascending = True,inplace = True) # 按时间顺序升序排列
+df1 = df1.sort_values(by='DO最大用户数',ascending = False,inplace = True) # 按时间顺序降序排列
+df1 = df1.sort_index(axis = 0,ascending = True,inplace = True)     # 按行号升序排列
+df1 = df1.sort_index(axis = 1,ascending = True,inplace = True)     # 按列名进行升序排列
 df1 = df1.sort_values(by=['DO最大用户数','DO最大用户数'],ascending = [False,False]) # 按多个索引降序排序
 
 # =============================================================================
