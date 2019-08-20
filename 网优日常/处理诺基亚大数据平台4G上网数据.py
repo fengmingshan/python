@@ -35,7 +35,7 @@ user_4G_record = pd.read_csv(data_path + file,engine = 'python',encoding = 'utf-
 df_user_4G_record = pd.DataFrame()
 i = 0
 for df_tmp in user_data:
-     i += 1
-     df_user_4G_record = df_user_record.append(df_tmp)
-     if i%100 == 0:
-         print('finished: ', i ,' total: ', len(user_number_set))
+    i += 1
+    df_user_4G_record = df_user_record.append(df_tmp)
+    if i%100 == 0:
+        print('finished: ', i ,' total: ', len(user_number_set))
