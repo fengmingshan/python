@@ -30,6 +30,7 @@ df_zte['日期'] = df_zte['开始时间'].map(lambda x:str(x).split(' ')[0])
 df_zte['周'] =pd.to_datetime(df_zte['日期'])
 df_zte['周'] = df_zte['周'].map(lambda x:x.isocalendar()[1])
 
+df_zte = df_zte[df_zte['小区名称'].str.contains('_')]
 df_zte['Net_type'] = df_zte['小区名称'].map(lambda x:x.split('_')[1])
 df_zte['Net_type'] = df_zte['Net_type'].astype(int)
 

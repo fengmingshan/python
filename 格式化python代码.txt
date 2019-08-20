@@ -1,0 +1,8 @@
+# pip install autopep8
+# 在CMD窗口使用以下命令：
+
+# 格式化代码，覆盖原文件
+autopep8 --in-place --aggressive --aggressive D:\test\test.py
+
+# 格式化代码，直接查看效果
+autopep8 --aggressive --aggressive D:\test\test.py
