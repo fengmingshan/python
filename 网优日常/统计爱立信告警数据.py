@@ -141,7 +141,8 @@ alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
                     'SFP Stability Problem':'光模块故障',
                     'Calendar Clock NTP Server Unavailable':'NTP服务器不可用',
                     'Current Too High':'功率过载',
-                    'SW Error':'软件错误'}
+                    'SW Error':'软件错误',
+                    'Clock Reference Missing For Long Time':'参考时钟长时间丢失'}
 
 alarm_priority_dict ={ 'Heartbeat Failure':'需处理',
                     'Service Unavailable':'需处理',
