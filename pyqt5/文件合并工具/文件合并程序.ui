@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
+    <width>719</width>
     <height>453</height>
    </rect>
   </property>
@@ -117,17 +117,23 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_2">
-            <property name="text">
-             <string>csv文件</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QRadioButton" name="radioButton">
             <property name="text">
              <string>EXCEL文件</string>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_2">
+            <property name="text">
+             <string>csv文件</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
            </widget>
           </item>
           <item>
@@ -135,6 +141,9 @@
             <property name="text">
              <string>TXT文件</string>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
            </widget>
           </item>
           <item>
@@ -168,4 +177,7 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

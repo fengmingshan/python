@@ -244,7 +244,8 @@ class Ui_MainWindow(object):
                             'SFP Stability Problem':'光模块故障',
                             'Calendar Clock NTP Server Unavailable':'NTP服务器不可用',
                             'Current Too High':'功率过载',
-                            'SW Error':'软件错误'}
+                            'SW Error':'软件错误',
+                            'Clock Reference Missing For Long Time':'参考时钟长时间丢失'}
 
         alarm_priority_dict ={ 'Heartbeat Failure':'需处理',
                             'Service Unavailable':'需处理',
@@ -271,7 +272,8 @@ class Ui_MainWindow(object):
                             'SFP Stability Problem':'需处理',
                             'Calendar Clock NTP Server Unavailable':'不影响业务_无需处理',
                             'Current Too High':'需处理',
-                            'SW Error':'需处理,爱立信后台处理'}
+                            'SW Error':'需处理,爱立信后台处理',
+                            'Clock Reference Missing For Long Time':'需处理,爱立信后台处理'}
 
         alarm_class_dict ={ 'Critical':'紧急告警',
                             'Major':'主要告警',
@@ -289,7 +291,8 @@ class Ui_MainWindow(object):
                             'gsm1211PowerSupplyFailure':'gsm1211供电故障',
                             'x733PerformanceDegraded':'x733性能下降',
                             'x733SoftwareError':'软件故障',
-                            'm3100Unavailable':'m3100不可用'}
+                            'm3100Unavailable':'m3100不可用',
+                            'Reference failure':'参考时钟故障'}
 
 
         p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 正则表达式，匹配一条完整的告警记录文件

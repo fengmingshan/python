@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
-<!-- eric project file for project Excel表格合并工具 -->
-<!-- Saved: 2019-08-21, 14:09:33 -->
+<!-- eric project file for project 文件合并程序 -->
+<!-- Saved: 2019-08-21, 20:41:16 -->
 <!-- Copyright (C) 2019 ,  -->
 <Project version="5.1">
   <Language>en_US</Language>
@@ -13,11 +13,11 @@
   <Email></Email>
   <Eol index="0"/>
   <Sources>
-    <Source>Ui_Excel表格合并.py</Source>
+    <Source>Ui_文件合并程序.py</Source>
     <Source>__init__.py</Source>
   </Sources>
   <Forms>
-    <Form>Excel表格合并.ui</Form>
+    <Form>文件合并程序.ui</Form>
   </Forms>
   <Translations/>
   <Resources/>
