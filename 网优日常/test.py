@@ -1,9 +1,30 @@
 # -*- coding: utf-8 -*-
-
 import pandas as pd
 
-list1 = [1,2,3,4,5]
-
-list2 = [1,2,3,4,5]
-
-del list1[0]
+dict1 = {'Heartbeat Failure': '基站掉站',
+         'Service Unavailable': '小区服务不可用',
+         'Resource Activation Timeout': '资源激活超时',
+         'Fan Failure': '风扇故障',
+         'No Connection': '连接丢失',
+         'Grace Period Activated': '自动扩容激活',
+         'Inconsistent Configuration': '小区资源配置不一致',
+         'RET Failure': '电调天线故障',
+         'RET Not Calibrated': '电调天线校准失败',
+         'Link Degraded': 'BBU至RRU传输质量下降',
+         'Service Degraded': '小区服务质量下降',
+         'VSWR Over Threshold': '驻波比超限',
+         'HW Fault': '硬件故障',
+         'SW Fault': '软件故障',
+         'Link Failure': 'BBU至RRU光纤故障',
+         'Power Loss': 'RRU掉电',
+         'Resource Allocation Failure Service Degraded': '资源分配失败,服务质量下降',
+         'TimeSyncIO Reference Failed': '参考时钟故障',
+         'Calendar Clock Misaligned': '时钟校准失败',
+         'Synchronization End': '同步结束',
+         'Synchronization Start': '同步开始',
+         'PLMN Service Unavailable': '小区退出服务',
+         'SFP Stability Problem': '光模块故障',
+         'Calendar Clock NTP Server Unavailable': 'NTP服务器不可用',
+         'Current Too High': '功率过载',
+         'SW Error': '软件错误',
+         'Clock Reference Missing For Long Time': '参考时钟长时间丢失'}

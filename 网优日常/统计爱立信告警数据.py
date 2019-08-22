@@ -116,6 +116,7 @@ df_alarm['恢复时间'] = ''
 df_alarm['附加信息'] = ''
 df_alarm['故障原因'] = ''
 
+
 alarm_name_dict ={ 'Heartbeat Failure':'基站掉站',
                     'Service Unavailable':'小区服务不可用',
                     'Resource Activation Timeout':'资源激活超时',
@@ -225,6 +226,8 @@ df_alarm['附加信息'] = df_alarm['附加信息'].fillna('')
 df_alarm['附加信息'] = df_alarm['附加信息'].astype(str)
 df_alarm['告警处理优先级'] = df_alarm['告警名称'].map(alarm_priority_dict)
 df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
+df_alarm = trans_alarm_name(df_alarm)
+
 df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
 df_alarm['故障原因'] = df_alarm['故障原因'].map(alarm_cause_dict)
 df_alarm = trans_AlarmUnit(df_alarm)
