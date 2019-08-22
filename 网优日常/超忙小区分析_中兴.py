@@ -45,7 +45,7 @@ df_busy_cell_1800 = df_high_Data_Volume.append(df_massive_users)
 df_res_1800 = pd.DataFrame()
 for week in list(set(df_busy_cell_1800['周'])):
      df_1800 =  df_busy_cell_1800[df_busy_cell_1800['周'] == week]
-     df_pivot_1800 = pd.pivot_table(df_1800, index=['日期','网元','小区','小区名称'],
+     df_pivot_1800 = pd.pivot_table(df_1800, index=['周','日期','网元','小区','小区名称'],
                                                  values =['小区总流量(GB)' ,
                                                           '下行PRB平均占用率_1',
                                                           '最大RRC连接用户数_1'],
@@ -54,7 +54,7 @@ for week in list(set(df_busy_cell_1800['周'])):
                                                             '最大RRC连接用户数_1':np.max})
      df_pivot_1800 = df_pivot_1800.reset_index()
 
-     df_busy_cell_count_1800 = pd.pivot_table(df_pivot_1800, index=['网元','小区','小区名称'],
+     df_busy_cell_count_1800 = pd.pivot_table(df_pivot_1800, index=['周','网元','小区','小区名称'],
                                                       values =['日期'],
                                                       aggfunc = {'日期':'count'})
      df_busy_cell_count_1800  = df_busy_cell_count_1800.reset_index()
@@ -81,7 +81,7 @@ df_busy_cell_800 = df_high_Data_800.append(df_massive_users_800)
 df_res_800 = pd.DataFrame()
 for week in list(set(df_busy_cell_800['周'])):
      df_800 =  df_busy_cell_800[df_busy_cell_800['周'] == week]
-     df_pivot_800 = pd.pivot_table(df_800, index=['日期','网元','小区','小区名称'],
+     df_pivot_800 = pd.pivot_table(df_800, index=['周','日期','网元','小区','小区名称'],
                                             values =['小区总流量(GB)' ,
                                                      '下行PRB平均占用率_1',
                                                      '最大RRC连接用户数_1'],
@@ -90,7 +90,7 @@ for week in list(set(df_busy_cell_800['周'])):
                                                        '最大RRC连接用户数_1':np.max})
      df_pivot_800 = df_pivot_800.reset_index()
 
-     df_busy_cell_count_800 = pd.pivot_table(df_pivot_800, index=['网元','小区','小区名称'],
+     df_busy_cell_count_800 = pd.pivot_table(df_pivot_800, index=['周','网元','小区','小区名称'],
                                                            values =['日期'],
                                                            aggfunc = {'日期':'count'})
      df_busy_cell_count_800  = df_busy_cell_count_800.reset_index()
@@ -102,25 +102,35 @@ for week in list(set(df_busy_cell_800['周'])):
 
      df_res_800 = df_res_800.append(df_busy_cell_count_800)
 
+df_busy_1800 = pd.pivot_table(df_res_1800, index=['区县','网元','小区','小区名称'],
+                                            values =['周'],
+                                            aggfunc = {'周':len})
+df_busy_1800.rename(columns = {'周':'超忙周数'},inplace =True)
+df_busy_1800 = df_busy_1800.reset_index()
+df_busy_1800.drop_duplicates('小区名称', keep='first', inplace = True)
 
-df_res_1800.drop_duplicates('小区名称', keep='first', inplace = True)
-df_country_1800 = pd.pivot_table(df_res_1800, index=['区县'],
+df_country_1800 = pd.pivot_table(df_busy_1800, index=['区县'],
                                             values =['小区名称'],
                                             aggfunc = {'小区名称':'count'})
 df_country_1800 = df_country_1800.reset_index()
 
+df_busy_800 = pd.pivot_table(df_res_800, index=['区县','网元','小区','小区名称'],
+                                            values =['周'],
+                                            aggfunc = {'周':len})
+df_busy_800.rename(columns = {'周':'超忙周数'},inplace =True)
+df_busy_800 = df_busy_800.reset_index()
 
-df_res_800.drop_duplicates('小区名称', keep='first', inplace = True)
-df_country_800 = pd.pivot_table(df_res_800, index=['区县'],
+df_busy_800.drop_duplicates('小区名称', keep='first', inplace = True)
+df_country_800 = pd.pivot_table(df_busy_800, index=['区县'],
                                             values =['小区名称'],
                                             aggfunc = {'小区名称':'count'})
 df_country_800 = df_country_800.reset_index()
 
 
 with  pd.ExcelWriter(data_path + '中兴超忙小区.xlsx')  as writer:  #输出到excel
-    df_res_1800.to_excel(writer,'1800超忙小区',index=False)
+    df_busy_1800.to_excel(writer,'1800超忙小区',index=False)
     df_country_1800.to_excel(writer,'1800超忙按县统计',index=False)
-    df_res_800.to_excel(writer,'L800超忙小区',index=False)
+    df_busy_800.to_excel(writer,'L800超忙小区',index=False)
     df_country_800.to_excel(writer,'800M超忙按县统计',index=False)
 
 

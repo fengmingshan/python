@@ -91,24 +91,44 @@ df6=df1['Cell'][(df1['呼叫话务量(Erl)']>5)|(df1['DO最大用户数']>20)]
 df7=df1[['Cell','呼叫话务量(Erl)','DO最大用户数']][(df1['呼叫话务量(Erl)']>5)&(df1['DO最大用户数']>20)]
 
 # =============================================================================
-# 切片
+# 切片,分列
 # =============================================================================
-df2['区县'] = df2['小区名称'].split('_')[0:2] #可以直接对整列切片，然后复制给新建的列
+df1 = pd.DataFrame({
+    '小区名称' : ['宣威_板桥', '陆良_板桥', '罗平_板桥', '宣威_热水', '会泽_田坝', '会泽_迤车'],
+    'col3': [0, 1, 9, 4, 2, 3],
+})
+
+df1['区县'] = df1['小区名称'].str[0:2]  #可以直接对整列切片，然后复制给新建的列
 
 # =============================================================================
 # 排序 ：默认升序，ascending = False 降序
 # =============================================================================
-df1.sort_values(by='呼叫话务量(Erl)',ascending = True,inplace = True) # 按时间顺序升序排列
-df1 = df1.sort_values(by='DO最大用户数',ascending = False,inplace = True) # 按时间顺序降序排列
-df1 = df1.sort_index(axis = 0,ascending = True,inplace = True)     # 按行号升序排列
-df1 = df1.sort_index(axis = 1,ascending = True,inplace = True)     # 按列名进行升序排列
-df1 = df1.sort_values(by=['DO最大用户数','DO最大用户数'],ascending = [False,False]) # 按多个索引降序排序
+df1 = pd.DataFrame({
+    'col1' : ['A', 'A', 'B', np.nan, 'D', 'C'],
+    'col2' : [2, 1, 9, 8, 7, 4],
+    'col3': [0, 1, 9, 4, 2, 3],
+})
+df1.sort_values(by='col1',ascending = True,inplace = True) # 按时间顺序升序排列
+df1.sort_values(by='col1', ascending=False, na_position='first',inplace = True)
+df1.sort_values(by='col1', ascending=False, na_position='last',inplace = True)
+
+df2 = df1.sort_values(by='col2',ascending = False,inplace = True) # 按时间顺序降序排列
+df3= df1.sort_index(axis = 0,ascending = True,inplace = True)     # 按行号升序排列
+df4 = df1.sort_index(axis = 1,ascending = True,inplace = True)     # 按列名进行升序排列
+df5 = df1.sort_values(by=['col1','col2'],ascending = [False,False]) # 按多个索引降序排序
 
 # =============================================================================
 # 行列重命名
 # =============================================================================
-df1.rename(columns={'呼叫话务量(Erl)':'话务量',
-                    'DO最大用户数':'DO用户数'
+df1 = pd.DataFrame({
+    'col1' : ['A', 'A', 'B', np.nan, 'D', 'C'],
+    'col2' : [2, 1, 9, 8, 7, 4],
+    'col3': [0, 1, 9, 4, 2, 3],
+})
+
+df1.rename(columns={'col1':'话务量',
+                    'col2':'DO用户数'
+                    'col3':'DO流量'
                     },inplace =True)
 
 # =============================================================================
