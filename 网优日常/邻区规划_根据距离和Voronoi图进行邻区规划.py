@@ -99,13 +99,13 @@ def plan_neighbor_bts(df_bts):
          points = np.array(point_list)
          # 计算Voronoi图
          vor = Voronoi(points=points)
-    
+
          seed_ponts = vor.points
          df_bts['point_index'] = list(df_bts.index)
-    
+
          point_region = vor.point_region
          df_bts['regions_index'] = point_region
-    
+
          regions = vor.regions
          df_regions = pd.DataFrame()
          df_regions['regions_index'] = range(len(regions))
@@ -147,7 +147,7 @@ def plan_neighbor_bts(df_bts):
          df_bts['layer2_neighbor'] = df_bts['S_bts_name'].map(layer2_neighbor_name_dict)
      elif len(point_list) <4:
          df_bts['layer1_neighbor'] = list(df_bts['N_bts_name'])
-         df_bts['layer2_neighbor'] = list(df_bts['N_bts_name'])     
+         df_bts['layer2_neighbor'] = list(df_bts['N_bts_name'])
      return df_bts
 
 def plan_neighbor_cell(Degree,Scell_azimuth,Ncell_azimuth):
@@ -218,7 +218,7 @@ for i in range(801,len(df_bts)):
           else:
               layer1_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer1_neighbor'])
               layer2_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer2_neighbor'])
-              
+
           if isinstance(df_neighbor_bts2.loc[0,'layer1_neighbor'],list):
               layer1_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer1_neighbor'])
               layer2_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer2_neighbor'])
@@ -232,7 +232,7 @@ for i in range(801,len(df_bts)):
                                         &(df_tmp['Distance'] <= mix_max_distance)]
           df_neighbor_bts1 = plan_neighbor_bts(df_neighbor_bts1)
           df_neighbor_bts1 = df_neighbor_bts1.reset_index().drop('index',axis = 1)
-          
+
           df_neighbor_bts2 = df_tmp[(df_tmp['N_network'] == 'L800')&(df_tmp['Distance'] <= L800_max_distance)]
           df_neighbor_bts2 = plan_neighbor_bts(df_neighbor_bts2)
           df_neighbor_bts2 = df_neighbor_bts2.reset_index().drop('index',axis = 1)
@@ -245,7 +245,7 @@ for i in range(801,len(df_bts)):
           else:
               layer1_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer1_neighbor'])
               layer2_neighbor_bts.append(df_neighbor_bts1.loc[0,'layer2_neighbor'])
-              
+
           if isinstance(df_neighbor_bts2.loc[0,'layer1_neighbor'],list):
               layer1_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer1_neighbor'])
               layer2_neighbor_bts.extend(df_neighbor_bts2.loc[0,'layer2_neighbor'])
