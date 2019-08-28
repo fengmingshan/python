@@ -9,17 +9,6 @@ pyinstaller -F -c -i GRAPH.ICO Ui_文件编辑器.py
 # =============================================================================
 # 打包pyqt程序运行时报错，添加--hidden-import PyQt5.sip
 # =============================================================================
-pyinstaller --hidden-import PyQt5.sip -F -w -i "d:\py2exe\file_merge.ico" d:\test\Ui_文件合并程序.py
-
-pyinstaller --hidden-import PyQt5.sip -F -w -i "d:\py2exe\file_merge.ico" --upx "d:\py2exe\upx391w" d:\py2exe\Ui_文件合并程序.py
-
-pyinstaller --hidden-import PyQt5.sip -w -i "d:\py2exe\file_merge.ico" d:\test\Ui_文件合并程序.py
-
-pyinstaller --clean --hidden-import PyQt5.sip -c -i "d:\py2exe\file_merge.ico" d:\test\Ui_文件合并程序.py
-
-pyinstaller --clean --hidden-import PyQt5.sip -F -w -i "d:\py2exe\Warning2.ico" d:\test\Ui_爱立信告警统计.py
-
-pyinstaller --hidden-import PyQt5.sip -F -w -i warning.ico Ericsson_Alarm_Static.py
 
 # =============================================================================
 # 参数说明
