@@ -79,7 +79,7 @@ def calc_azimuth_difference(Degree,Scell_azimuth,Ncell_azimuth):
                     else 360 - abs(Scell_azimuth - Degree)
      neighbor_Degree_detal = abs(Ncell_azimuth - Degree) if abs(Ncell_azimuth - Degree) < 180 \
                               else 360 - abs(Ncell_azimuth - Degree)
-     if Scell_degree_detal + neighbor_Degree_detal <= 120:
+     if Scell_degree_detal + neighbor_Degree_detal <= 90:
           add_neighbor ='Yes'
      else:
           add_neighbor ='No'
@@ -169,6 +169,6 @@ def plan_first_layer(plan_bts_name,df_cell):
 df_planed = plan_first_layer('麒麟西城师范学院樱苑二栋L8',df_cell)
 df_planed = df_planed[['Scell','CELLNAME','first_layer','second_layer']]
 df_planed.rename(columns = {'CELLNAME':'Ncell'},inplace = True)
-
+df_planed.drop_duplicates(['Scell','Ncell'],keep = 'first',inplace = True)
 with pd.ExcelWriter(data_path + '邻区规划结果.xlsx') as writer:
     df_planed.to_excel(writer,index = False)
