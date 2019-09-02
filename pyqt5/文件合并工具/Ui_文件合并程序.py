@@ -6,6 +6,29 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+import os
+import sys
+import logging
+
+def _append_run_path():
+    if getattr(sys, 'frozen', False):
+        pathlist = []
+
+        # If the application is run as a bundle, the pyInstaller bootloader
+        # extends the sys module by a flag frozen=True and sets the app
+        # path into variable _MEIPASS'.
+        pathlist.append(sys._MEIPASS)
+
+        # the application exe path
+        _main_app_path = os.path.dirname(sys.executable)
+        pathlist.append(_main_app_path)
+
+        # append to system path enviroment
+        os.environ["PATH"] += os.pathsep + os.pathsep.join(pathlist)
+
+    #logging.error("current PATH: %s", os.environ['PATH'])
+_append_run_path()
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget,QFileDialog
 from pandas import ExcelWriter,DataFrame,read_excel,read_csv
@@ -111,8 +134,8 @@ class Ui_MainWindow(QWidget):
 
     skip_rows = 0
     def spinBox_changevalue(self,value):
-        Ui_MainWindow.skip_rows = value
-        self.textBrowser.append('跳过{0}行'.format(Ui_MainWindow.skip_rows))
+        self.skip_rows = value
+        self.textBrowser.append('跳过{0}行'.format(self.skip_rows))
 
     file_type = ''
     def radioButton_clicked(self):
@@ -127,22 +150,20 @@ class Ui_MainWindow(QWidget):
             else:
                 Ui_MainWindow.file_type = ''
 
-    data_path = ''
-    fname = ''
     def select_file(self):
-        Ui_MainWindow.data_path = ''
+        self.fname = ''
         if Ui_MainWindow.file_type == 'excel':
-            Ui_MainWindow.fname,filetype  = QFileDialog.getOpenFileNames(None,
+            self.fname,filetype  = QFileDialog.getOpenFileNames(None,
                                      '打开多个文件',
                                      'D:/',
                                      ("excel (*.xls *.xlsx )"))
         elif Ui_MainWindow.file_type == 'csv':
-            Ui_MainWindow.fname,filetype  = QFileDialog.getOpenFileNames(None,
+            self.fname,filetype  = QFileDialog.getOpenFileNames(None,
                                      '打开多个文件',
                                      'D:/',
                                      ("csv (*.csv)"))
         elif Ui_MainWindow.file_type == 'txt':
-            Ui_MainWindow.fname,filetype  = QFileDialog.getOpenFileNames(None,
+            self.fname,filetype  = QFileDialog.getOpenFileNames(None,
                                      '打开多个文件',
                                      'D:/',
                                      ("Text (*.txt *.log )"))
@@ -151,13 +172,13 @@ class Ui_MainWindow(QWidget):
             self.textBrowser.append('=======================')
 
         try:
-            if Ui_MainWindow.fname[0]:
-                self.textBrowser.append('选择{0}个文件'.format(len(Ui_MainWindow.fname)))
-                for file in Ui_MainWindow.fname:
+            if self.fname[0]:
+                self.textBrowser.append('选择{0}个文件'.format(len(self.fname)))
+                for file in self.fname:
                     self.textBrowser.append(file)
                 self.textBrowser.append('=======================')
         except :
-            self.textBrowser.append('未选择任何文件')
+            self.textBrowser.append('请先选择文件类型')
             self.textBrowser.append('=======================')
 
     def get_file_path(self,fname):
@@ -178,15 +199,14 @@ class Ui_MainWindow(QWidget):
             file_suffix = fname.split('.')[1]
         return file_suffix
 
-
     def merge_excel(self,fname):
         df_merge = DataFrame()
         if isinstance(fname,list):
             for file in fname:
-                df_tmp = read_excel(file,skiprows = Ui_MainWindow.skip_rows)
+                df_tmp = read_excel(file,skiprows = self.skip_rows)
                 df_merge = df_merge.append(df_tmp)
         else :
-            df_merge = read_excel(fname,skiprows = Ui_MainWindow.skip_rows)
+            df_merge = read_excel(fname,skiprows = self.skip_rows)
         file_path = self.get_file_path(fname)
         with ExcelWriter(file_path + '合并后文件'+ '.xlsx') as writer:
             df_merge.to_excel(writer,'合并后',index = False)
@@ -218,14 +238,14 @@ class Ui_MainWindow(QWidget):
             File.write(content_all)
 
     def merge_file(self):
-        if  Ui_MainWindow.fname:
-            file_suffix = self.get_file_suffix(Ui_MainWindow.fname)
+        if  self.fname:
+            file_suffix = self.get_file_suffix(self.fname)
             if file_suffix =='xls' or file_suffix =='xlsx':
-                self.merge_excel(Ui_MainWindow.fname)
+                self.merge_excel(self.fname)
             elif file_suffix =='csv':
-                self.merge_csv(Ui_MainWindow.fname)
+                self.merge_csv(self.fname)
             elif file_suffix =='txt':
-                self.merge_txt(Ui_MainWindow.fname)
+                self.merge_txt(self.fname)
             self.textBrowser.append('合并文件成功')
         else:
             self.textBrowser.append('未选择任何文件')
@@ -233,7 +253,7 @@ class Ui_MainWindow(QWidget):
 
 
     def open_result(self):
-        result_path = self.get_file_path(Ui_MainWindow.fname)
+        result_path = self.get_file_path(self.fname)
         startfile(result_path)
 
 
