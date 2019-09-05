@@ -5,12 +5,13 @@ Created on Thu Sep  5 16:07:52 2019
 @author: Administrator
 """
 
-data_path = 'd:/test/'
-
-os.chdir(data_path)
 
 from docx import Document
 from docx.shared import Inches
+
+data_path = 'd:/test/'
+
+os.chdir(data_path)
 
 document = Document()
 
