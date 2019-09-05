@@ -40,7 +40,7 @@ df_carrier_info = pd.read_excel(file_name)
 # 参数修改脚本
 with open(out_path + '修改DO载频功率.txt', 'w') as f:
     for i in range(0, len(df_carrier_info), 1):
-        line = r'SET DO_CARRIERSTATE:POS="{system}"-"{cellid}"-"{carrierid}",FORWARDTRANSMITPOWER=50;'\
+        line = r'SET DO_CARRIERSTATE:POS="{system}"-"{cellid}"-"{carrierid}",FORWARDTRANSMITPOWER=7000;'\
         .format(system = df_carrier_info.loc[i, 'system'],
              cellid = df_carrier_info.loc[i, 'cellid'],
              carrierid = df_carrier_info.loc[i, 'carrierid'])
