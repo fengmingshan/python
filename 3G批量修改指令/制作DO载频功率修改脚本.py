@@ -8,7 +8,7 @@ Created on Tue Jan 29 15:27:13 2019
 import pandas as pd
 import os
 
-# 修改小区邻区指令
+# 申请权限
 # APPLY CMRIGHT:SYSTEM=102;
 
 # ADD 1X_LINKCELL_L:POS="1"-"0"-"21",NCELLSYSTEM=1,NCELL=1,ISEACHOTHER=0;
@@ -37,6 +37,7 @@ file_name = '载频参数表.xlsx'
 
 df_carrier_info = pd.read_excel(file_name)
 
+# 参数修改脚本
 with open(out_path + '修改DO载频功率.txt', 'w') as f:
     for i in range(0, len(df_carrier_info), 1):
         line = r'SET DO_CARRIERSTATE:POS="{system}"-"{cellid}"-"{carrierid}",FORWARDTRANSMITPOWER=50;'\
@@ -44,3 +45,14 @@ with open(out_path + '修改DO载频功率.txt', 'w') as f:
              cellid = df_carrier_info.loc[i, 'cellid'],
              carrierid = df_carrier_info.loc[i, 'carrierid'])
         f.write(line+'\n')
+
+# 申请网元权限脚本
+df_system = df_carrier_info[['system','cellid']]
+df_system.drop_duplicates('system', keep ='first', inplace = True)
+df_system.reset_index(inplace = True)
+with open(out_path + '申请权限.txt', 'w') as f:
+    for i in range(0, len(df_system), 1):
+        line = 'APPLY CMRIGHT:SYSTEM={system};'\
+        .format(system = df_system.loc[i, 'system'])
+        f.write(line+'\n')
+
