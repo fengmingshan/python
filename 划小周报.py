@@ -105,8 +105,8 @@ for file in traffic_file_3g:
         df_3g_traffic['日期'] =  df_3g_traffic['日期'].map(lambda x:x.split(' ')[0])
 
 # 汇总1X登记用户数
-df_1x_user = pd.DataFrame()        
-for file in user_file_1x: 
+df_1x_user = pd.DataFrame()
+for file in user_file_1x:
     df_tmp = pd.read_csv(user_path_1x + file,engine = 'python', encoding = 'gbk')
     df_tmp.columns = df_tmp.columns.map(lambda x:x.strip())
     date_list = list(set(df_tmp['开始时间'].map(lambda x:x.split(' ')[0])))
@@ -120,11 +120,11 @@ for file in user_file_1x:
         # =============================================================================
         df_pivot_user = pd.pivot_table(df_date, index=['开始时间'],
                                       values ='1X: Sector基本性能测量对象.定时登记成功次数',
-                                      aggfunc = {'1X: Sector基本性能测量对象.定时登记成功次数':np.sum})                                                  
+                                      aggfunc = {'1X: Sector基本性能测量对象.定时登记成功次数':np.sum})
         df_pivot_user = df_pivot_user.sort_values(by='1X: Sector基本性能测量对象.定时登记成功次数',ascending = False)
         df_pivot_user = df_pivot_user.reset_index()
         busy_hour =  df_pivot_user.loc[0,'开始时间']
-        df_max_user =  df_date[['BTS','1X: Sector基本性能测量对象.定时登记成功次数']][df_date['开始时间'] == busy_hour]        
+        df_max_user =  df_date[['BTS','1X: Sector基本性能测量对象.定时登记成功次数']][df_date['开始时间'] == busy_hour]
         df_max_user['日期'] = date
         df_1x_user = df_1x_user.append(df_max_user)  
         df_1x_user['日期'] =  df_1x_user['日期'].map(lambda x:x.replace('-','/'))
@@ -224,7 +224,6 @@ df_all_1x = df_all_1x.reset_index()
 df_all_1x['日期'] = pd.to_datetime(df_all_1x['日期'])
 df_all_1x = df_all_1x.sort_values(by='日期',ascending = True)
 df_all_1x['日期'] = df_all_1x['日期'].map(lambda x:str(x))
-df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.split(' ')[0])        
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('-','/'))
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x.replace('/0','/'))
 df_all_1x['日期'] =  df_all_1x['日期'].map(lambda x:x[5:])
