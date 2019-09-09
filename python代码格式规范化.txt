@@ -12,3 +12,8 @@ autopep8 --aggressive --aggressive D:\test\test.py
 
 # 格式化代码，覆盖原文件
 autopep8 --in-place --aggressive --aggressive D:\_python\python\网优日常\校园超忙小区分析.py
+
+autopep8 --in-place --aggressive --aggressive d:\_python\python\Pytroch_神经网络\pytroch官方60分钟入门.py
+
+autopep8 --in-place --aggressive --aggressive d:\_python\python\Pytroch_神经网络\pytroch_图像分类器.py
+
