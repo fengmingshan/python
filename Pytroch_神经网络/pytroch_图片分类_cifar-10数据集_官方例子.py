@@ -154,4 +154,18 @@ print('Accuracy of the network on the 10000 test images: %d %%' % (
     100 * correct / total))
 
 # Save the model checkpoint
-torch.save(net.state_dict(), 'model.ckpt')
+torch.save(net.state_dict(), 'net.ckpt')
+
+# 打印模型参数表
+print("net's state_dict:")
+for var_name in net.state_dict():
+    print(var_name, "\t", net.state_dict()[var_name])
+
+# 重新加载网络模型
+model = Net()
+model.load_state_dict(torch.load('./cifar-10图片分类模型参数备份/net.ckpt'))
+# 在测试模型前，你必须调用model.eval来设置dropout和normalization层切换到评估模式，否则会导致不一致的测试结果.
+model.eval()
+
+# 下面可以输入图片开始测试了。
+
