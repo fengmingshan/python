@@ -9,13 +9,13 @@ from numba import jit
 data_path = r'd:\_小程序\爱立信告警统计' + '\\'
 
 def trans_AlarmUnit(df):
+    df['告警单元'] = df['告警单元'].map(lambda x:x.strip())
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SubNetwork=QuJing',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SystemFunctions=1 SysM=1',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('SubNetwork=ONRM_ROOT_MO',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('ENodeBFunction=1',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Cabinet=1',''))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('Equipment=1',''))
-    df['告警单元'] = df['告警单元'].map(lambda x:x.strip())
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('ManagedElement=','基站:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('EUtranCellFDD=','小区:'))
     df['告警单元'] = df['告警单元'].map(lambda x:x.replace('FanGroup=','风扇单元:'))
@@ -37,7 +37,8 @@ def trans_AlarmUnit(df):
 def trans_AdditionalText(df):
     for i in range(0,len(df)):
         if df.loc[i,'告警名称'] == '驻波比超限':
-            df.loc[i,'附加信息'] = df.loc[i,'附加信息'].split(',')[1].strip().replace('VSWR','驻波比:')
+            if df.loc[i,'附加信息'] != '':
+                df.loc[i,'附加信息'] = df.loc[i,'附加信息'].split(',')[1].strip().replace('VSWR','驻波比:')
         elif df.loc[i,'告警名称'] == 'BBU至RRU光纤故障':
             if 'No signal detected' in df.loc[i,'附加信息']:
                 df.loc[i,'附加信息'] = '光口无光'
@@ -94,8 +95,153 @@ def trans_AdditionalText(df):
             df.loc[i,'附加信息'] = '工作状态异常'
     return df
 
+@jit()
+def trans_alarm_name(df):
+    for i in range(0, len(df)):
+        if df.loc[i, '告警名称'] == 'Heartbeat Failure':
+            df.loc[i, '告警名称'] = '基站掉站'
+        elif df.loc[i, '告警名称'] == 'Service Unavailable':
+            df.loc[i, '告警名称'] = '小区服务不可用'
+        elif df.loc[i, '告警名称'] == 'Resource Activation Timeout':
+            df.loc[i, '告警名称'] = '资源激活超时'
+        elif df.loc[i, '告警名称'] == 'Fan Failure':
+            df.loc[i, '告警名称'] = '风扇故障'
+        elif df.loc[i, '告警名称'] == 'No Connection':
+            df.loc[i, '告警名称'] = '连接丢失'
+        elif df.loc[i, '告警名称'] == 'Grace Period Activated':
+            df.loc[i, '告警名称'] = '自动扩容激活'
+        elif df.loc[i, '告警名称'] == 'Inconsistent Configuration':
+            df.loc[i, '告警名称'] = '小区资源配置不一致'
+        elif df.loc[i, '告警名称'] == 'RET Failure':
+            df.loc[i, '告警名称'] = '电调天线故障'
+        elif df.loc[i, '告警名称'] == 'RET Not Calibrated':
+            df.loc[i, '告警名称'] = '电调天线校准失败'
+        elif df.loc[i, '告警名称'] == 'Link Degraded':
+            df.loc[i, '告警名称'] = 'BBU至RRU传输质量下降'
+        elif df.loc[i, '告警名称'] == 'Service Degraded':
+            df.loc[i, '告警名称'] = '小区服务质量下降'
+        elif df.loc[i, '告警名称'] == 'VSWR Over Threshold':
+            df.loc[i, '告警名称'] = '驻波比超限'
+        elif df.loc[i, '告警名称'] == 'HW Fault':
+            df.loc[i, '告警名称'] = '硬件故障'
+        elif df.loc[i, '告警名称'] == 'SW Fault':
+            df.loc[i, '告警名称'] = '软件故障'
+        elif df.loc[i, '告警名称'] == 'Link Failure':
+            df.loc[i, '告警名称'] = 'BBU至RRU光纤故障'
+        elif df.loc[i, '告警名称'] == 'Power Loss':
+            df.loc[i, '告警名称'] = 'RRU掉电'
+        elif df.loc[i, '告警名称'] == 'Resource Allocation Failure Service Degraded':
+            df.loc[i, '告警名称'] = '资源分配失败,服务质量下降'
+        elif df.loc[i, '告警名称'] == 'TimeSyncIO Reference Failed':
+            df.loc[i, '告警名称'] = '参考时钟故障'
+        elif df.loc[i, '告警名称'] == 'Calendar Clock Misaligned':
+            df.loc[i, '告警名称'] = '时钟校准失败'
+        elif df.loc[i, '告警名称'] == 'Synchronization End':
+            df.loc[i, '告警名称'] = '同步结束'
+        elif df.loc[i, '告警名称'] == 'Synchronization Start':
+            df.loc[i, '告警名称'] = '同步开始'
+        elif df.loc[i, '告警名称'] == 'PLMN Service Unavailable':
+            df.loc[i, '告警名称'] = '小区退出服务'
+        elif df.loc[i, '告警名称'] == 'SFP Stability Problem':
+            df.loc[i, '告警名称'] = '光模块故障'
+        elif df.loc[i, '告警名称'] == 'Calendar Clock NTP Server Unavailable':
+            df.loc[i, '告警名称'] = 'NTP服务器不可用'
+        elif df.loc[i, '告警名称'] == 'Current Too High':
+            df.loc[i, '告警名称'] = '功率过载'
+        elif df.loc[i, '告警名称'] == 'SW Error':
+            df.loc[i, '告警名称'] = '软件错误'
+        elif df.loc[i, '告警名称'] == 'Clock Reference Missing For Long Time':
+            df.loc[i, '告警名称'] = '参考时钟长时间丢失'
+    return df
+
+@jit()
+def trans_alarm_priority(df):
+    for i in range(0, len(df)):
+        if df.loc[i, '告警名称'] == 'Heartbeat Failure':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'Service Unavailable':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'Resource Activation Timeout':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'Fan Failure':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'No Connection':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'Grace Period Activated':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'Inconsistent Configuration':
+            df.loc[i, '告警处理优先级'] = '需处理,爱立信后台处理'
+        elif df.loc[i, '告警名称'] == 'RET Failure':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'RET Not Calibrated':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'Link Degraded':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'Service Degraded':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'VSWR Over Threshold':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'HW Fault':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'SW Fault':
+            df.loc[i, '告警处理优先级'] = '需处理,爱立信后台处理'
+        elif df.loc[i, '告警名称'] == 'Link Failure':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'Power Loss':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'Resource Allocation Failure Service Degraded':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'TimeSyncIO Reference Failed':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'Calendar Clock Misaligned':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'Synchronization End':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'Synchronization Start':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'PLMN Service Unavailable':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'SFP Stability Problem':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'Calendar Clock NTP Server Unavailable':
+            df.loc[i, '告警处理优先级'] = '不影响业务_无需处理'
+        elif df.loc[i, '告警名称'] == 'Current Too High':
+            df.loc[i, '告警处理优先级'] = '需处理'
+        elif df.loc[i, '告警名称'] == 'SW Error':
+            df.loc[i, '告警处理优先级'] = '需处理,爱立信后台处理'
+        elif df.loc[i, '告警名称'] == 'Clock Reference Missing For Long Time':
+            df.loc[i, '告警处理优先级'] = '需处理,爱立信后台处理'
+    return df
+
+@jit()
+def trans_alarm_cause(df):
+    for i in range(0, len(df)):
+        if df.loc[i, '故障原因'] == 'LAN Error/Communication Error':
+            df.loc[i, '故障原因'] = '传输故障'
+        elif df.loc[i, '故障原因'] == 'x733UnderlyingResourceUnavailable':
+            df.loc[i, '故障原因'] = 'x733基础资源不可用'
+        elif df.loc[i, '故障原因'] == 'gsm1211TimeoutExpired':
+            df.loc[i, '故障原因'] = 'gsm1211超时'
+        elif df.loc[i, '故障原因'] == 'x733EquipmentMalfunction':
+            df.loc[i, '故障原因'] = 'x733设备故障'
+        elif df.loc[i, '故障原因'] == 'x733ThresholdCrossed':
+            df.loc[i, '故障原因'] = 'x733超过阈值'
+        elif df.loc[i, '故障原因'] == 'x733ConfigurationOrCustomizationError':
+            df.loc[i, '故障原因'] = 'x733配置错误'
+        elif df.loc[i, '故障原因'] == 'gsm1211PowerSupplyFailure':
+            df.loc[i, '故障原因'] = 'gsm1211供电故障'
+        elif df.loc[i, '故障原因'] == 'x733PerformanceDegraded':
+            df.loc[i, '故障原因'] = 'x733性能下降'
+        elif df.loc[i, '故障原因'] == 'x733SoftwareError':
+            df.loc[i, '故障原因'] = '软件故障'
+        elif df.loc[i, '故障原因'] == 'm3100Unavailable':
+            df.loc[i, '故障原因'] = 'm3100不可用'
+        elif df.loc[i, '故障原因'] == 'gsm1211ClockSynchronisationProblem':
+            df.loc[i, '故障原因'] = 'gsm1211时钟同步故障'
+    return df
+
 all_files = listdir(data_path)
-files = [x for x in all_files if '.txt' in x ]
+files = [x for x in all_files if '1509.txt' in x ]
 content_all = ''
 for file in files:
     file_tmp = open(data_path + file)
@@ -193,6 +339,7 @@ alarm_cause_dict ={ 'LAN Error/Communication Error':'传输故障',
                     'Reference failure':'参考时钟故障'}
 
 
+
 p1 = r'(AlarmId.*[\s\S]+?FDN2:)'  # 正则表达式，匹配一条完整的告警记录文件
 alarm_list = findall(p1,content_all) # 通过正则匹配分割所有的告警记录
 
@@ -224,12 +371,10 @@ for j in range(0,len(alarm_list)):
 
 df_alarm['附加信息'] = df_alarm['附加信息'].fillna('')
 df_alarm['附加信息'] = df_alarm['附加信息'].astype(str)
-df_alarm['告警处理优先级'] = df_alarm['告警名称'].map(alarm_priority_dict)
 df_alarm['告警级别'] = df_alarm['告警级别'].map(alarm_class_dict)
+df_alarm = trans_alarm_priority(df_alarm)
 df_alarm = trans_alarm_name(df_alarm)
-
-df_alarm['告警名称'] = df_alarm['告警名称'].map(alarm_name_dict)
-df_alarm['故障原因'] = df_alarm['故障原因'].map(alarm_cause_dict)
+df_alarm = trans_alarm_cause(df_alarm)
 df_alarm = trans_AlarmUnit(df_alarm)
 df_alarm = trans_AdditionalText(df_alarm)
 
@@ -2380,11 +2525,13 @@ eNodeBID_dict = {'GCTCRBS6601_QJFYFC5133_WCTT_EFT':'731316',
 
 df_alarm['eNodeB_ID'] = df_alarm['网元'].map(eNodeBID_dict)
 df_alarm['网元'] = df_alarm['网元'].map(BTS_name_dict)
-df_alarm['网元'] = df_alarm['网元'].map(lambda x:x.replace('县',''))
-df_alarm['网元'] = df_alarm['网元'].map(lambda x:x.replace('市',''))
-df_alarm['网元'] = df_alarm['网元'].map(lambda x:x.replace('区',''))
-df_alarm['区县'] = df_alarm['网元'].map(lambda x:x[0:2])
-df_alarm['乡镇'] = df_alarm['网元'].map(lambda x:x[2:4])
+
+df_alarm['网元'] = df_alarm['网元'].map(lambda x: x.replace('县', ''))
+df_alarm['网元'] = df_alarm['网元'].map(lambda x: x.replace('市', ''))
+df_alarm['网元'] = df_alarm['网元'].map(lambda x: x.replace('区', ''))
+df_alarm['区县'] = df_alarm['网元'].map(lambda x: x[0:2])
+df_alarm['乡镇'] = df_alarm['网元'].map(lambda x: x[2:4])
+
 def completion_town_name(df,col_name):
      df[col_name] = df[col_name].map(lambda x:x.replace('十八','十八连山'))
      df[col_name] = df[col_name].map(lambda x:x.replace('黄泥','黄泥河'))
