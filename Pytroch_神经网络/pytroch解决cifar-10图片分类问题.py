@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # @Author: Administrator
 # @Date:   2019-09-09 13:40:28
 # @Last Modified by:   Administrator
@@ -43,7 +42,7 @@ class LeNet(nn.Module):
     def __init__(self):
         # 这个语句是找到LeNet的父类即nn.Module，然后执行nn.Module的init方法
         # 相当于对实例LeNet执行nn.Module进行初始化方法
-        super(LeNet, self).__init__() 
+        super(LeNet, self).__init__()
         # Conv2d的第一个参数是输入的channel数量，第二个是输出的channel数量，第三个是kernel size
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.conv2 = nn.Conv2d(6, 16, 5)
