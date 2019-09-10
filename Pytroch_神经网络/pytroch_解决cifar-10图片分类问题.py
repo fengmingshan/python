@@ -1,7 +1,7 @@
 # @Author: Administrator
 # @Date:   2019-09-09 13:40:28
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-09 14:14:34
+# @Last Modified time: 2019-09-10 22:20:48
 
 # -*- coding: utf-8 -*-
 
@@ -16,6 +16,9 @@ import torchvision.transforms as transforms
 
 root_path = 'd:/_python/神经网络数据集/CIFAR-10'
 os.chdir(root_path)
+
+# 原来的tensor是三个维度的，值在0到1之间，那么经过transforms.Normalize之后就到了-1到1区间
+# x = (x-mean)/std 也就是（（0,1）-0.5）/0.5=(-1,1)
 transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])

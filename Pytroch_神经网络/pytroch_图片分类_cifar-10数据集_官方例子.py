@@ -13,6 +13,8 @@ import torchvision.transforms as transforms
 root_path = 'D:/_python/神经网络数据集/cifar-10'
 os.chdir(root_path)
 
+# 原来的tensor是三个维度的，值在0到1之间，那么经过transforms.Normalize之后就到了-1到1区间
+# x = (x-mean)/std 也就是（（0,1）-0.5）/0.5=(-1,1)
 transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -35,6 +37,9 @@ import numpy as np
 
 # functions to show an image
 def imshow(img):
+    # 因为读取数据的时候对img做了Normalize标准化，现在要反算回来
+    # Normalize(x) = (x-mean)/std ,反算就是 x*std + mean
+    # 因为0 < x < 1,所以std =1/2，mean = 1/2
     img = img / 2 + 0.5     # unnormalize
     # 将图片转成numpy包的图片
     npimg = img.numpy()
