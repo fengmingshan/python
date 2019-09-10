@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 19:03:43
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 19:16:13
+# @Last Modified time: 2019-09-10 19:28:42
 
 # Multilayer Neural Network （多层神经网络）
 
@@ -117,9 +117,14 @@ if __name__ == '__main__':
         #test(model, device, test_loader)
 
 
+    # =============================================================================
+    # 随机选取test集中的图片测试模型
+    # =============================================================================
     import torchvision
     import matplotlib.pyplot as plt
     import numpy as np
+    import time
+
     # functions to show an image
     def imshow(img):
         img = img / 2 + 0.5     # unnormalize
@@ -127,10 +132,6 @@ if __name__ == '__main__':
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()
 
-    # =============================================================================
-    # 随机选取test集中的图片测试模型
-    # =============================================================================
-    import time
     # 分类结果:
     classes = (0,1,2,3,4,5,6,7,8,9)
     # get some random test images
@@ -152,4 +153,3 @@ if __name__ == '__main__':
         print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
             for j in range(4)))
         time.sleep(3)
-

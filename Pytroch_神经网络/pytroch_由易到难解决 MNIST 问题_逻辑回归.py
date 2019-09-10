@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 18:19:27
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 19:02:12
+# @Last Modified time: 2019-09-10 19:28:24
 
 # 1. Logistic Regression （逻辑回归）
 # 首先先要构造模型，因为输入的图片大小为 28*28 ，而最终分类完成后输出 10 种结果，
@@ -108,10 +108,14 @@ if __name__ == '__main__':
         train(model, device, train_loader, optimizer, epoch)
         #test(model, device, test_loader)
 
-
+    # =============================================================================
+    # 随机选取test集中的图片测试模型
+    # =============================================================================
     import torchvision
     import matplotlib.pyplot as plt
     import numpy as np
+    import time
+
     # functions to show an image
     def imshow(img):
         img = img / 2 + 0.5     # unnormalize
@@ -119,10 +123,6 @@ if __name__ == '__main__':
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()
 
-    # =============================================================================
-    # 随机选取test集中的图片测试模型
-    # =============================================================================
-    import time
     # 分类结果:
     classes = (0,1,2,3,4,5,6,7,8,9)
     # get some random test images
