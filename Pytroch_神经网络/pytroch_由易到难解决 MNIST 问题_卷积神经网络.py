@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 19:19:39
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 19:27:48
+# @Last Modified time: 2019-09-10 20:08:50
 from __future__ import print_function
 import torch
 import torch.nn as nn
@@ -21,6 +21,7 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        # nn.Dropout2d()防止过拟合，随机选择一个信道，将其置为零
         self.conv2_drop = nn.Dropout2d()
         self.layer1 = nn.Sequential(
             nn.Linear(320, 100),
@@ -34,6 +35,7 @@ class CNN(nn.Module):
         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
         x = x.view(-1, 320)
         x = self.layer1(x)
+        # F.dropout()防止过拟合，随机选择一个元素将其置为零
         x = F.dropout(x, training=self.training)
         x = self.layer2(x)
         # log_softmax(x, dim=1)对第二个维度即每一列做softmax
@@ -41,7 +43,7 @@ class CNN(nn.Module):
 
 
 def train(model, device, train_loader, optimizer, epoch):
-    model.train()
+    model.train() #启用 BatchNormalization 和 Dropout
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
@@ -56,7 +58,7 @@ def train(model, device, train_loader, optimizer, epoch):
 
 
 def test(model, device, test_loader):
-    model.eval()
+    model.eval() # 不启用 BatchNormalization 和 Dropout
     test_loss = 0
     correct = 0
     with torch.no_grad():
@@ -76,8 +78,8 @@ def test(model, device, test_loader):
 
 if __name__ == '__main__':
     batch_size = 64
-    test_batch_size = 1000
-    epochs = 2
+    test_batch_size = 4
+    epochs = 3
     lr = 0.01
     momentum = 0.5
     seed = 1
@@ -111,3 +113,39 @@ if __name__ == '__main__':
     for epoch in range(1, epochs + 1):
         train(model, device, train_loader, optimizer, epoch)
         test(model, device, test_loader)
+
+    # =============================================================================
+    # 随机选取test集中的图片测试模型
+    # =============================================================================
+    import torchvision
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import time
+
+    # functions to show an image
+    def imshow(img):
+        img = img / 2 + 0.5     # unnormalize
+        npimg = img.numpy()
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+        plt.show()
+
+    # 分类结果:
+    classes = (0,1,2,3,4,5,6,7,8,9)
+    # get some random test images
+    test_dataiter = iter(test_loader)
+    for i in range(10):
+        # 取图片数据，因为trainloader设置了batch_size=4，所以没运行一次.next()方法就会取出4幅图
+        images, labels = test_dataiter.next()
+        outputs = model(images)
+        # 显示图片
+        imshow(torchvision.utils.make_grid(images,padding = 2))
+
+        # 预测
+        # 第二个参数1是代表dim的意思，也就是取每一行的最大值，
+        # "_"取到的是最大值，predicted取到的是最大值对应的index，因为我们不关心最大值所以用匿名变量"_"来取
+        _, predicted = torch.max(outputs, 1)
+
+        # print 标签
+        print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
+            for j in range(4)))
+        time.sleep(3)

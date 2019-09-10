@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 19:03:43
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 19:28:42
+# @Last Modified time: 2019-09-10 20:10:07
 
 # Multilayer Neural Network （多层神经网络）
 
@@ -40,7 +40,7 @@ class net(nn.Module):
         return x
 
 def train(model, device, train_loader, optimizer, epoch):
-    model.train()
+    model.train() #启用 BatchNormalization 和 Dropout
     criterion = nn.CrossEntropyLoss()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -58,7 +58,7 @@ def train(model, device, train_loader, optimizer, epoch):
 
 def test(model, device, test_loader):
     criterion = nn.CrossEntropyLoss()
-    model.eval()
+    model.eval() #不启用 BatchNormalization 和 Dropout
     test_loss = 0
     correct = 0
     with torch.no_grad():

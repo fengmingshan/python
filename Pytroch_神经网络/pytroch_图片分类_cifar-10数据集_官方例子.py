@@ -36,7 +36,11 @@ import numpy as np
 # functions to show an image
 def imshow(img):
     img = img / 2 + 0.5     # unnormalize
+    # 将图片转成numpy包的图片
     npimg = img.numpy()
+    # 交换颜色轴,H代表高，W代表宽，C代表颜色，因为
+    # numpy包的图片是: H * W * C
+    # torch包的图片是: C * H * W，所以需要通过转置调整颜色轴
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
 
