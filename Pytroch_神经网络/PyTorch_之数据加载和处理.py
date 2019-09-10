@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-09 22:26:15
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-09 23:22:24
+# @Last Modified time: 2019-09-10 09:20:21
 
 from __future__ import print_function, division
 import os
@@ -198,7 +198,7 @@ class ToTensor(object):
 
 # 接下来我们把这些转换应用到一个例子上
 # 我们想要把图像的短边调整为256，然后随机裁剪(randomcrop)为224大小的正方形。
-# 也就是说，我们打算组合一个Rescale和 RandomCrop的变换。 
+# 也就是说，我们打算组合一个Rescale和 RandomCrop的变换。
 # 我们可以调用一个简单的类 torchvision.transforms.Compose可以把多个步骤整合到一起。具体实现如下图：
 scale = Rescale(256)
 crop = RandomCrop(128)
@@ -215,3 +215,96 @@ for i, tsfrm in enumerate([scale, crop, composed]):
     ax.set_title(type(tsfrm).__name__)
     show_landmarks(**transformed_sample)
 plt.show('hold')
+
+
+# 使用for i in range循环来对整个数据集执行同样的操作。
+transformed_dataset = FaceLandmarksDataset(csv_file='./face_landmarks.csv',
+                                           root_dir='./',
+                                           transform=transforms.Compose([
+                                               Rescale(256),
+                                               RandomCrop(224),
+                                               ToTensor()
+                                           ]))
+
+for i in range(len(transformed_dataset)):
+    sample = transformed_dataset[i]
+    # 在使用plt.imshow前必须先将图片格式转成numpy数组，并且对维度进行转置
+    # 因为numpy包的图片是: H * W * C ，torch包的图片是: C * H * W。
+    # 所以transpose((1, 2, 0))可以将torch图片，转成numpy图片。
+    plt.imshow(sample['image']grid.numpy().transpose((1, 2, 0)))
+    plt.show('hold')
+
+    print(i, sample['image'].size(), sample['landmarks'].size())
+
+    if i == 3:
+        break
+
+# 但是对所有全量数据集简单的使用for循环牺牲了很多性能
+# torch.utils.data.DataLoader是一个提供上述所有这些功能的迭代器。参数DataLoader=（num_workers=n）表示进程数量
+# 但是这个库目前有bug，使用多进程会报错，所以不要
+
+dataloader = DataLoader(transformed_dataset, batch_size=4,
+                        shuffle=True)
+
+# 辅助功能：显示批次
+def show_landmarks_batch(sample_batched):
+    """Show image with landmarks for a batch of samples."""
+    images_batch, landmarks_batch = \
+            sample_batched['image'], sample_batched['landmarks']
+    batch_size = len(images_batch)
+    im_size = images_batch.size(2)
+    grid_border_size = 2
+
+    # utils.make_grid的作用是将多幅图拼接成一幅图
+    grid = utils.make_grid(images_batch)
+    # 在使用plt.imshow前必须先将图片格式转成numpy数组，并且对维度进行转置
+    # 因为numpy包的图片是: H * W * C ，torch包的图片是: C * H * W。
+    # 所以transpose((1, 2, 0))可以将torch图片，转成numpy图片。
+    plt.imshow(grid.numpy().transpose((1, 2, 0)))
+
+    for i in range(batch_size):
+        plt.scatter(landmarks_batch[i, :, 0].numpy() + i * im_size + (i + 1) * grid_border_size,
+                    landmarks_batch[i, :, 1].numpy() + grid_border_size,
+                    s=10, marker='.', c='r')
+
+        plt.title('Batch from dataloader')
+
+for i_batch, sample_batched in enumerate(dataloader):
+    print(i_batch, sample_batched['image'].size(),
+          sample_batched['landmarks'].size())
+
+    # 观察第4批次并停止。
+    if i_batch == 3:
+        plt.figure()
+        show_landmarks_batch(sample_batched)
+        plt.axis('off')
+        plt.ioff()
+        plt.show()
+        break
+
+# torchvision:torchvision中还有一个更常用的数据集类ImageFolder。 它假定了数据集是以如下方式构造的:
+# root/ants/xxx.png
+# root/ants/xxy.jpeg
+# root/ants/xxz.png
+# .
+# root/bees/123.jpg
+# root/bees/nsdf3.png
+# root/bees/asd932_.png
+# 其中'ants’,bees’等是分类标签。
+# 你可以按如下的方式创建一个数据加载器(dataloader)
+
+import torch
+from torchvision import transforms, datasets
+
+data_transform = transforms.Compose([
+        transforms.RandomSizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225])
+    ])
+hymenoptera_dataset = datasets.ImageFolder(root='D:/_python/神经网络数据集/hymenoptera_data/train',
+                                           transform=data_transform)
+dataset_loader = torch.utils.data.DataLoader(hymenoptera_dataset,
+                                             batch_size=4, shuffle=True,
+                                             num_workers=4)
