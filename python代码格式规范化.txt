@@ -17,3 +17,7 @@ autopep8 --in-place --aggressive --aggressive d:\_python\python\Pytroch_神经�
 
 autopep8 --in-place --aggressive --aggressive d:\_python\python\Pytroch_神经网络\pytroch_图像分类器.py
 
+
+# 在CMD窗口运行.py文件时，在末尾加上这一句，自动将.py格式代码规范化
+os.system('autopep8 --in-place --aggressive --aggressive {file}'.format(file = sys.argv[0]))
+
