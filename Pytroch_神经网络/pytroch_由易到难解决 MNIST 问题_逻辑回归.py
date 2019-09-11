@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 18:19:27
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 19:28:24
+# @Last Modified time: 2019-09-11 11:19:12
 
 # 1. Logistic Regression （逻辑回归）
 # 首先先要构造模型，因为输入的图片大小为 28*28 ，而最终分类完成后输出 10 种结果，
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
     # functions to show an image
     def imshow(img):
-        img = img / 2 + 0.5     # unnormalize
+        img = img*0.3081 + 0.1307
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()

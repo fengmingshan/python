@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 19:03:43
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 20:10:07
+# @Last Modified time: 2019-09-11 11:19:02
 
 # Multilayer Neural Network （多层神经网络）
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     # functions to show an image
     def imshow(img):
-        img = img / 2 + 0.5     # unnormalize
+        img = img*0.3081 + 0.1307
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()
