@@ -57,8 +57,9 @@ class My_Mnist_Dataset(Dataset):
         sample = (img, lable)
         return sample
 
-transform = transforms.Compose(
-    [
+# 为什么这里是Normalize((0.1307,), (0.3081,))？
+# 因为制作MNIST数据集的作者已经算好了mean和std，我们只要带入使用就行了
+transform = transforms.Compose([
     transforms.Normalize((0.1307,), (0.3081,))]
 )
 
@@ -81,7 +82,8 @@ images, labels = train_iter.next()
 # 显示图片
 # 自定义一个显示图片的函数
 def imshow(img):
-    img = img / 2 + 0.5     # unnormalize
+    # 对图片进行Normalize()的反运算
+    img = img*0.3081 + 0.1307
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
@@ -171,7 +173,8 @@ def test_model(model,banchs,data_load):
 
     # 自定义一个显示图片的函数
     def imshow(img):
-        img = img / 2 + 0.5     # unnormalize
+        # Normalize()的反运算
+        img = img*0.3081 + 0.1307
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()
@@ -194,6 +197,7 @@ def test_model(model,banchs,data_load):
 
 # 随机抽取图片测试模型
 test_model(cnn,10,test_loader)
+
 # =============================================================================
 # 保存和重新加载模型
 # =============================================================================
@@ -217,25 +221,7 @@ model.eval()
 
 # 下面可以输入图片开始测试了。
 
-# 分类结果:
-classes = (0,1,2,3,4,5,6,7,8,9)
-# get some random test images
-test_iter = iter(test_loader)
-for i in range(10):
-    # 取图片数据，因为trainloader设置了batch_size=4，所以没运行一次.next()方法就会取出4幅图
-    images, labels = test_iter.next()
-    outputs = model(images)
-    # 显示图片
-    imshow(torchvision.utils.make_grid(images,padding = 2))
-    # 预测
-    # 第二个参数1是代表dim的意思，也就是取每一行的最大值，
-    # "_"取到的是最大值，predicted取到的是最大值对应的index，因为我们不关心最大值所以用匿名变量"_"来取
-    _, predicted = torch.max(outputs, 1)
-
-    # print 标签
-    print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
-        for j in range(4)))
-    time.sleep(2)
-
+# 随机抽取图片测试模型
+test_model(model,10,test_loader)
 
 
