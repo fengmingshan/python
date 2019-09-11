@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 22:28:02
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-11 10:17:26
+# @Last Modified time: 2019-09-11 11:06:31
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -126,7 +126,8 @@ class CNN(nn.Module):
 lr = 0.01
 momentum = 0.5
 log_interval = 16
-epoch = 1
+epoch = 3
+
 cnn = CNN()
 cnn.train()
 
@@ -147,7 +148,7 @@ for i in range(epoch):
         optimizer.step()
         if batch_idx % log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(images), len(train_loader.dataset),
+                i, batch_idx * len(images), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
 
 end = time.time()
@@ -157,6 +158,65 @@ print ('Train：%dmin%.3fsec' %  ((int)(t/60), t-60*(int)(t/60)))
 # =============================================================================
 # 随机选取test集中的图片测试模型
 # =============================================================================
+
+# 定义一个随机选图片测试模型的函数:
+# 该函数接收3个参数model,banchs,data_load
+# model：要测试的模型，banchs：测试批次，data_load：数据集
+def test_model(model,banchs,data_load):
+    model.eval()
+    # 分类结果:
+    classes = (0,1,2,3,4,5,6,7,8,9)
+    # get some random test images
+    test_iter = iter(data_load)
+
+    # 自定义一个显示图片的函数
+    def imshow(img):
+        img = img / 2 + 0.5     # unnormalize
+        npimg = img.numpy()
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+        plt.show()
+
+    for i in range(banchs):
+        # 取图片数据，因为trainloader设置了batch_size=4，所以没运行一次.next()方法就会取出4幅图
+        images, labels = test_iter.next()
+        outputs = model(images)
+        # 显示图片
+        imshow(torchvision.utils.make_grid(images,padding = 2))
+        # 预测
+        # 第二个参数1是代表dim的意思，也就是取每一行的最大值，
+        # "_"取到的是最大值，predicted取到的是最大值对应的index，因为我们不关心最大值所以用匿名变量"_"来取
+        _, predicted = torch.max(outputs, 1)
+
+        # print 标签
+        print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
+            for j in range(4)))
+        time.sleep(2)
+
+# 随机抽取图片测试模型
+test_model(cnn,10,test_loader)
+# =============================================================================
+# 保存和重新加载模型
+# =============================================================================
+
+# 保存模型配置文件
+torch.save(cnn.state_dict(), 'net_3_epoch.ckpt')
+
+# 打印模型参数表
+#print("net's state_dict:")
+#for var_name in net.state_dict():
+#    print(var_name, "\t", net.state_dict()[var_name])
+
+# 重新加载网络模型
+# 模型实例化
+model = CNN()
+# 加载模型参数
+model.load_state_dict(torch.load('./cnn模型备份/net_3_epoch.ckpt'))
+# 在测试模型前，你必须调用model.eval来关闭 BatchNormalization 和 Dropout
+# 否则会导致不一致的测试结果.
+model.eval()
+
+# 下面可以输入图片开始测试了。
+
 # 分类结果:
 classes = (0,1,2,3,4,5,6,7,8,9)
 # get some random test images
@@ -164,7 +224,7 @@ test_iter = iter(test_loader)
 for i in range(10):
     # 取图片数据，因为trainloader设置了batch_size=4，所以没运行一次.next()方法就会取出4幅图
     images, labels = test_iter.next()
-    outputs = cnn(images)
+    outputs = model(images)
     # 显示图片
     imshow(torchvision.utils.make_grid(images,padding = 2))
     # 预测
@@ -176,7 +236,6 @@ for i in range(10):
     print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
         for j in range(4)))
     time.sleep(2)
-
 
 
 
