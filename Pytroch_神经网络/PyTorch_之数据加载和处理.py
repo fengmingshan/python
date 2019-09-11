@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-09 22:26:15
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 09:20:21
+# @Last Modified time: 2019-09-11 09:21:03
 
 from __future__ import print_function, division
 import os
@@ -307,4 +307,4 @@ hymenoptera_dataset = datasets.ImageFolder(root='D:/_python/神经网络数据�
                                            transform=data_transform)
 dataset_loader = torch.utils.data.DataLoader(hymenoptera_dataset,
                                              batch_size=4, shuffle=True,
-                                             num_workers=4)
+                                             num_workers=4) # 这个库目前有bug使用num_workers=4，多进程的时候会报错

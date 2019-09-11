@@ -2,14 +2,21 @@
 # @Author: Administrator
 # @Date:   2019-09-10 22:28:02
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-11 00:18:52
+# @Last Modified time: 2019-09-11 09:10:36
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import torchvision
 import os
+import time
 import numpy as np
 import pandas as pd
+from torch.autograd import Variable
+from torch.utils.data import Dataset, DataLoader
+from torchvision import datasets, transforms
+import matplotlib.pyplot as plt
+import numpy as np
 
 # 本例使用的是转成CSV格式的MNIST数据集，表格的第一列是lable，后面的img向量
 # 注意：torch.nn只支持mini-batch的数据形式，而不支持单个的数据
@@ -46,14 +53,47 @@ class CNN(nn.Module):
         # log_softmax(x, dim=1)对第二个维度即每一列做softmax
         return F.log_softmax(x, dim=1)
 
-trainData = pd.read_csv("mnist_train.csv").values
-train_data = trainData[0:50000, 1:]
-train_label = trainData[0:50000, 0]  # 50000 代表样本数
+transform = transforms.Compose(
+    [transforms.ToTensor(),
+     transforms.Normalize((0.1307,), (0.3081,))])
 
-testData = pd.read_csv("mnist_test.csv").values
-test_data = testData[0:10000, 1:]
-test_label = testData[0:10000, 0]     # 10000 代表标签数
+# 自定义数据MNIST集
+class my_mnist(Dataset):
+    """我自己自定义的mnist数据集合"""
 
+    def __init__(self, csv_file, root_dir, transform=None):
+        """
+        csv_file（string）：带注释的csv文件的路径。
+        root_dir（string）：包含所有图像的目录。
+        transform（callable， optional）：一个样本上的可用的可选变换
+        """
+        self.images = pd.read_csv(csv_file)
+        self.root_dir = root_dir
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, idx):
+        img_name = os.path.join(self.root_dir,
+                                self.landmarks_frame.iloc[idx, 0])
+        image = io.imread(img_name)
+        landmarks = self.landmarks_frame.iloc[idx, 1:]
+        landmarks = np.array([landmarks])
+        landmarks = landmarks.astype('float').reshape(-1, 2)
+        sample = {'image': image, 'lable': landmarks}
+
+        if self.transform:
+            sample = self.transform(sample)
+
+        return sample
+
+# functions to show an image
+def imshow(img):
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.show()
 
 # 训练
 
@@ -69,24 +109,6 @@ optimizer = optim.SGD(cnn.parameters(), lr=lr,
 
 print("Training...")
 start = time.time()
-
-transform = transforms.Normalize((0.1307,), (0.3081,))
-
-for i in range(len(train_data)):
-    img = torch.Tensor(train_data[i])
-    img = img.view(-1,28,28)
-    img = transform(img)
-    img = img.unsqueeze(0)
-    lable = torch.Tensor(train_label[i])
-    optimizer.zero_grad()
-    output = cnn(img)
-    loss = F.nll_loss(output, lable)
-    loss.backward()
-    optimizer.step()
-    if i % 1000 == 0:
-        print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            0, i, len(train_data),
-            100. * i / len(train_data), loss.item()))
 
 end = time.time()
 t = end - start
