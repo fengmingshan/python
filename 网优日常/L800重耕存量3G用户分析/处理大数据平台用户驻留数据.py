@@ -48,10 +48,10 @@ user_data = pd.read_csv(data_path + file,engine = 'python',encoding = 'utf-8',  
 df_user_record = pd.DataFrame()
 i = 0
 for df_tmp in user_data:
-     i += 1
-     df_user_record = df_user_record.append(df_tmp)
-     if i%100 == 0:
-          print('finished: ', i )
+    i += 1
+    df_user_record = df_user_record.append(df_tmp)
+    if i%100 == 0:
+        print('finished: ', i )
 
 df_user_record['town'] = df_user_record['wirelessid'].map(town_dict)
 df_user_record['net_type'] = df_user_record['wirelessid'].map(net_type_dict)

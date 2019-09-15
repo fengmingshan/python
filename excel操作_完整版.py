@@ -15,7 +15,6 @@ file2=r'D:\test\BTS.csv'
 df1=pd.read_excel(file,dtype =str,encoding='utf-8')
 df2=pd.read_excel(file,skiprows=1,dtype =str,encoding='utf-8')  # skiprows=1跳过1行
 df3=pd.read_excel(file,sheetname='Sheet2',dtype =str,encoding='utf-8') # sheetname='sheet1'指定读取得sheet名
-
 df4=pd.read_csv(file2,dtype =str,encoding='gbk')
 
 # 读取超大文件需要分块读取
@@ -32,6 +31,27 @@ reader  = pd.read_csv(path + file , engine = 'python', iterator=True)
                print("Iteration is stopped.")
      df_tmp = pd.concat(chunks, ignore_index=True)
 
+
+user_data = pd.read_csv(data_path + file,engine = 'python',encoding = 'utf-8',  chunksize = 100000)
+df_user_record = pd.DataFrame()
+i = 0
+for df_tmp in user_data:
+    i += 1
+    try:
+        df_user_record = df_user_record.append(df_tmp)
+    except:
+        print("Iteration is stopped.")
+    if i%100 == 0:
+        print('finished:{} ,total:{}'.format(i,len(user_data)))
+
+# =============================================================================
+# 常用统计信息
+# =============================================================================
+df1.describe() # 统计信息
+df1.head(10) #开通几行
+df1.shape #形状
+df1.dtypes #数据类型
+gl.info(memory_usage='deep') # 内存占用
 #==============================================================================
 # 单元格的选取.loc与.iloc与.at
 #==============================================================================
