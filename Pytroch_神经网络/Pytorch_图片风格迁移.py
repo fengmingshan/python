@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-09 22:26:15
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-15 20:11:21
+# @Last Modified time: 2019-09-15 21:54:25
 
 import torch
 import torch.nn as nn
@@ -38,8 +38,8 @@ def image_loader(image_name):
     image = loader(image).unsqueeze(0)
     return image.to(device, torch.float)
 
-style_img = image_loader("./images/star_small.jpg")
-content_img = image_loader("./images/FYR_1000.jpg")
+style_img = image_loader("./images/picasso.jpg")
+content_img = image_loader("./images/fms_in.jpg")
 
 assert style_img.size() == content_img.size()
 
@@ -217,7 +217,7 @@ def get_input_optimizer(input_img):
 # 最后，我们必须定义一个方法来展示图像风格转换。
 # 对于每一次的网络迭代，都将更新过的输入传入其中并计算损失。
 def run_style_transfer(cnn, normalization_mean, normalization_std,
-                       content_img, style_img, input_img, num_steps=150,
+                       content_img, style_img, input_img, num_steps=200,
                        style_weight=1000000, content_weight=1):
     """Run the style transfer."""
     print('Building the style transfer model..')
