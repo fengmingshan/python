@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-11 23:16:46
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-12 00:11:26
+# @Last Modified time: 2019-09-16 09:09:28
 
 from __future__ import print_function
 import torch
@@ -83,7 +83,7 @@ imshow(torchvision.utils.make_grid(images, padding=2))
 print("Training...")
 start = time.time()
 
-epochs = 3
+epochs = 1
 lr = 0.01
 momentum = 0.5
 log_interval = 32
@@ -161,5 +161,9 @@ def test_model(model, banchs, data_load):
                                       for j in range(4)))
         time.sleep(2)
 
+# 保存模型配置文件
+torch.save(model.state_dict(), 'net_32_batches.ckpt')
+
 # 随机抽取图片测试模型
-test_model(model, 10, test_loader)
+test_model(model, 1, test_loader)
+

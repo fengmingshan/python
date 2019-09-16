@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-10 20:04:43
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-10 22:23:41
+# @Last Modified time: 2019-09-16 08:49:47
 
 import torch
 import torch.nn as nn
@@ -61,12 +61,8 @@ class CNN(nn.Module):
         x = self.fc(x)
         return x
 
-
-
-
 model = CNN()
 print(model)
-
 
 model = model.train()
 # 这里的tensor是一个维度的，值在0到1之间，那么经过transforms.Normalize之后就到了-1到1区间

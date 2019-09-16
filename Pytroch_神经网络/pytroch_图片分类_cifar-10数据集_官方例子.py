@@ -8,7 +8,7 @@ Created on Mon Sep  9 19:42:07 2019
 import torch
 import torchvision
 import torchvision.transforms as transforms
-
+import os
 
 root_path = 'D:/_python/神经网络数据集/cifar-10'
 os.chdir(root_path)
@@ -22,12 +22,12 @@ transform = transforms.Compose(
 trainset = torchvision.datasets.CIFAR10(root='./', train=True,
                                         download=False, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=4,
-                                          shuffle=True, num_workers=2)
+                                          shuffle=True, num_workers=0)
 
 testset = torchvision.datasets.CIFAR10(root='./', train=False,
                                        download=False, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=4,
-                                         shuffle=False, num_workers=2)
+                                         shuffle=False, num_workers=0)
 
 classes = ('plane', 'car', 'bird', 'cat',
            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -69,7 +69,6 @@ print(' '.join('%s' % classes[labels[j]] for j in range(4)))
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -101,8 +100,9 @@ criterion = nn.CrossEntropyLoss()
 # 当使用冲量时，则把每次x的更新量v考虑为本次的梯度下降量- dx * lr与上次x的更新量v乘上一个介于[0, 1]的因子momentum的和，
 # 即：v = - dx * lr + v * momemtum。
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+net.train()
 
-for epoch in range(2):  # loop over the dataset multiple times
+for epoch in range(4):  # loop over the dataset multiple times
     running_loss = 0.0
     # enumerate(trainloader,0)，表示从头开始迭代，因为刚才运行过.next()方法，起始位置已经改变了
     for i, data in enumerate(trainloader,0):
