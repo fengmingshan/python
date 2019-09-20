@@ -18,6 +18,4 @@ for file in files:
 with  pd.ExcelWriter(data_path  + '配置数据汇总.xlsx')  as writer:  #输出到excel
     df_content.to_excel(writer,'配置数据汇总',index = False)
 
-        
-        
 
