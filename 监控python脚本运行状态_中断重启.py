@@ -37,5 +37,5 @@ class Auto_Run():
             self.p=subprocess.Popen(['python','%s'%self.cmd],stdin=sys.stdin,stdout=sys.stdout,stderr=sys.stderr,shell=False) 
         else: 
             pass 
-        
+
 app = Auto_Run(TIME,CMD) 
