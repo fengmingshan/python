@@ -28,9 +28,8 @@ for hour in hour_list:
 df_busy = df[df['hour'] == ind]
 
 df_busy['下行PRB平均占用率_1'] = df_busy['下行PRB平均占用率_1'].map(lambda x:float(x.replace('%','')))
-df_busy['time'] = df_busy['开始时间'].map(lambda x:str(x).split(' ')[0][8:]+'日'+str(x).split(' ')[1][:2]+'点')
-df_busy['下行PRB平均占用率_1'] = df_busy['下行PRB平均占用率_1'].map(lambda x:float(x.replace('%','')))
-df_busy['PRACH信道占用率_1'] = df_busy['PRACH信道占用率_1'].map(lambda x:float(x.replace('%','')))
+df_busy['E-RAB掉线率_1'] = df_busy['E-RAB掉线率_1'].map(lambda x:float(x.replace('%','')))
+df_busy['time'] = df_busy['开始时间'].map(lambda x:x[5:])
 
 def draw_line_chart(df,time_col,data_col):
     x1 = df[time_col].values
@@ -50,6 +49,7 @@ def draw_line_chart(df,time_col,data_col):
 def draw_bar_chart(df,time_col,data_col):
     x2= df[time_col].values
     y2 = df[data_col].values
+    plt.figure(figsize=(14, 4))
     plt.bar(x2,y2,color='g',width = 0.3,alpha=0.6,label=data_col)
     for x,y in zip(x2,y2):
         plt.text(x, y*1.005, y, ha='center', va= 'bottom',fontsize=8)
@@ -62,14 +62,14 @@ def draw_bar_chart(df,time_col,data_col):
     plt.savefig(pic_path + data_col + ".png",format='png', dpi=200)
     plt.show('hold')
 
-draw_line_chart(df_busy,'开始时间','下行PRB平均占用率_1')
-draw_line_chart(df_busy,'开始时间','CQI优良比(>=7比例)')
+draw_line_chart(df_busy,'time','下行PRB平均占用率_1')
+draw_line_chart(df_busy,'time','E-RAB掉线率_1')
 
 
 
-draw_bar_chart(df_busy,'开始时间','最大RRC连接用户数_1')
-draw_bar_chart(df_busy,'开始时间','下行平均激活用户数_1')
-draw_bar_chart(df_busy,'开始时间','最大激活用户数_1')
-draw_bar_chart(df_busy,'开始时间','Total DL Data Volume(GB)')
+draw_bar_chart(df_busy,'time','最大RRC连接用户数_1')
+draw_bar_chart(df_busy,'time','下行平均激活用户数_1')
+draw_bar_chart(df_busy,'time','最大激活用户数_1')
+draw_bar_chart(df_busy,'time','Total DL Data Volume(GB)')
 
 
