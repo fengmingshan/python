@@ -5,7 +5,7 @@ Created on Tue Jan 29 15:27:13 2019
 @author: Administrator
 """
 
-import pandas as pd 
+import pandas as pd
 import os
 
 # 修改小区邻区指令
@@ -23,7 +23,7 @@ import os
 # 设置环境变量
 # =============================================================================
 data_path = r'd:/_小程序/3G邻区自动优化/'
-cmd_path = r'd:/3G邻区自动优化/邻区修改脚本输出/'
+cmd_path = r'd:/_小程序/3G邻区自动优化/邻区修改脚本输出/'
 
 if not os.path.exists(cmd_path):
     os.mkdir(cmd_path)
