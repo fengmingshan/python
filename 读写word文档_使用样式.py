@@ -8,7 +8,6 @@ Created on Thu Sep  5 17:16:28 2019
 from docx import Document
 from docx.shared import Inches
 from docx.enum.style import WD_STYLE_TYPE
-import sys
 import os
 
 data_path = 'd:/test/'

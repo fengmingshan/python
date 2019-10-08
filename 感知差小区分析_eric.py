@@ -28,20 +28,17 @@ traffic_title = list(df_traffic_title.columns)
 df_prb_title  = pd.read_excel(data_path + 'prb_title.xlsx',encoding = 'utf-8')
 prb_title = list(df_prb_title.columns)
 
-
-
-
 traffic_files = os.listdir(traffic_path) 
 prb_files = os.listdir(prb_path) 
 
 
 file = '0611-0618.csv'
-for file in traffic_files:    
+for file in traffic_files:
     df_tmp = pd.read_csv(traffic_path + file,header = None,names = traffic_title, engine = 'python', encoding = 'gbk')
     df_tmp['DATE_ID'] = df_tmp['DATE_ID'].map(lambda x:x.replace('\'',''))
     df_tmp['eNodeB'] = df_tmp['eNodeB'].map(lambda x:x.replace('\'',''))
     date = df_tmp.loc[0,'DATE_ID']
-    
+
     # =============================================================================
     # 计算每日实际忙时确定RRC连接用户数
     # =============================================================================
@@ -50,12 +47,12 @@ for file in traffic_files:
     df_pivot_rrc = df_pivot_rrc.reset_index()
     busy_hour =  df_pivot_rrc.loc[0,'HOUR_ID']
     df_max_rrc =  df_tmp[['eNodeB','Max number of UE in RRc']][df_tmp['HOUR_ID'] == busy_hour]
-    
+
     df_pivot = pd.pivot_table(df_tmp, index=['eNodeB'],
                               values = ['Air Interface_Traffic_Volume_UL_MBytes',
-                                        'Air Interface_Traffic_Volume_DL_MBytes'], 
+                                        'Air Interface_Traffic_Volume_DL_MBytes'],
                               aggfunc = {'Air Interface_Traffic_Volume_UL_MBytes':np.sum,
-                                         'Air Interface_Traffic_Volume_DL_MBytes':np.sum})  
+                                         'Air Interface_Traffic_Volume_DL_MBytes':np.sum})
     df_pivot['总流量'] = df_pivot['Air Interface_Traffic_Volume_UL_MBytes'] + df_pivot['Air Interface_Traffic_Volume_DL_MBytes']
     df_pivot = df_pivot.reset_index()
     df_pivot = pd.merge(df_pivot,df_max_rrc,on = 'eNodeB',how = 'left')  
@@ -64,5 +61,5 @@ for file in traffic_files:
                              'Max number of UE in RRc' : 'RRC连接用户数',
                              'Air Interface_Traffic_Volume_UL_MBytes':'上行流量(MB)',
                              'Air Interface_Traffic_Volume_DL_MBytes':'下行流量(MB)'},inplace =True)
-    df_combine = df_combine.append(df_pivot)  
+    df_combine = df_combine.append(df_pivot)
 
