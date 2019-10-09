@@ -10,7 +10,7 @@ from docx.shared import Inches
 from docx.enum.style import WD_STYLE_TYPE
 import os
 
-data_path = 'd:/test/'
+data_path = 'd:/_小程序/python读写word文档'
 
 os.chdir(data_path)
 
@@ -20,14 +20,50 @@ doc = Document()
 styles = doc.styles
 print("\n".join([s.name for s in styles if s.type == WD_STYLE_TYPE.PARAGRAPH]))
 
+#    Normal
+#    Header
+#    Footer
+#    Heading 1
+#    Heading 2
+#    Heading 3
+#    Heading 4
+#    Heading 5
+#    Heading 6
+#    Heading 7
+#    Heading 8
+#    Heading 9
+#    No Spacing
+#    Title
+#    Subtitle
+#    List Paragraph
+#    Body Text
+#    Body Text 2
+#    Body Text 3
+#    List
+#    List 2
+#    List 3
+#    List Bullet
+#    List Bullet 2
+#    List Bullet 3
+#    List Number
+#    List Number 2
+#    List Number 3
+#    List Continue
+#    List Continue 2
+#    List Continue 3
+#    macro
+#    Quote
+#    Caption
+#    Intense Quote
+#    TOC Heading
 
-document = Document('d:/test/demo.docx')
+document = Document('./demo.docx')
 for p in document.paragraphs:
-    print(len(p.text))
+    #print(len(p.text))
     print(p.style.name)
 
 # 用游程遍历段落
-document = Document('d:/test/demo.docx')
+document = Document('./demo.docx')
 for p in document.paragraphs:
     print('====')
     for r in p.runs:
@@ -39,7 +75,7 @@ for p in document.paragraphs:
 from docx.oxml.ns import qn
 
 doc = Document()
-paragraph doc.add_paragraph(u'一个人的命运啊，当然要靠自我奋斗')
+paragraph = doc.add_paragraph(u'一个人的命运啊，当然要靠自我奋斗')
 # 打印所有styles
 #for style in doc.styles:
 #    print(style.name)
