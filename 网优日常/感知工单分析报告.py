@@ -18,14 +18,13 @@ plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 # 导入读写word文档的库
 
-path = 'D:/_小程序/感知工单分析报告/'
-pic_path = 'D:/_小程序/感知工单分析报告/pic/'
+path = 'D:/_小程序/感知工单分析报告'
+pic_path = 'D:/_小程序/感知工单分析报告/pic'
 analyze_cell = '730448_6'
 if not os.path.exists(pic_path):
     os.mkdir(pic_path)
 
 os.chdir(path)
-
 
 def draw_line_chart(df, time_col, data_col):
     x1 = df[time_col].values
@@ -60,8 +59,7 @@ def draw_bar_chart(df, time_col, data_col):
     plt.savefig(pic_path + data_col + ".png", format='png', dpi=200)
     plt.show('hold')
 
-
-def judge_lever(mr_good_rate):
+def mr_cqi_lever(mr_good_rate):
     mr_good_rate = float(mr_good_rate.replace('%', ''))
     if mr_good_rate >= 95:
         return '非常好'
@@ -72,6 +70,54 @@ def judge_lever(mr_good_rate):
     elif mr_good_rate < 85:
         return '稍差'
 
+def speed_level(user_speed):
+    if user_speed >=  5:
+        return '非常好'
+    elif user_speed >= 3.2:
+        return '良好'
+    elif user_speed >= 2:
+        return '正常'
+    elif user_speed >= 1:
+        return '稍差'
+    elif user_speed < 1:
+        return '很差'
+
+def prb_level(prb_ratio):
+    if prb_ratio >=  90:
+        return '非常高，急需扩容'
+    elif prb_ratio >= 70:
+        return '很高，需要扩容'
+    elif prb_ratio >= 50:
+        return '达到超忙小区标准，需要继续观察'
+    elif prb_ratio < 50:
+        return '正常'
+
+def coverage_problem_locate(mr_good_rate,cqi_rate):
+    mr_good_rate = float(mr_good_rate.split('%',''))
+    cqi_rate = float(mr_good_rate.split('%',''))
+    if mr_good_rate >=  90:
+        coverage =  'MR覆盖良好，'
+        if cqi_rate >=  90:
+            cqi_coverage =  'CQI优良率正常。'
+        else:
+            cqi_coverage =  '但CQI优良率稍差，可能存在mod3干扰，需要检查邻区和PCI规划。'
+    else:
+        coverage =  'MR覆盖良好'
+        if cqi_rate >=  90:
+            cqi_coverage =  'CQI优良率正常，无需优化。'
+        else:
+            cqi_coverage =  'CQI优良率稍差，需要通过优化增强覆盖。'
+
+def load_problem_locate(prb_ratio,max_uesrs):
+    if prb_ratio <  50:
+        if max_uesrs > 200:
+        cell_
+    else:
+        coverage =  'MR覆盖良好'
+        if cqi_rate >=  90:
+            cqi_coverage =  'CQI优良率正常，无需优化。'
+        else:
+            cqi_coverage =  'CQI优良率稍差，需要通过优化增强覆盖。'
 
 all_files = os.listdir(path)
 KPI_file = [x for x in all_files if 'KPI' in x][0]
@@ -102,7 +148,14 @@ df_busy['time'] = df_busy['开始时间'].map(lambda x: x[5:])
 df_busy.rename(columns={'CQI>=7占比': 'CQI优良比'}, inplace=True)
 
 cqi_rate = str(round(df_busy['CQI优良比'].mean(), 2)) + '%'
-cqi_lever = judge_lever(cqi_rate)
+cqi_lever = mr_cqi_lever(cqi_rate)
+
+prb_ratio = round(df_busy['CQI优良比'].mean(),2)
+prb_level = prb_level(prb_ratio)
+
+user_speed = round(df_busy['分QCI用户体验下行平均速率（Mbps）_1'].mean(),2)
+user_speed_level = speed_level(user_speed)
+
 max_uesrs = df_busy['最大RRC连接用户数_1'].max()
 avg_uesrs = ceil(df_busy['平均RRC连接用户数_1'].mean())
 max_act_uesrs = df_busy['最大激活用户数_1'].max()
@@ -112,12 +165,16 @@ avg_act_uesrs = ceil(df_busy['平均激活用户数_1'].mean())
 draw_line_chart(df_busy, 'time', '下行PRB平均占用率_1')
 draw_line_chart(df_busy, 'time', 'E-RAB掉线率_1')
 draw_line_chart(df_busy, 'time', 'CQI优良比')
-
 draw_bar_chart(df_busy, 'time', '最大RRC连接用户数_1')
-draw_bar_chart(df_busy, 'time', '下行平均激活用户数_1')
+draw_bar_chart(df_busy, 'time', '平均RRC连接用户数_1')
 draw_bar_chart(df_busy, 'time', '最大激活用户数_1')
+draw_bar_chart(df_busy, 'time', '平均激活用户数_1')
 draw_bar_chart(df_busy, 'time', '分QCI用户体验下行平均速率（Mbps）_1')
 
+df_busy[['最大RRC连接用户数_1','平均RRC连接用户数_1','最大激活用户数_1','平均激活用户数_1']].plot()
+plt.legend(bbox_to_anchor=(1.05, 0.5), loc='upper left', borderaxespad=0.)
+plt.savefig('./pic/用户数.png', format='png', dpi=200)
+plt.show()
 # =============================================================================
 # MR分析
 # =============================================================================
@@ -130,8 +187,9 @@ df_mr['points'] = df_mr['|≥-105dBm采样点'] + df_mr['|≥-110dBm采样点'] 
 df_mr['good_points'] = df_mr['|≥-105dBm采样点'] + df_mr['|≥-110dBm采样点']
 df_mr['MR覆盖率'] = round(df_mr['good_points'] / df_mr['points'] * 100, 2)
 average_rsrp = df_mr.loc[:, '平均RSRP（dBm）'].values[0]
+
 mr_good_rate = str(df_mr.loc[:, 'MR覆盖率'].values[0]) + '%'
-mr_lever = judge_lever(mr_good_rate)
+mr_lever = mr_cqi_lever(mr_good_rate)
 
 # 对MR的字段进行重命名
 df_mr.set_index('NAME', drop=False, inplace=True)
@@ -186,9 +244,9 @@ document.add_picture(pic_path + 'MR覆盖情况' + ".png", width=Inches(6))
 # 添加MR覆盖率描述
 paragraph1_1 = document.add_paragraph(
     analyze_cell_name +
-    'MR覆盖率:{mr_rate},MR覆盖指标{mr_lever}。'.format(
+    '小区: ''MR覆盖率:{mr_rate},MR覆盖指标{mr_lever}。'.format(
         mr_rate=mr_good_rate,
-        mr_lever=mr_lever),
+        mr_level=mr_level),
     style=style_1)
 
 # 添加第一段的2小节标题
@@ -199,13 +257,30 @@ head2.font.size = Pt(16)
 
 # 添加CQI图片
 document.add_picture(pic_path + 'CQI优良比' + ".png", width=Inches(6))
-# 添加CQI描述
+# 添加CQI文字描述
 paragraph1_2 = document.add_paragraph(
-    analyze_cell_name +
+    '小区: ' + analyze_cell_name +
     '平均CQI覆盖率:{cqi_rate},CQI覆盖率指标{cqi_lever}'.format(
         cqi_rate=cqi_rate,
-        cqi_lever=cqi_lever),
+        cqi_level=cqi_level),
     style=style_1)
+
+# 添加第一段的3小节标题
+head2 = document.add_heading('', level=2).add_run('1.3 用户体验速率')
+head2.font.name = u'华文楷体'
+head2._element.rPr.rFonts.set(qn('w:eastAsia'), u'华文楷体')
+head2.font.size = Pt(16)
+
+# 添加速率图片
+document.add_picture(pic_path + '分QCI用户体验下行平均速率（Mbps）_1' + ".png", width=Inches(6))
+# 添加速率文字描述
+paragraph1_2 = document.add_paragraph(
+    '小区: '+ analyze_cell_name +
+    '平均用户体验速率:{user_speed},用户体验速率{user_speed_level}'.format(
+        user_speed = user_speed,
+        user_speed_level = user_speed_level),
+    style=style_1)
+
 
 
 # 添加第二段标题
@@ -221,10 +296,10 @@ head2._element.rPr.rFonts.set(qn('w:eastAsia'), u'华文楷体')
 head2.font.size = Pt(16)
 
 # 添加用户数图片
-document.add_picture(pic_path + '最大RRC连接用户数_1' + ".png", width=Inches(6))
+document.add_picture(pic_path + '用户数' + ".png", width=Inches(6))
 # 添加用户数说明
 paragraph2 = document.add_paragraph(
-    '小区' +
+    '小区: ' +
     analyze_cell_name +
     '忙时最大RRC连接用户数{max_uesrs}个，平均RRC连接用户数{avg_uesrs}个,最大激活用户数{max_act_uesrs}个,平均激活用户数{avg_act_uesrs}个'.format(
         max_uesrs = max_uesrs,
@@ -234,13 +309,23 @@ paragraph2 = document.add_paragraph(
     style=style_1)
 
 # 添加第一段的2小节标题
-head2 = document.add_heading('', level=2).add_run('2.2 小区负荷分析')
+head2 = document.add_heading('', level=2).add_run('2.2 PRB利用率分析')
 head2.font.name = u'华文楷体'
 head2._element.rPr.rFonts.set(qn('w:eastAsia'), u'华文楷体')
 head2.font.size = Pt(16)
 
+# 添加用户数图片
+document.add_picture(pic_path + '下行PRB平均占用率_1' + ".png", width=Inches(6))
+# 添加用户数说明
+paragraph2 = document.add_paragraph(
+    '小区: ' +
+    analyze_cell_name +
+    'PRB下行利用率{prb_ratio}%，属于{prb_level}'.format(
+        prb_ratio = prb_ratio,
+        prb_level = prb_level),
+    style=style_1)
 
 
+# 保存文档
 document.add_page_break()
-
 document.save(analyze_cell_name + '感知质差分析报告.docx')

@@ -78,17 +78,14 @@ head1.font.name = u'华文楷体'
 head1._element.rPr.rFonts.set(qn('w:eastAsia'), u'华文楷体')
 head1.font.size = Pt(20)
 
-
 paragraph3 = document.add_paragraph(
     '本周4G用户数上周有所减少，增长的有宣威、会泽、富源；下降的有麒麟、沾益、马龙。', style=style_1)
-
 
 # 添加图片
 document.add_picture('./pic/RRC用户数.png', width=Inches(2.25))
 
-
+# 保存文档
 document.add_page_break()
-
 document.save('demo.docx')
 
 
