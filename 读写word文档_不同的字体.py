@@ -11,7 +11,7 @@ from docx.shared import Inches
 from docx.oxml.ns import qn
 import os
 
-path = 'd:/_小程序/python读写word文档'
+data_path = 'd:/_小程序/python读写word文档'
 os.chdir(data_path)
 
 #打开文档
