@@ -11,9 +11,10 @@ import numpy as np
 L1800_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,49, 50, 51, 52, 53, 54, 55, 56, 129, 130, 131, 132, 133, 134, 135, 136,177, 178, 179, 180, 181, 182]
 L800_list = [17, 18, 19, 20, 21, 22,145, 146, 147, 148, 149,150]
 
-data_path = r'D:\test' + '\\'
-
-df_zte = pd.read_csv(data_path + '2019_07_22_16_48_37_531_yn_zxgs_中兴忙时话务_19625.csv' ,engine= 'python')
+data_path = 'D:/_小程序/超忙小区分析'
+os.chdir(data_path)
+zte_file = '中兴2019-09忙时.csv'
+df_zte = pd.read_csv(zte_file ,engine= 'python')
 
 df_zte['空口上行用户面流量（MByte）_1'] = df_zte['空口上行用户面流量（MByte）_1'].map(lambda x:str(x).replace(',',''))
 df_zte['空口下行用户面流量（MByte）_1477070755617-11'] = df_zte['空口下行用户面流量（MByte）_1477070755617-11'].map(lambda x:str(x).replace(',',''))
@@ -45,6 +46,7 @@ df_busy_cell_1800 = df_high_Data_Volume.append(df_massive_users)
 df_res_1800 = pd.DataFrame()
 for week in list(set(df_busy_cell_1800['周'])):
      df_1800 =  df_busy_cell_1800[df_busy_cell_1800['周'] == week]
+     # 按天进行透视求出当天最忙时的指标
      df_pivot_1800 = pd.pivot_table(df_1800, index=['周','日期','网元','小区','小区名称'],
                                                  values =['小区总流量(GB)' ,
                                                           '下行PRB平均占用率_1',
@@ -71,7 +73,6 @@ for week in list(set(df_busy_cell_1800['周'])):
      df_busy_cell_count_1800 = df_busy_cell_count_1800[df_busy_cell_count_1800['日期'] >= 4]
 
      df_res_1800 = df_res_1800.append(df_busy_cell_count_1800)
-
 
 df_high_Data_800 = df_zte_L800[(df_zte_L800['小区总流量(GB)'] >= 1.5) & (df_zte_L800['下行PRB平均占用率_1'] >= 0.5) ]
 df_massive_users_800 = df_zte_L800[(df_zte_L800['最大RRC连接用户数_1'] >= 50) & (df_zte_L800['下行PRB平均占用率_1'] >= 0.5) ]
@@ -125,7 +126,6 @@ df_country_800 = pd.pivot_table(df_busy_800, index=['区县'],
                                             values =['小区名称'],
                                             aggfunc = {'小区名称':'count'})
 df_country_800 = df_country_800.reset_index()
-
 
 with  pd.ExcelWriter(data_path + '中兴超忙小区.xlsx')  as writer:  #输出到excel
     df_busy_1800.to_excel(writer,'1800超忙小区',index=False)
