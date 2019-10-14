@@ -26,8 +26,6 @@ lon_lat_file = 'bsc1_lon_lat.xlsx'
 载频邻区添加门限 = 10
 
 # 定义一个文本转xls的函数，因为切换次数的xls文件格式有问题
-
-
 def txt2xls(filename, xlsname):
     """
     :文本转换成xls的函数

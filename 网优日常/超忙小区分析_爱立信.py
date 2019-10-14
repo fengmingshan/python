@@ -192,7 +192,7 @@ df_res_800.drop_duplicates('EUTRANCELLFDD', keep = 'first', inplace = True)
 
 # 处理数据格式
 df_res_800['eNodeB']=df_res_800['eNodeB'].map(
-    lambda x: x.replace('’'，'')
+    lambda x: x.replace('’',''))
 df_res_800['country']=df_res_800['EUTRANCELLFDD'].map(
     lambda x: x.split('QJ')[1][:2])
 df_res_800['RRC连接用户数']=df_res_800['RRC连接用户数'].map(
@@ -218,6 +218,6 @@ df_country_800= pd.pivot_table(df_res_800, index=['country'],
                                 aggfunc = {'EUTRANCELLFDD': 'count'})
 df_country_800=df_country_800.reset_index()
 
-with pd.ExcelWriter('爱立信超忙小区.xlsx') as writer:  # 输出到excel
+with pd.ExcelWriter('爱立信超忙小区_结果输出.xlsx') as writer:  # 输出到excel
     df_res_800.to_excel(writer, 'L800超忙小区', index = False)
     df_country_800.to_excel(writer, '800M超忙按县统计', index = False)

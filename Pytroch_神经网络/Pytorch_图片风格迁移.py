@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-09 22:26:15
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-15 21:54:25
+# @Last Modified time: 2019-10-13 16:51:36
 
 import torch
 import torch.nn as nn
@@ -18,12 +18,9 @@ import os
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-work_path = 'd:/Test/pytroch实现图片风格迁移'
+work_path = 'D:/神经网络/pytroch实现图片风格迁移'
 os.chdir(work_path)
-# 瀵煎叆椋庢牸鍜屽唴瀹瑰浘鐗囥€傚師濮嬬殑PIL鍥剧墖鐨勫€间粙浜?鍒?55涔嬮棿锛?
-# 浣嗘槸褰撹浆鎹㈡垚torch寮犻噺鏃讹紝瀹冧滑鐨勫€艰杞崲鎴?鍒?涔嬮棿銆傚浘鐗囦篃闇€瑕佽閲嶈鎴愮浉鍚岀殑缁村害銆?
-# 涓€涓噸瑕佺殑缁嗚妭鏄紝娉ㄦ剰torch搴撲腑鐨勭缁忕綉缁滅敤鏉ヨ缁冪殑寮犻噺鐨勫€间负0鍒?涔嬮棿銆?
-# 濡傛灉浣犲皾璇曞皢0鍒?55鐨勫紶閲忓浘鐗囧姞杞藉埌绁炵粡缃戠粶锛岀劧鍚庢縺娲荤殑鐗瑰緛鏄犲皠灏嗕笉鑳戒睛娴嬪埌鐩爣鍐呭鍜岄鏍笺€?
+
 
 # desired size of the output image
 imsize = 512 if torch.cuda.is_available() else 128  # use small size if no gpu
@@ -38,14 +35,15 @@ def image_loader(image_name):
     image = loader(image).unsqueeze(0)
     return image.to(device, torch.float)
 
-style_img = image_loader("./images/picasso.jpg")
-content_img = image_loader("./images/fms_in.jpg")
+style_img = image_loader("./style/cunzhuang.jpg")
+content_img = image_loader("./input/weiming.jpg")
 
+print(style_img.size())
+print(content_img.size())
 assert style_img.size() == content_img.size()
 
 
-# 灏嗗浘鐗囪浆鎹㈡垚PIL鏍煎紡鏉ュ睍绀猴紝骞朵娇鐢╬lt.imshow灞曠ず瀹冪殑鎷疯礉銆?
-# 鎴戜滑灏嗗皾璇曞睍绀哄唴瀹瑰拰椋庢牸鍥剧墖鏉ョ‘淇濆畠浠姝ｇ‘鐨勫鍏ャ€?
+
 unloader = transforms.ToPILImage()  # reconvert into PIL image
 
 plt.ion()
@@ -217,7 +215,7 @@ def get_input_optimizer(input_img):
 # 最后，我们必须定义一个方法来展示图像风格转换。
 # 对于每一次的网络迭代，都将更新过的输入传入其中并计算损失。
 def run_style_transfer(cnn, normalization_mean, normalization_std,
-                       content_img, style_img, input_img, num_steps=200,
+                       content_img, style_img, input_img, num_steps=500,
                        style_weight=1000000, content_weight=1):
     """Run the style transfer."""
     print('Building the style transfer model..')
@@ -272,11 +270,9 @@ output = run_style_transfer(cnn, cnn_normalization_mean, cnn_normalization_std,
 
 plt.figure()
 imshow(output, title='Output Image')
-
 # sphinx_gallery_thumbnail_number = 4
 plt.ioff()
 plt.show('hold')
-
 
 
 
