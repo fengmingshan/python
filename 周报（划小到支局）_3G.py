@@ -24,37 +24,37 @@ pic_path = r'D:\_话务周报(划小到支局)\pic' + '\\'
 
 df_zte_eNodeB =  pd.read_excel(data_path + 'zte_eNode_name.xls',encoding = 'utf-8')
 
-files_3G = os.listdir(path_3g) 
-files_3G_busy = os.listdir(path_3g_busy) 
+files_3G = os.listdir(path_3g)
+files_3G_busy = os.listdir(path_3g_busy)
 
 
 df_zte_3G_traffic = pd.DataFrame()
-for file in files_3G:    
+for file in files_3G:
     df_tmp = pd.read_csv(path_3g + file,engine = 'python', encoding = 'gbk')
     df_tmp.fillna(0,inplace=True)
     df_tmp.columns = df_tmp.columns.map(lambda x:x.strip())
-    df_tmp['开始时间'] = pd.to_datetime(df_tmp['开始时间'],format="%Y-%m-%d")  
+    df_tmp['开始时间'] = pd.to_datetime(df_tmp['开始时间'],format="%Y-%m-%d")
     week = str(df_tmp.iloc[0,0]).split(' ')[0][5:10] + "_" + str(df_tmp.iloc[-1,0]).split(' ')[0][5:10]
     df_tmp['week'] = week
     df_zte_3G_traffic = df_zte_3G_traffic.append(df_tmp)
 
-df_zte_3G_traffic['开始时间'] = pd.to_datetime(df_tmp['开始时间'],format="%Y-%m-%d")  
+df_zte_3G_traffic['开始时间'] = pd.to_datetime(df_tmp['开始时间'],format="%Y-%m-%d")
 df_zte_3G_traffic.rename(columns={'DO: 小区RLP信息对象.前向MacIndex最大忙数':'3G用户数',
                                   'DO: 小区RLP信息对象.RLP层前向传送字节数(KB)':'3G流量(TB)',
                                   '1X: 小区CS呼叫话务量(Erl)':'1X话务量',
                                   'Cell':'网元'},inplace =True)
 df_zte_3G_traffic['3G流量(TB)'] =  df_zte_3G_traffic['3G流量(TB)'].map(lambda x:x.replace('-','0'))
 df_zte_3G_traffic['3G用户数'] =  df_zte_3G_traffic['3G用户数'].map(lambda x:x.replace('-','0'))
-df_zte_3G_traffic['3G流量(TB)'] =  df_zte_3G_traffic['3G流量(TB)'].astype(float) 
-df_zte_3G_traffic['3G用户数'] =  df_zte_3G_traffic['3G用户数'].astype(float) 
+df_zte_3G_traffic['3G流量(TB)'] =  df_zte_3G_traffic['3G流量(TB)'].astype(float)
+df_zte_3G_traffic['3G用户数'] =  df_zte_3G_traffic['3G用户数'].astype(float)
 df_zte_3G_traffic['3G流量(TB)'] =  df_zte_3G_traffic['3G流量(TB)']/(1024*1024*1024)
 df_zte_3G_traffic['3G流量(TB)'] =  df_zte_3G_traffic['3G流量(TB)'].map(lambda x:round(x,4))
 df_zte_3G_traffic['网元'] =  df_zte_3G_traffic['网元'].map(lambda x:x.split('_')[2])
 df_zte_3G_traffic['网元'] =  df_zte_3G_traffic['网元'].map(lambda x:x.split('J')[1])
 
 df_zte_3G_traffic =  df_zte_3G_traffic[['week','网元','1X话务量','3G流量(TB)','3G用户数']]
-df_zte_3G_traffic = pd.pivot_table(df_zte_3G_traffic, index=['week','网元'], 
-                                   values = ['1X话务量','3G流量(TB)','3G用户数'], 
+df_zte_3G_traffic = pd.pivot_table(df_zte_3G_traffic, index=['week','网元'],
+                                   values = ['1X话务量','3G流量(TB)','3G用户数'],
                                    aggfunc = {'1X话务量':np.sum,'3G流量(TB)':np.sum,'3G用户数':np.max})  
 df_zte_3G_traffic = df_zte_3G_traffic.reset_index()                                                     
 
