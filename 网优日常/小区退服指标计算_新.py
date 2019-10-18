@@ -19,21 +19,20 @@ from numba import jit
 # =============================================================================
 # 生成各县退服清单
 # =============================================================================
-@jit
-def 填写退服小区(a,b):
-	if pd.isnull(a):
-		return b.split('_')[0] + '_' + b.split('_')[1]
-	else:
-		return a
 
-@jit
+def 填写退服小区(a, b):
+    if pd.isnull(a):
+        return str(b.split('_')[0] + '_' + b.split('_')[1])
+    else:
+        return str(a)
+
+
 def bulid_Index(a,b,c):
     if a == '基站中断':
         return b
     else:
         return c
 
-@jit
 def fill_Index(a,b,c,d):
     if pd.isnull(a):
         if b == '基站中断':
@@ -43,7 +42,6 @@ def fill_Index(a,b,c,d):
     else:
         return a
 
-@jit
 def calc_time(interval):
     '''
     根据告警的interval计算出时长，单位：minutes
@@ -57,7 +55,6 @@ def calc_time(interval):
         break_minutes = 0
     return break_minutes
 
-@jit
 def calc_break_time(bts_level,t0,t1):
     '''
     根据告警发生时间 t0 和 告警结束时间 t1
@@ -131,9 +128,9 @@ df_block = pd.read_excel(block_cell)
 df_block['退服小区标识'] = df_block.apply(
     lambda x: 填写退服小区(x.关联小区标识, x.告警对象名称), axis=1)
 df_block['告警清除时间'] = df_block['告警清除时间'].map(str)
-df_block = df_block[['退服小区标识', '所属基站ID','网元等级','告警发生时间', '告警清除时间', '退服时长(分钟)', '6-8点退服时长（分钟）', '8-22点退服时长（分钟）',
+df_block = df_block[['所属基站ID','退服小区标识','网元等级','告警发生时间', '告警清除时间', '退服时长(分钟)', '6-8点退服时长（分钟）', '8-22点退服时长（分钟）',
                      '22-24点退服时长（分钟）']]
-df_block['alarm_time_index'] = df_block['所属基站ID'].map(str) + '_' + df_block['告警发生时间'].map(lambda x:x[:-3])
+df_block['alarm_time_index'] = df_block['退服小区标识'] + '_' + df_block['告警发生时间'].map(lambda x:x[:-6])
 for i in range(len(df_block)):
     break_time = calc_break_time(df_block.loc[i,'网元等级'],df_block.loc[i,'告警发生时间'],df_block.loc[i,'告警清除时间'])
     df_block.loc[i,'6-8点退服时长（分钟）'] = break_time[0]
@@ -155,13 +152,12 @@ df_ALL = df_ALL.reset_index()
 df_ALL.drop('index',axis = 1,inplace = True)
 
 df_LTE = df_ALL[(df_ALL['是否NB小区'] == '否') | (df_ALL['是否NB小区'].isnull() == True) ]
-df_LTE['alarm_time_index'] = df_LTE['所属基站ID'].map(str) + '_' + df_LTE['告警发生时间'].map(lambda x:x[:-3])
+df_LTE['退服小区标识'] = df_LTE.apply(lambda x : 填写退服小区(x.关联小区标识,x.告警对象名称),axis = 1)
+df_LTE['alarm_time_index'] = df_LTE['退服小区标识'] + '_' + df_LTE['告警发生时间'].map(lambda x:x[:-6])
 df_LTE.set_index('alarm_time_index',inplace = True)
 df_LTE.update(df_block_res)
 df_LTE.reset_index(inplace = True)
 
-df_LTE['退服小区标识'] = df_LTE.apply(lambda x : 填写退服小区(x.关联小区标识,x.告警对象名称),axis = 1)
-#df_LTE['LTE小区个数'] = df_LTE['LTE小区个数'].map(lambda x : 1 if pd.isnull(x) else x)
 df_LTE.rename(columns={'退服时长(分钟)':'总退服时长',
                        '告警清除时间':'告警恢复时间',
                        '6-8点退服时长（分钟）':'总6至8点退服时长',

@@ -8,7 +8,6 @@ from datetime import datetime
 from dateutil.parser import parse
 from dateutil.rrule import *
 from interval import Interval, IntervalSet
-from numba import jit
 
 data_path = r'D:\_小程序\小区退服计算'
 if not os.path.exists(data_path):
@@ -40,14 +39,13 @@ def calc_time(interval):
         break_minutes = 0
     return break_minutes
 
-@jit
 def calc_break_time(bts_level,t0,t1):
     '''
     根据告警发生时间 t0 和 告警结束时间 t1
     计算出在三个考核时段内告警的时长，单位：minutes
     '''
-    t0 = df_block.loc[i,'告警发生时间']
-    t1 = df_block.loc[i,'告警清除时间']
+#    t0 = df_block.loc[0,'告警发生时间']
+#    t1 = df_block.loc[0,'告警清除时间']
     date_list = list(rrule(DAILY, dtstart=parse(t0), until=parse(t1)))
     day_list = [x.strftime('%Y-%m-%d') for x in date_list]
     # 创建断站的时间段
@@ -95,10 +93,11 @@ def calc_break_time(bts_level,t0,t1):
 df_block = pd.read_excel(block_cell)
 df_block['退服小区标识'] = df_block.apply(
     lambda x: 填写退服小区(x.关联小区标识, x.告警对象名称), axis=1)
+df_block['告警发生时间'] = df_block['告警发生时间'].map(str)
 df_block['告警清除时间'] = df_block['告警清除时间'].map(str)
-df_block = df_block[['退服小区标识', '所属基站ID','网元等级','告警发生时间', '告警清除时间', '退服时长(分钟)', '6-8点退服时长（分钟）', '8-22点退服时长（分钟）',
+df_block = df_block[['所属基站ID','退服小区标识','网元等级','告警发生时间', '告警清除时间', '退服时长(分钟)', '6-8点退服时长（分钟）', '8-22点退服时长（分钟）',
                      '22-24点退服时长（分钟）']]
-df_block['alarm_time_index'] = df_block['所属基站ID'].map(str) + '_' + df_block['告警发生时间'].map(lambda x:x[:-3])
+df_block['alarm_time_index'] = df_block['退服小区标识'] + '_' + df_block['告警发生时间'].map(lambda x:x[:-6])
 
 for i in range(len(df_block)):
     break_time = calc_break_time(df_block.loc[i,'网元等级'],df_block.loc[i,'告警发生时间'],df_block.loc[i,'告警清除时间'])
