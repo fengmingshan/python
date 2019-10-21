@@ -100,9 +100,9 @@ def test_model(model, banchs, data_load):
         # print 标签
         print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
                                       for j in range(4)))
-        time.sleep(2)
+        time.sleep(5)
 
 
 # 随机抽取图片测试模型
-test_model(model, 5, test_loader)
+test_model(model, 6, test_loader)
 

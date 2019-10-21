@@ -39,7 +39,7 @@ print pattern1.findall(key)
 key = r"chuxiuhong@hit.edu.cn"
 p1 = r"@.+?\."#我想匹配到@后面一直到“.”之间的，在这里是hit
 pattern1 = re.compile(p1)
-print pattern1.findall(key)
+print(pattern1.findall(key))
 # 输出结果 ['@hit.']
 
 

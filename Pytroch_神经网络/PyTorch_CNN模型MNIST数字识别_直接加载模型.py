@@ -88,7 +88,7 @@ def test_model(model, banchs, data_load):
         # 预测
         # 第二个参数1是代表dim的意思，也就是取每一行的最大值，
         # "_"取到的是最大值，predicted取到的是最大值对应的index，因为我们不关心最大值所以用匿名变量"_"来取
-        time.sleep(1.5)
+        time.sleep(3)
         _, predicted = torch.max(outputs, 1)
 
         # print 标签
@@ -101,7 +101,7 @@ def test_model(model, banchs, data_load):
 # 模型实例化
 model = CNN()
 # 加载模型参数
-model.load_state_dict(torch.load('./cnn模型备份/net_128_batches.ckpt'))
+model.load_state_dict(torch.load('./cnn模型备份/net_3_epoch.ckpt'))
 # 在测试模型前，你必须调用model.eval来关闭 BatchNormalization 和 Dropout
 # 否则会导致不一致的测试结果.
 
