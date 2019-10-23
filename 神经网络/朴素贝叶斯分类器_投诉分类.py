@@ -125,11 +125,11 @@ X_vec.shape
 X1=X_vec[:len(df1)]
 X2=X_vec[len(df1):]
 
-X_train, X_test, y_train, y_test = train_test_split(X1, df1['标签'], test_size=0.15, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X1, df['标签'], test_size=0.15, random_state=0)
 #print(X_train.shape,X_test.shape,y_train.shape,y_test.shape)
-
+print(X_train[0])
 def train_nbClassifier(X_train,y_train):
-    from sklearn.naive_bayes import MultinomialNB
+    from sklearn.naive_bayes import MultinomialNB # 导入朴素贝叶斯模型
     clf = MultinomialNB(alpha = 0.2)   #alpha为不确定性的权重，当学习集少的情况下，需要提高alpha来增加不确定性来拟合未知的数据，可以试试alpha=1的情况
     clf.fit(X_train,y_train)
     return clf
@@ -142,6 +142,7 @@ y_pred[:10]
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+
 print('分类报告：',classification_report(y_test, y_pred))
 print('全局准确率:',accuracy_score(y_test, y_pred))
 print('混淆矩阵：',confusion_matrix(y_test, y_pred))
@@ -212,6 +213,7 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     plt.xlabel('Predicted label')
 
 classes = [2,4,5,6,8,11,14,15,16,19,21,23,28,31,32,33,36,37,42,43,44,45,46,47,49,50,52,53,54,56,57,59,60,64,66,67,69,72,74,77,79]
+
 plt.figure(figsize=(30, 25))
 plot_confusion_matrix(confusion_mat, classes=classes, normalize=True, title='混淆矩阵')
 plt.show()

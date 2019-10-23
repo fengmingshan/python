@@ -64,7 +64,8 @@ print(len(df))
 print(len(df1))
 print(len(df2))
 
-# 去除文本中的一些网页格式
+# 去除文本中的一些网页格式 和标点符号
+df['文本'] = df['文本'].map(lambda x:x.replace('！',''))
 df['文本'] = df['文本'].map(lambda x:x.replace('①',''))
 df['文本'] = df['文本'].map(lambda x:x.replace('②',''))
 df['文本'] = df['文本'].map(lambda x:x.replace('③',''))
@@ -138,6 +139,7 @@ stopwords[:20]
 
 # 对文本 X 进行分词操作
 X_split = cutWords(X,stopwords)
+X_words = [x.split() for x in X_split]
 
 X_train, X_test, y_train, y_test = train_test_split(X_split, df['标签'], test_size=0.15, random_state=0)
 #print(X_train.shape,X_test.shape,y_train.shape,y_test.shape)
@@ -146,7 +148,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_split, df['标签'], test_
 # 训练word2vec词向量:
 # =============================================================================
 import gensim
-model = gensim.models.Word2Vec(X_split,min_count =5,window =8,size=100)   # X_split是经分词后的文本构成的list，也就是tokens的列表的列表
+model = gensim.models.Word2Vec(X_words,min_count =5,window =8,size=100)   # X_split是经分词后的文本构成的list，也就是tokens的列表的列表
 embeddings_index = dict(zip(model.wv.index2word, model.wv.vectors))
 print('Found %s word vectors.' % len(embeddings_index))
 
@@ -228,3 +230,112 @@ model.summary()
 model.fit(xtrain_pad, y = y_train, batch_size=512, epochs=10, verbose=1, validation_data=(xvalid_pad, y_test))
 
 model.save('lstm_model_10epochs.h5')
+
+# =============================================================================
+# 模型评估
+# =============================================================================
+# 预测结果可视化
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
+
+from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+
+
+# 将分类报告输出为excel
+def classifaction_report_csv(report):
+    report_data = []
+    lines = report.split('\n')
+    for line in lines[2:-3]:
+        row = {}
+        row_data = line.split('      ')
+        row['类别'] = row_data[1]
+        row['精确率_precision'] = float(row_data[2])
+        row['召回率_recall'] = float(row_data[3])
+        row['f1_score'] = float(row_data[4])
+        row['support'] = float(row_data[5])
+        report_data.append(row)
+    dataframe = pd.DataFrame.from_dict(report_data)
+    return dataframe
+
+y_pred = model.predict(xvalid_pad, verbose=0)
+y_pred[0]
+# 将预测结果80维的向量转成分类
+y_pred_list = []
+for item in y_pred:
+    y_pred_list.append(list(item).index(max(item)))
+
+report = classification_report(y_test, y_pred_list)
+df_report = classifaction_report_csv(report)
+
+if not os.path.exists('./结果可视化'):
+    os.mkdir('./结果可视化')
+with pd.ExcelWriter('./结果可视化/LSTM分类报告.xlsx') as writer:
+    df_report.to_excel(writer,index = False)
+
+# 混淆矩阵可视化
+confusion_mat = confusion_matrix(y_test, y_pred_list)
+
+# 混淆矩阵可视化
+import itertools
+# 定义绘制混淆矩阵的函数
+def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    Input
+    - cm : 计算出的混淆矩阵的值
+    - classes : 混淆矩阵中每一行每一列对应的列
+    - normalize : True:显示百分比, False:显示个数
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+    print(cm)
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+
+classes = [1,2,4,5,6,8,11,12,14,15,16,19,20,21,23,24,26,31,33,34,36,37,38,39,42,43,44,45,47,50,51,52,53,54,56,57,58,59,60,67,69,71,72,74,77,79]
+
+plt.figure(figsize=(30, 25))
+plot_confusion_matrix(confusion_mat, classes=classes, normalize=True, title='混淆矩阵')
+plt.show()
+plt.savefig("./结果可视化/混淆矩阵_.png",format='png', dpi=500)
+
+# 全局准确率
+print('全局准确率:',accuracy_score(y_test, y_pred_list))
+
+# =============================================================================
+# 加载模型
+# =============================================================================
+data_path = 'D:/Notebook/通过机器学习进行投诉分类'
+os.chdir(data_path)
+
+#from keras.models import load_model
+## 读取模型
+#model = load_model('lstm_model_10epochs.h5')
+## 预测
+#y_pred = model.predict(xvalid_pad, verbose=0)
+#print(y_pred[0])
+
+## 将预测结果80维的向量转成分类
+#y_pred_list = []
+#for item in y_pred:
+#    y_pred_list.append(list(item).index(max(item)))
