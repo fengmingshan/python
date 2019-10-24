@@ -158,7 +158,8 @@ print('共训练 %s 个词向量.' % len(embeddings_dict))
 w2vModel.save('w2vModel.model')
 
 # 加载自己以前训练的词向量
-w2vModel = gensim.models.Word2Vec.load('w2vModel.model')
+#w2vModel = gensim.models.Word2Vec.load('w2vModel.model')
+#embeddings_dict = dict(zip(w2vModel.wv.index2word, w2vModel.wv.vectors))
 
 # 使用 keras Tokenizer对词组进行编码
 # 创建了一个Tokenizer对象后，使用该对象的fit_on_texts()函数，以空格去识别每个词
@@ -176,10 +177,11 @@ xvalid_pad = sequence.pad_sequences(xvalid_seq, maxlen = max_len)
 
 word_index = token.word_index
 
+
 # 基于已有的数据集中的词汇创建一个词嵌入矩阵（Embedding Matrix），需要参与神经网络模型训练
 embedding_matrix = np.zeros((len(word_index) + 1, 100))
 for word, i in tqdm(word_index.items()):
-    embedding_vector = w2vModel[word]
+    embedding_vector =  embeddings_dict1.get(word)
     if embedding_vector is not None:
         embedding_matrix[i] = embedding_vector
 
