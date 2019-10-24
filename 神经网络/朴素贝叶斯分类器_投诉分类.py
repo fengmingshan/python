@@ -77,12 +77,17 @@ def replace_num(text):
 df['文本'] = df['文本'].map(lambda x:replace_num(x))
 
 
-#定义停词函数
+#定义读取停词函数
 def loadStopWords():
     stop = []
     for line in open('stopWord.txt').readlines():
         stop.append(line)
     return list(set(stop))
+
+# 读取停用词表
+stopwords = loadStopWords()
+print(len(stopwords))
+stopwords[:20]
 
 #定义切词函数
 def cutWords(msgs,stopWords):
@@ -102,20 +107,15 @@ def cutWords(msgs,stopWords):
 X=df['文本']
 X[:5]
 
-# 读取停用词表
-stopwords = loadStopWords()
-print(len(stopwords))
-stopwords[:20]
-
 # 对文本 X 进行分词操作
-X_split = cutWords(X,stopwords)
+X_cut = cutWords(X,stopwords)
 
 #文本向量化
 vectorizer = CountVectorizer()
-X_vec = vectorizer.fit_transform(X_split)
+X_w2vec = vectorizer.fit_transform(X_cut)
 
-type(X_vec)
-X_vec.shape
+type(X_w2vec)
+X_w2vec.shape
 
 #print(X_vec[1])
 #print(X_vec[0].toarray())
@@ -125,11 +125,11 @@ X_vec.shape
 X1=X_vec[:len(df1)]
 X2=X_vec[len(df1):]
 
-X_train, X_test, y_train, y_test = train_test_split(X1, df['标签'], test_size=0.15, random_state=0)
-#print(X_train.shape,X_test.shape,y_train.shape,y_test.shape)
-print(X_train[0])
+X_train, X_test, y_train, y_test = train_test_split(X1, df1['标签'], test_size=0.15, random_state=0)
+print(X_train.shape,X_test.shape,y_train.shape,y_test.shape)
+
 def train_nbClassifier(X_train,y_train):
-    from sklearn.naive_bayes import MultinomialNB # 导入朴素贝叶斯模型
+    from sklearn.naive_bayes import MultinomialNB
     clf = MultinomialNB(alpha = 0.2)   #alpha为不确定性的权重，当学习集少的情况下，需要提高alpha来增加不确定性来拟合未知的数据，可以试试alpha=1的情况
     clf.fit(X_train,y_train)
     return clf
@@ -142,7 +142,6 @@ y_pred[:10]
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
-
 print('分类报告：',classification_report(y_test, y_pred))
 print('全局准确率:',accuracy_score(y_test, y_pred))
 print('混淆矩阵：',confusion_matrix(y_test, y_pred))
@@ -174,9 +173,6 @@ if not os.path.exists('./结果可视化'):
     os.mkdir('./结果可视化')
 with pd.ExcelWriter('./结果可视化/分类报告.xlsx') as writer:
     df_report.to_excel(writer,index = False)
-
-
-confusion_mat = confusion_matrix(y_test, y_pred)
 
 # 混淆矩阵可视化
 import itertools
@@ -212,8 +208,9 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-classes = [2,4,5,6,8,11,14,15,16,19,21,23,28,31,32,33,36,37,42,43,44,45,46,47,49,50,52,53,54,56,57,59,60,64,66,67,69,72,74,77,79]
+confusion_mat = confusion_matrix(y_test, y_pred)
 
+classes = [2,4,5,6,8,11,14,15,16,19,21,23,28,31,32,33,36,37,42,43,44,45,46,47,49,50,52,53,54,56,57,59,60,64,66,67,69,72,74,77,79]
 plt.figure(figsize=(30, 25))
 plot_confusion_matrix(confusion_mat, classes=classes, normalize=True, title='混淆矩阵')
 plt.show()

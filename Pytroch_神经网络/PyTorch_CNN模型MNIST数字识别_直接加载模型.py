@@ -2,7 +2,7 @@
 # @Author: Administrator
 # @Date:   2019-09-16 08:49:26
 # @Last Modified by:   Administrator
-# @Last Modified time: 2019-09-16 09:10:39
+# @Last Modified time: 2019-10-23 13:07:21
 from __future__ import print_function
 import torch
 import torch.nn as nn
@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 import os
-
 
 data_path = 'd:/_python/神经网络数据集/mnist'
 os.chdir(data_path)
@@ -88,23 +87,24 @@ def test_model(model, banchs, data_load):
         # 预测
         # 第二个参数1是代表dim的意思，也就是取每一行的最大值，
         # "_"取到的是最大值，predicted取到的是最大值对应的index，因为我们不关心最大值所以用匿名变量"_"来取
-        time.sleep(3)
+        time.sleep(2)
         _, predicted = torch.max(outputs, 1)
 
         # print 标签
         print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
                                       for j in range(6)))
-        time.sleep(1)
+        time.sleep(6)
 
 
 # 重新加载网络模型
 # 模型实例化
 model = CNN()
 # 加载模型参数
+#model.load_state_dict(torch.load('./cnn模型备份/net_128_batches.ckpt'))
 model.load_state_dict(torch.load('./cnn模型备份/net_3_epoch.ckpt'))
 # 在测试模型前，你必须调用model.eval来关闭 BatchNormalization 和 Dropout
 # 否则会导致不一致的测试结果.
 
 # 随机抽取图片测试模型
-test_model(model, 4, test_loader)
+test_model(model, 5, test_loader)
 

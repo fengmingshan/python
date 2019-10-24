@@ -127,7 +127,7 @@ df0 = df.loc[X_test.index]
 # 检查形状
 X_train.shape,X_test.shape,y_train.shape,y_test.shape
 
-#神经网络
+# 定义神经网络
 m4 = keras.Sequential()
 m4.add(Dense(64,input_shape=(31,),activation='relu'))
 m4.add(Dense(32,activation='relu'))
@@ -140,6 +140,15 @@ m4.compile(optimizer='adam', loss='mse', metrics=['mse'])
 m4.fit(X_train,y_train,epochs=130,batch_size=64,validation_data=(X_test,y_test))
 
 m4.save_weights('MLP_SINR_weights.h5')
+
+# 绘制准确率曲线
+plt.plot(m4.history['accuracy'])
+plt.plot(m4.history['val_accuracy'])
+plt.title('Model accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
 
 # =============================================================================
 # 加载模型
@@ -159,7 +168,7 @@ model.summary()
 
 model.load_weights('MLP_SINR_weights.h5')
 
-# 预测
+# 模型测试
 y_pred = model.predict(X_test)
 print(y_pred[:10])
 

@@ -5,7 +5,7 @@
 # @Last Modified time: 2019-09-11 11:19:02
 
 # Multilayer Neural Network （多层神经网络）
-
+import os
 from __future__ import print_function
 import torch
 import torch.nn as nn
@@ -14,7 +14,8 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torchvision import datasets, transforms
 
-
+data_path = 'D:/_python/神经网络数据集/mnist'
+os.chdir(data_path)
 # Multilayer Neural Network （多层神经网络）
 # 这里我们就创建三层神经网络，让前一层的输出作为后一层的输入。
 # 添加批标准化 BatchNorm1d() 与激活函数 ReLU() ，来增加网络的收敛速度和非线性.
@@ -87,12 +88,10 @@ if __name__ == '__main__':
     log_interval = 32
 
     use_cuda = torch.cuda.is_available()
-
     torch.manual_seed(seed)
-
     device = torch.device("cuda" if use_cuda else "cpu")
-
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
+
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('./', train=True, download=False,
                        transform=transforms.Compose([
@@ -136,7 +135,7 @@ if __name__ == '__main__':
     classes = (0,1,2,3,4,5,6,7,8,9)
     # get some random test images
     test_dataiter = iter(test_loader)
-    for i in range(10):
+    for i in range(3):
         # 取图片数据，因为trainloader设置了batch_size=4，所以没运行一次.next()方法就会取出4幅图
         images, labels = test_dataiter.next()
         data = Variable(images.view(-1, 28 * 28))
@@ -148,7 +147,7 @@ if __name__ == '__main__':
         # 第二个参数1是代表dim的意思，也就是取每一行的最大值，
         # "_"取到的是最大值，predicted取到的是最大值对应的index，因为我们不关心最大值所以用匿名变量"_"来取
         _, predicted = torch.max(outputs, 1)
-
+        print(outputs)
         # print 标签
         print('Predicted: ', ' '.join('%s' % classes[predicted[j]]
             for j in range(4)))
