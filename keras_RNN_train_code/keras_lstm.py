@@ -43,9 +43,9 @@ input_dim = x_test.shape
 # 定义网络模型
 model = Sequential()
 #model.add(Embedding(input_dim, output_dim=100))
-model.add(keras.layers.LSTM(60,return_sequences=True))
-model.add(keras.layers.LSTM(40,return_sequences=True))
-model.add(keras.layers.LSTM(25))
+model.add(LSTM(100,input_shape=(1,157),return_sequences=True))
+model.add(LSTM(40,return_sequences=True))
+model.add(LSTM(25))
 model.add(Dropout(0.3))
 #model.add(Dense(50, activation='relu'))
 model.add(Dense(12, activation='relu'))
@@ -54,6 +54,7 @@ model.add(Dense(6, activation='softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
               metrics=['accuracy'])
+model.summary()
 
 history=model.fit(x_train, y_train, batch_size=128, epochs=100,validation_data=(x_test, y_test),verbose=1)
 #score = model.evaluate(x_test, y_test, batch_size=32)

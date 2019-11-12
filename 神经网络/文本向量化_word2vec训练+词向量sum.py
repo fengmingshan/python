@@ -8,12 +8,14 @@
 import itertools
 import matplotlib.pyplot as plt
 import gensim
+import xgboost as xgb
 import pandas as pd
 import numpy as np
 import os
 import jieba
 from tqdm import tqdm
 from keras.models import load_model
+from keras.utils import np_utils
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.normalization import BatchNormalization
 from keras.layers.recurrent import LSTM, GRU
@@ -30,8 +32,6 @@ from sklearn.metrics import classification_report
 
 
 # 定义损失评估函数
-
-
 def multiclass_logloss(actual, predicted, eps=1e-15):
     """对数损失度量（Logarithmic Loss  Metric）的多分类版本。
     :param actual: 包含actual target classes的数组
@@ -158,20 +158,24 @@ print('共训练 %s 个词向量.' % len(embeddings_dict))
 w2vModel.save('w2vModel.model')
 
 
+# 加载自己以前训练的词向量
+w2vModel = gensim.models.Word2Vec.load('w2vModel.model')
+embeddings_dict = dict(zip(w2vModel.wv.index2word, w2vModel.wv.vectors))
+
 # 定义将全文本转词向量的函数
 def sent2vec(s):
     words = str(s)
     M = []
     for w in words:
         try:
-            # M.append(embeddings_index[w])
+            # M.append(embeddings_dict[w])
             M.append(w2vModel[w])
         except BaseException:
             continue
     M = np.array(M)
     v = M.sum(axis=0)
     if not isinstance(v, np.ndarray):
-        return np.zeros(300)
+        return np.zeros(100)
     return v / np.sqrt((v ** 2).sum())
 
 
@@ -187,8 +191,41 @@ X_test_w2v = np.array(X_test_w2v)
 scl = preprocessing.StandardScaler()
 X_train_w2v_scl = scl.fit_transform(X_train_w2v)
 X_test_w2v_scl = scl.transform(X_test_w2v)
-X_test_w2v_scl.shape[1]
 
-# 对标签进行binarize处理
+# 基于word2vec特征在一个简单的Xgboost模型上进行拟合
+clf = xgb.XGBClassifier(nthread=10, silent=False)
+clf.fit(X_train_w2v_scl, y_train)
+predictions = clf.predict_proba(X_test_w2v_scl)
+
+print ("logloss: %0.3f " % multiclass_logloss(y_test, predictions))
+
+# 使用全连接神经网络进行测试
+
+# 对标签进行binarize处理，因为全连接神经网络分类结果是一个向量
 y_train_enc = np_utils.to_categorical(y_train)
 y_test_enc = np_utils.to_categorical(y_test)
+
+
+#创建1个3层的序列神经网络（Sequential Neural Net）
+model = Sequential()
+
+model.add(Dense(300, input_dim=300, activation='relu'))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+
+model.add(Dense(300, activation='relu'))
+model.add(Dropout(0.3))
+model.add(BatchNormalization())
+
+model.add(Dense(3))
+model.add(Activation('softmax'))
+
+model.summay()
+
+# 模型编译
+model.compile(loss='categorical_crossentropy', optimizer='adam')
+
+
+model.fit(xtrain_w2v_scl, y=ytrain_enc, batch_size=64,
+          epochs=5, verbose=1,
+          validation_data=(xvalid_w2v_scl, yvalid_enc))

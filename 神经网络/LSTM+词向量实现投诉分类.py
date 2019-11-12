@@ -14,6 +14,7 @@ import os
 import jieba
 from tqdm import tqdm
 from keras.models import load_model
+from keras.utils import np_utils
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.normalization import BatchNormalization
 from keras.layers.recurrent import LSTM, GRU
@@ -177,6 +178,9 @@ xvalid_pad = sequence.pad_sequences(xvalid_seq, maxlen = max_len)
 
 word_index = token.word_index
 
+# 对标签进行binarize处理
+y_train_enc = np_utils.to_categorical(y_train)
+y_test_enc = np_utils.to_categorical(y_test)
 
 # 基于已有的数据集中的词汇创建一个词嵌入矩阵（Embedding Matrix），需要参与神经网络模型训练
 embedding_matrix = np.zeros((len(word_index) + 1, 100))
@@ -210,7 +214,7 @@ model.fit(
     xtrain_pad,
     y=y_train,
     batch_size=512,
-    epochs=3,
+    epochs=1,
     verbose=1,
     validation_data=(
         xvalid_pad,
@@ -218,6 +222,26 @@ model.fit(
 
 model.save('lstm_model_1_epochs.h5')
 
+# =============================================================================
+# 多层LSTM模型
+# =============================================================================
+# 定义网络模型
+model = Sequential()
+#model.add(Embedding(70, output_dim=100))
+model.add(LSTM(100,return_sequences=True))
+model.add(LSTM(40,return_sequences=True))
+model.add(LSTM(25))
+model.add(Dropout(0.3))
+#model.add(Dense(50, activation='relu'))
+model.add(Dense(12, activation='relu'))
+#model.add(Dropout(0.2))
+model.add(Dense(80, activation='softmax'))
+model.compile(loss='categorical_crossentropy',
+              optimizer='rmsprop',
+              metrics=['accuracy'])
+model.summary()
+
+history=model.fit(xtrain_pad, y_train_enc, batch_size=128, epochs=1,validation_data=(xvalid_pad, y_test_enc),verbose=1)
 
 # =============================================================================
 # 模型评估
