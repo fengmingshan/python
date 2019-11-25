@@ -7,6 +7,7 @@ Created on Tue Nov 19 09:30:48 2019
 
 import os
 import pandas as pd
+from tqdm import tqdm,trange
 import time
 from datetime import datetime
 from math import sin
@@ -29,15 +30,18 @@ def getDistance(latA, lonA, latB, lonB):
     radLonA = radians(lonA)
     radLatB = radians(latB)
     radLonB = radians(lonB)
-
-    pA = atan(rb / ra * tan(radLatA))
-    pB = atan(rb / ra * tan(radLatB))
-    x = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB) * cos(radLonA - radLonB))
-    c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
-    c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
-    dr = flatten / 8 * (c1 - c2)
-    distance = ra * (x + dr)
-    return distance
+    # 如果源小区和目标小区经纬度相同，会出现除于0的情况报错，所以要确保经纬度不同再开始计算
+    if latA != latB and lonA != lonB:
+        pA = atan(rb / ra * tan(radLatA))
+        pB = atan(rb / ra * tan(radLatB))
+        x = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB) * cos(radLonA - radLonB))
+        c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
+        c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
+        dr = flatten / 8 * (c1 - c2)
+        distance = ra * (x + dr)
+        return distance
+    else:
+        return 0
 
 
 data_path = 'D:/_python小程序/根据经纬度计算基站间距离'
@@ -46,7 +50,7 @@ os.chdir(data_path)
 source_cell_info = 'source_bts_info.xlsx'
 destination_cell_info = 'destination_bts_info.xlsx'
 
-max_distance = 7000
+max_distance = 4000
 
 df_source_cell = pd.read_excel(source_cell_info)
 df_source_cell['lon'] = df_source_cell['lon'].map(lambda x: round(x, 5))
@@ -65,41 +69,36 @@ df_destination_cell.rename(
 
 list_res = []
 start_time = datetime.now()
-for i in range(len(df_source_cell)):
-    df_tmp = df_destination_cell[(df_destination_cell['des_lon'] != df_source_cell.loc[i, 'lon']) & (
-        df_destination_cell['des_lat'] != df_source_cell.loc[i, 'lat'])]
-    df_tmp['s_name'] = df_source_cell.loc[i, 'name']
-    df_tmp['s_eNodeB'] = df_source_cell.loc[i, 'eNodeB']
-    df_tmp['s_lon'] = df_source_cell.loc[i, 'lon']
-    df_tmp['s_lat'] = df_source_cell.loc[i, 'lat']
-    df_tmp['distance'] = df_tmp.apply(
-        lambda x: getDistance(
-            x.s_lat,
-            x.s_lon,
-            x.des_lat,
-            x.des_lon),
-        axis=1)
-    df_tmp = df_tmp[df_tmp['distance'] <= max_distance]
-    list_res.append(df_tmp)
-    if i > 0 and i % 100 == 0:
-        bantch_time = datetime.now()
-        delta_time = (bantch_time - start_time).seconds
-        print('\n', '  Part Report  '.center(60, '#'))
-        print('Total {total} cells,finished {finish} cells, remain {remain} cells！'.format(
-            total=len(df_source_cell), finish=i, remain=len(df_source_cell) - i))
-        print('Take {seconds} seconds!'.format(seconds=delta_time))
-    elif i == len(df_source_cell) - 1:
-        total_time = datetime.now()
-        delta_time = (total_time - start_time).seconds
-        print('\n', '  Global Report  '.center(60, '#'))
-        print('ALL {total} cells finished !'.format(total=len(df_source_cell)))
-        print('Total take {seconds} seconds!'.format(seconds=delta_time))
+
+with tqdm(total=len(df_source_cell)) as t:
+    for i in range(len(df_source_cell)):
+        t.update(1)
+        df_tmp = df_destination_cell
+        df_tmp['s_name'] = df_source_cell.loc[i, 'name']
+        df_tmp['s_eNodeB'] = df_source_cell.loc[i, 'eNodeB']
+        df_tmp['s_lon'] = df_source_cell.loc[i, 'lon']
+        df_tmp['s_lat'] = df_source_cell.loc[i, 'lat']
+        df_tmp['distance'] = df_tmp.apply(
+            lambda x: getDistance(
+                x.s_lat,
+                x.s_lon,
+                x.des_lat,
+                x.des_lon),
+            axis=1)
+        df_tmp = df_tmp[df_tmp['distance'] <= max_distance]
+        list_res.append(df_tmp)
+        if i == len(df_source_cell) - 1:
+            total_time = datetime.now()
+            delta_time = (total_time - start_time).seconds
+            print('\n', '  Global Report  '.center(60, '#'))
+            print('ALL {total} cells finished !'.format(total=len(df_source_cell)))
+            print('Total take {seconds} seconds!'.format(seconds=delta_time))
 
 df_res = pd.concat(list_res, axis=0)
 df_res = df_res[['s_name', 's_eNodeB', 's_lon', 's_lat', 'des_name',
                  'des_eNodeB', 'des_lon', 'des_lat', 'distance']]
-df_res['distance'] = df_res['distance'].map(lambda x:ceil(x))
+df_res['distance'] = df_res['distance'].map(lambda x: ceil(x))
 with open('距离计算结果.csv', 'w') as writer:
     df_res.to_csv(writer, index=False)
-print('\n'+'结果已输出到：{path}，请到该目录查看！'.format(path=os.getcwd().replace('\\\\', '\\') + '\\'))
+print('\n' + '结果已输出到：{path}，请到该目录查看！'.format(path=os.getcwd().replace('\\\\', '\\') + '\\'))
 os.startfile(data_path)

@@ -10,8 +10,8 @@ import numpy as np
 from numba import jit
 from math import ceil
 
-data_path = r'd:/_小程序/超忙小区分析'
-eric_file = '爱立信2019-09忙时.csv'
+data_path = 'D:/_python小程序/超忙小区分析'
+eric_file = '爱立信10月忙时.csv'
 eric_cell_info = 'eric_cell_info.xlsx'
 os.chdir(data_path)
 
@@ -76,9 +76,9 @@ df_eric_L1800 = df_eric[df_eric['cell'].isin(L1800_list)]
 df_eric_L800 = df_eric[df_eric['cell'].isin(L800_list)]
 
 df_high_Data_800 = df_eric_L800[(df_eric_L800['Total_throughput'] >= 1.5) & (
-    df_eric_L800['DL_Util_of_PRB'] >= 0.5)]
+    df_eric_L800['DL_Util_of_PRB'] >= 0.7)]
 df_massive_users_800 = df_eric_L800[(df_eric_L800['Max number of UE in RRc'] >= 50) & (
-    df_eric_L800['DL_Util_of_PRB'] >= 0.5)]
+    df_eric_L800['DL_Util_of_PRB'] >= 0.7)]
 
 df_busy_cell_800 = df_high_Data_800.append(df_massive_users_800)
 
@@ -192,7 +192,11 @@ df_res_800.drop_duplicates('EUTRANCELLFDD', keep = 'first', inplace = True)
 
 # 处理数据格式
 df_res_800['eNodeB']=df_res_800['eNodeB'].map(
-    lambda x: x.replace('’',''))
+    lambda x: x.strip('\''))
+df_res_800['eNodeB']=df_res_800['eNodeB'].map(
+    lambda x: int(x))
+df_res_800['EUTRANCELLFDD']=df_res_800['EUTRANCELLFDD'].map(
+    lambda x: x.strip('\''))
 df_res_800['country']=df_res_800['EUTRANCELLFDD'].map(
     lambda x: x.split('QJ')[1][:2])
 df_res_800['RRC连接用户数']=df_res_800['RRC连接用户数'].map(
