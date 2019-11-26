@@ -10,8 +10,8 @@ import numpy as np
 from numba import jit
 from math import ceil
 
-data_path = r'd:/_小程序/超忙小区分析'
-zte_file = '中兴_2019-09忙时.csv'
+data_path = r'D:/_python小程序/超忙小区分析'
+zte_file = '2019年10月中兴超忙.csv'
 os.chdir(data_path)
 L1800_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 49, 50, 51, 52, 53, 54, 55,
     56, 129, 130, 131, 132, 133, 134, 135, 136, 177, 178, 179, 180, 181, 182]
