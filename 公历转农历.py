@@ -9,16 +9,7 @@ Created on Wed Dec  4 21:56:43 2019
 from zhdate import ZhDate
 from datetime import datetime
 import pandas as pd
-import os
 
-
-date_path = 'D:/Test'
-os.chdir(date_path)
-
-df = pd.read_csv('Chicago_Crimes_2012_to_2017.csv',engine ='python')
-df.columns
-df['old_Date'] = pd.to_datetime(df['Date'])
-df['old_Date'][0:5]
 
 date1 = ZhDate(2010, 1, 1) # 新建农历 2010年正月初一 的日期对象
 print(date1)  # 直接返回农历日期字符串
