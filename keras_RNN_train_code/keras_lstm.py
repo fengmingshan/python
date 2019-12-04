@@ -25,7 +25,7 @@ modelf_savefile：模型保存路径（文件夹）
 datafile = r'data/fk.xlsx'
 dict_savefile = r'data_dict/fk_words_dict.json'
 modelf_savefile = r'model_data/rnn_checkpoint'
-num_bat=7#7分数据
+num_bat=7 #7份数据
 i=1#第一份数据作为测试集
 
 data_dict = ctn.cut_to_num(datafile,dict_savefile=dict_savefile,save=True,paramater=6)
