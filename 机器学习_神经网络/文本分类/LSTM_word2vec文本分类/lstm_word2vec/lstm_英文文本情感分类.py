@@ -15,15 +15,17 @@ import collections
 import nltk
 import numpy as np
 
+import os
+print(os.getcwd())
+
 # calculate maximum length and construct a dictionary
 maxlen = 0
 word_freqs = collections.Counter()
 num_recs = 0
-with open('/data/emotion_english_traindata.txt','r+') as f:
+with open('./data/emotion_english_traindata.txt','r+',encoding='utf-8') as f:
     for line in f:
         label, sentence = line.strip().split("\t")
         words = sentence.lower().split(" ")
-        #words = nltk.word_tokenize(sentence.lower())
         if len(words) > maxlen:
             maxlen = len(words)
         for word in words:
@@ -31,6 +33,7 @@ with open('/data/emotion_english_traindata.txt','r+') as f:
         num_recs += 1
 print('max_len ',maxlen)
 print('nb_words ', len(word_freqs))
+print('num_recs ', num_recs)
 
 # prepare the data
 MAX_FEATURES = 2000
