@@ -204,13 +204,12 @@ time_step = 1
 features = 100
 
 model = Sequential()
-model.add(LSTM(100,input_shape = (time_step,features) ,return_sequences=True))
+model.add(LSTM(100,input_shape = (time_step,features) ,return_sequences=True,))
 model.add(LSTM(40,return_sequences=True))
 model.add(LSTM(25))
 model.add(Dropout(0.3))
-#model.add(Dense(50, activation='relu'))
-model.add(Dense(12, activation='relu'))
-#model.add(Dropout(0.2))
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(80, activation='softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',

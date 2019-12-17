@@ -50,7 +50,7 @@ os.chdir(data_path)
 source_cell_info = 'source_bts_info.xlsx'
 destination_cell_info = 'destination_bts_info.xlsx'
 
-max_distance = 4000
+max_distance = 2000
 
 df_source_cell = pd.read_excel(source_cell_info)
 df_source_cell['lon'] = df_source_cell['lon'].map(lambda x: round(x, 5))

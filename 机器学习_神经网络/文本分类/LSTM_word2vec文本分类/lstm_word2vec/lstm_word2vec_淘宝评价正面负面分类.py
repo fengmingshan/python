@@ -6,7 +6,7 @@ Created on  2018/5/18 13:30
 """
 import imp
 import sys
-
+import os
 imp.reload(sys)
 import numpy as np
 import pandas as pd
@@ -23,6 +23,9 @@ from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import LSTM
 from keras.layers.core import Dense, Dropout, Activation
 from keras.models import model_from_yaml
+
+data_path = 'D:/_python/python/机器学习_神经网络/文本分类/LSTM_word2vec文本分类/data'
+os.chdir(data_path)
 
 np.random.seed(1337)  # For Reproducibility
 # the dimension of word vector
@@ -47,8 +50,8 @@ cpu_count = multiprocessing.cpu_count()
 
 # loading training file
 def loadfile():
-    neg = pd.read_excel('/data/liuhua/code/kerasTest/data/neg.xls', header=None, index=None)
-    pos = pd.read_excel('/data/liuhua/code/kerasTest/data/pos.xls', header=None, index=None)
+    neg = pd.read_excel('./data/neg.xls', header=None, index=None)
+    pos = pd.read_excel('./data/pos.xls', header=None, index=None)
     #merge all data
     neg = np.array(neg[0])
     post = np.array(pos[0])
@@ -65,7 +68,7 @@ def getstopword(stopwordPath):
 #divide the sentence and remove the disused words
 def wordsege(text):
     # get disused words set
-    stopwordPath = open('/data/liuhua/code/kerasTest/data/stopwords1.txt', 'r')
+    stopwordPath = open('/data/stopwords.txt', 'r')
     stoplist = getstopword(stopwordPath)
     stopwordPath.close()
 
@@ -83,6 +86,7 @@ def wordsege(text):
         if len(fenci) > 0:
             text_list.append(fenci)
     return text_list
+
 def tokenizer(neg, post):
     neg_sege = wordsege(neg)
     post_sege = wordsege(post)
@@ -218,7 +222,7 @@ def input_transform(string):
     words = jieba.cut(string)
     # reshape the list to bilayer list
     words = np.array(words).reshape(1, -1)
-    model = Word2Vec.load('/data/liuhua/code/kerasTest/data/Word2vec_model.pkl')
+    model = Word2Vec.load('./data/Word2vec_model.pkl')
     # create a dictionary of words and phrases,return the index of each word,vector of words,and index of words corresponding to each senten
     _, _, combined = create_dictionaries(model, words)
     return combined
@@ -226,12 +230,12 @@ def input_transform(string):
 
 def lstm_predict(string):
     print('loading model......')
-    with open('/data/liuhua/code/kerasTest/data/lstm.yml', 'r') as f:
+    with open('./data/lstm.yml', 'r') as f:
         yaml_string = yaml.load(f)
     model = model_from_yaml(yaml_string)
 
     print('loading weights......')
-    model.load_weights('/data/liuhua/code/kerasTest/data/lstm.h5')
+    model.load_weights('./data/lstm.h5')
     model.compile(loss='binary_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
     data = input_transform(string)
