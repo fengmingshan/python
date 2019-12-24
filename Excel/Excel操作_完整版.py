@@ -13,6 +13,41 @@ import numpy as np
 df1 = pd.DataFrame([['a1', 1], ['a2', 4], ['a3', 7]], columns=['uid', 'score'])
 df2 = pd.DataFrame({'col1': np.arange(3), 'col2': np.arange(5, 8)})
 df3 = pd.DataFrame({'col1': [1, 2, 3, 4], 'col2': ['a', 'b', 'c', 'd']})
+
+df4 = pd.DataFrame({'区县': ['富源', '会泽', '陆良', '罗平', '马龙', '麒麟', '师宗', '宣威', '沾益', '合计'],
+                    '物理站址数量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '上周语音话务量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周语音话务量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '话务量环比变化': np.random.randint(90, 400, size=10, dtype='int'),
+                    '上周DO流量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周DO流量': np.random.randint(90, 400, size=10, dtype='int'),
+                    'DO流量环比变化': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周DO在线用户数': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周忙时登记用户数': np.random.randint(90, 400, size=10, dtype='int')
+                    })
+
+df5 = pd.DataFrame(np.array([
+                   ['富源', '会泽', '陆良', '罗平', '马龙', '麒麟', '师宗', '宣威', '沾益', '合计'],
+                   np.random.randint(90, 400, size=10, dtype='int'),
+                   np.random.randint(15000, 45000, size=10, dtype='int'),
+                   np.random.randint(15000, 45000, size=10, dtype='int'),
+                   np.random.uniform(-0.1, 0.1, size=10),
+                   np.random.randint(200, 4500, size=10, dtype='int'),
+                   np.random.randint(200, 4500, size=10, dtype='int'),
+                   np.random.uniform(-0.1, 0.1, size=10),
+                   np.random.randint(1000, 10000, size=10, dtype='int'),
+                   np.random.randint(30000, 150000, size=10, dtype='int')]).T,
+                   columns=['区县',
+                            '物理站址数量',
+                            '上周语音话务量',
+                            '本周语音话务量',
+                            '话务量环比变化',
+                            '上周DO流量',
+                            '本周DO流量',
+                            'DO流量环比变化',
+                            '本周DO在线用户数',
+                            '本周忙时登记用户数'])
+
 # 不等长数据
 data1 = [{'a': 1, 'b': 2}, {'a': 5, 'b': 10, 'c': 20}]
 # 不等长的数据也能创建字典，自动填充nan

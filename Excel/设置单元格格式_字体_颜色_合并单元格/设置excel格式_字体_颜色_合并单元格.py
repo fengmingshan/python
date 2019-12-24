@@ -74,12 +74,12 @@ with pd.ExcelWriter('修改excel表格样式示例.xlsx') as writer:
     worksheet1.conditional_format(
         'E3:E%d' %
         l_end, {
-            'type': 'cell', 'criteria': '<=', 'value': 0.1, 'format': percent_fmt})
+            'type': 'cell', 'criteria': '<=', 'value': 0, 'format': percent_fmt})
     # 条件格式：小于-4%的单元格显示红色
     worksheet1.conditional_format(
-        'E3:E%d' %
+        'H3:H%d' %
         l_end, {
-            'type': 'cell', 'criteria': '<', 'value': -0.04, 'format': red_fmt})
+            'type': 'cell', 'criteria': '<', 'value': 0, 'format': red_fmt})
     # 加边框
     worksheet1.conditional_format('A1:J%d' % l_end, {'type': 'no_blanks', 'format': border_format})
     worksheet1.conditional_format('A2:J2', {'type': 'no_blanks', 'format': border_format})

@@ -31,14 +31,14 @@ df_mr['MR总采样点'] = df_mr['|≥-105dBm采样点'] \
     + df_mr['|≥-115dBm采样点'] \
     + df_mr['|≥-120dBm采样点'] \
     + df_mr['|≥负无穷采样点']
-df_mr = df_mr[['平均RSRP（dBm）', 'MR总采样点','|≥-105dBm采样点', '|≥-110dBm采样点',
+df_mr = df_mr[['平均RSRP（dBm）', 'MR总采样点', '|≥-105dBm采样点', '|≥-110dBm采样点',
                '|≥-115dBm采样点', '|≥-120dBm采样点', '|≥负无穷采样点', 'day_index']]
 
 df_TA = pd.DataFrame()
 for file in TA_files:
     df_tmp = pd.read_csv('./data/' + file, engine='python')
     df_TA = df_TA.append(df_tmp)
-df_TA['cell_id'] = df_TA['eNodeB'].map(str) + '_' + df_TA['小区'].map(str)
+df_TA['cell_id'] = df_TA['网元'].map(str) + '_' + df_TA['小区'].map(str)
 df_TA['time_index'] = df_TA['开始时间'] + '_' + df_TA['cell_id']
 df_TA['TA总采样点'] = df_TA['TA在范围[0,1)的上报次数'] \
     + df_TA['TA在范围[1,3)的上报次数'] \
@@ -57,7 +57,7 @@ df_TA['0.5km以下'] = df_TA['TA在范围[0,1)的上报次数'] + df_TA['TA在�
     df_TA['TA在范围[3,5)的上报次数'] + df_TA['TA在范围[5,7)的上报次数']
 df_TA['0.5km-1km'] = df_TA['TA在范围[7,9)的上报次数'] + df_TA['TA在范围[9,11)的上报次数'] + \
     df_TA['TA在范围[11,13)的上报次数']
-df_TA['1km-1.5km'] = df_TA['TA在范围[13,20)的上报次数']S
+df_TA['1km-1.5km'] = df_TA['TA在范围[13,20)的上报次数']
 df_TA['1.5km-2.1km'] = df_TA['TA在范围[20,27)的上报次数']
 df_TA['2.1km-3.1km'] = df_TA['TA在范围[27,34)的上报次数'] + df_TA['TA在范围[34,40)的上报次数']
 df_TA['3.1km以上'] = df_TA['TA在范围[40,50)的上报次数'] + df_TA['TA在范围[50,81)的上报次数']
@@ -85,11 +85,11 @@ df_KPI = df_KPI[['time_index',
 df_all = pd.merge(df_KPI, df_TA, how='left', on='time_index')
 df_all['day_index'] = df_all['time_index'].map(lambda x: x.split(' ')[0]) + '_' + df_all['cell_id']
 df_all = pd.merge(df_all, df_mr, how='left', on='day_index')
-df_all = df_all[~(pd.isnull(df_mr['平均RSRP（dBm）'])) &
-                ~(pd.isnull(df_mr['|≥-105dBm采样点'])) &
-                ~(pd.isnull(df_mr['|≥-110dBm采样点'])) &
-                ~(pd.isnull(df_mr['|≥-115dBm采样点'])) &
-                ~(pd.isnull(df_mr['|≥-120dBm采样点'])) &
-                ~(pd.isnull(df_mr['|≥负无穷采样点']))]
+df_all = df_all[~(pd.isnull(df_all['平均RSRP（dBm）'])) &
+                ~(pd.isnull(df_all['|≥-105dBm采样点'])) &
+                ~(pd.isnull(df_all['|≥-110dBm采样点'])) &
+                ~(pd.isnull(df_all['|≥-115dBm采样点'])) &
+                ~(pd.isnull(df_all['|≥-120dBm采样点'])) &
+                ~(pd.isnull(df_all['|≥负无穷采样点']))]
 with open('原始数据汇总.csv', 'w') as writer:
     df_all.to_csv(writer, index=False)
