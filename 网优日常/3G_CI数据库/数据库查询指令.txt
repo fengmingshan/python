@@ -1,0 +1,6 @@
+//按县按厂家查询可用的CI
+SELECT * FROM `全球小区`
+WHERE `全球小区号` not IN  (SELECT `全球小区号` FROM `华为小区`)
+and `全球小区号` not IN  (SELECT `全球小区号` FROM `中兴小区`)
+LEFT JOIN `gci_特服群` on `全球小区号`
+LEFT JOIN `特服群模板` on `全球小区号`
