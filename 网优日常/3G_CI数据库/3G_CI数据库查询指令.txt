@@ -1,0 +1,76 @@
+# 按县按BSC查询可用的CI
+SELECT * FROM `全球小区`
+LEFT JOIN `gci_特服群` on `全球小区`.`全球小区号` = `gci_特服群`.`全球小区号`
+LEFT JOIN `特服群模板` on `gci_特服群`.`特服群模板号` = `特服群模板`.`特服群模板号`
+WHERE `全球小区`.`全球小区号` not IN  (SELECT `全球小区号` FROM `华为小区`)
+and `全球小区`.`全球小区号` not IN  (SELECT `全球小区号` FROM `中兴小区`)
+and `全球小区`.`BSC局号` LIKE '%1002%'
+and `特服群模板`.`区县` LIKE '%师宗%'
+
+
+# 核对全网CI
+SELECT `全球小区`.`全球小区号`,
+`全球小区`.`BSC局号`,
+ZTE.`区县` as '中兴区县',
+ZTE.`中兴小区名称`,
+HW.`区县` as '中兴区县',
+HW.`华为小区名称`,
+TMP.`区县` as '特服区县'
+FROM (`全球小区`
+LEFT JOIN (SELECT `全球小区号`,`区县`,`alias_b` as '中兴小区名称' FROM `中兴小区`) as ZTE on `全球小区`.`全球小区号` = ZTE.`全球小区号`
+LEFT JOIN (SELECT `全球小区号`,`区县`,`小区名` as '华为小区名称' FROM `华为小区`) as HW on `全球小区`.`全球小区号` = HW.`全球小区号`
+LEFT JOIN (SELECT `全球小区号`,`特服群模板号` FROM `gci_特服群`) as GCI on `全球小区`.`全球小区号` = GCI.`全球小区号`
+LEFT JOIN (SELECT `特服群模板号`,`区县` FROM `特服群模板`) as TMP on GCI.`特服群模板号` = TMP.`特服群模板号`)
+WHERE ZTE.`区县` <> TMP.`区县`
+OR HW.`区县` <> TMP.`区县`
+
+# 核对中兴小区BSC准确性
+SELECT * FROM `中兴小区`
+LEFT JOIN `全球小区` on `中兴小区`.`全球小区号` = `全球小区`.`全球小区号`
+WHERE `全球小区`.`BSC局号` <>  1001
+AND  `全球小区`.`BSC局号` <>  1002
+
+# 核对华为小区BSC准确性
+SELECT * FROM `华为小区`
+LEFT JOIN `全球小区` on `华为小区`.`全球小区号` = `全球小区`.`全球小区号`
+WHERE `全球小区`.`BSC局号` <>  1003
+
+# 统计全市中兴可用CI
+SELECT count(`全球小区`.`全球小区号`),
+TMP.`区县` as '区县'
+from (`全球小区`
+LEFT JOIN  
+(SELECT 
+`全球小区号`,
+`特服群模板号`
+from `gci_特服群`) as GCI 
+on `全球小区`.`全球小区号` = GCI.`全球小区号`
+LEFT JOIN  
+(SELECT 
+`特服群模板号`,
+`区县`
+from `特服群模板`) as TMP 
+on GCI.`特服群模板号` = TMP.`特服群模板号`)
+where (`全球小区`.`BSC局号` = 1001 or `全球小区`.`BSC局号` = 1002)
+and `全球小区`.`全球小区号` NOT in (SELECT `全球小区号` FROM `中兴小区`)
+GROUP BY `区县`
+
+# 统计全市华为可用CI
+SELECT count(`全球小区`.`全球小区号`),
+TMP.`区县` as '区县'
+from (`全球小区`
+LEFT JOIN  
+(SELECT 
+`全球小区号`,
+`特服群模板号`
+from `gci_特服群`) as GCI 
+on `全球小区`.`全球小区号` = GCI.`全球小区号`
+LEFT JOIN  
+(SELECT 
+`特服群模板号`,
+`区县`
+from `特服群模板`) as TMP 
+on GCI.`特服群模板号` = TMP.`特服群模板号`)
+where `全球小区`.`BSC局号` = 1003
+and `全球小区`.`全球小区号` NOT in (SELECT `全球小区号` FROM `华为小区`)
+GROUP BY `区县`

@@ -19,6 +19,8 @@ os.path.splitext(r'D:\python\fms\字符串截取.py')  #获取文件的扩展名
 os.path.dirname(r'D:\python\fms\字符串截取.py')   #获取文件的路径名
 os.path.basename(r'D:\python\fms\字符串截取.py')     #获取文件的文件名
 
+os.startfile(r'D:\python\fms')    # 在windows界面打开指定文件夹
+
 os.system()     #运行shell命令
 
 os.getenv()     #设置环境变量
@@ -36,16 +38,16 @@ os.remove()     #用来删除一个文件
 fp = open(r'D:\python\fms\test.py','w')   #直接打开一个文件,'w'表示如果不存在就创建它
 '''
 关于open 模式：
-w 以写方式打开， 
-a 以追加模式打开 (从 EOF 开始, 必要时创建新文件) 
-r+ 以读写模式打开 
-w+ 以读写模式打开 (参见 w ) 
-a+ 以读写模式打开 (参见 a ) 
-rb 以二进制读模式打开 
-wb 以二进制写模式打开 (参见 w ) 
-ab 以二进制追加模式打开 (参见 a ) 
-rb+ 以二进制读写模式打开 (参见 r+ ) 
-wb+ 以二进制读写模式打开 (参见 w+ ) 
+w 以写方式打开，
+a 以追加模式打开 (从 EOF 开始, 必要时创建新文件)
+r+ 以读写模式打开
+w+ 以读写模式打开 (参见 w )
+a+ 以读写模式打开 (参见 a )
+rb 以二进制读模式打开
+wb 以二进制写模式打开 (参见 w )
+ab 以二进制追加模式打开 (参见 a )
+rb+ 以二进制读写模式打开 (参见 r+ )
+wb+ 以二进制读写模式打开 (参见 w+ )
 ab+ 以二进制读写模式打开 (参见 a+ )
 '''
 os.stat(r'D:\python\fms\字符串截取.py')   #获取文件属性
@@ -53,7 +55,7 @@ os.chmod(r'D:\python\fms\字符串截取.py')     #修改文件权限与时间�
 os.path.getsize(r'D:\python\fms\字符串截取.py')   #获取文件大小
 
 fp = open(r'D:\python\fms\test.py')
-os.path.getsize(r'D:\python\fms\test.py') 
+os.path.getsize(r'D:\python\fms\test.py')
 fp.read(100)  #制定长度读取文件，size为读取的长度[可选]，以byte为单位
 fp.readline(100)   #读一行，如果定义了size，有可能返回的只是一行的一部分
 fp.readlines(100)  #把文件每一行作为一个list的一个成员，并返回这个list。
@@ -76,23 +78,23 @@ fp.truncate([size])     #把文件裁成规定的大小，默认的是裁到当�
 # =============================================================================
 # 目录操作
 # =============================================================================
-os.makedirs(r'd：\python\test') 
+os.makedirs(r'd：\python\test')
 #创建多级目录,注意改命令是创建在当前工作目录下，执行之后创建了一个D:\python\fms\d：\python\test
-os.removedirs(r'd：\python\test')  
+os.removedirs(r'd：\python\test')
 os.mkdir('test')    #创建单个目录,也是创建在当前工作目录下
 os.removedirs(r'D:\python\fms\test')
 
-shutil.copyfile('oldfile','newfile')    #复制文件，oldfile和newfile都只能是文件 
-shutil.copy('oldfile','newfile')    #复制文件夹，oldfile只能是文件夹，newfile可以是文件，也可以是目标目录 
-shutil.copytree('olddir','newdir')  #复制文件夹，olddir和newdir都只能是目录，且newdir必须不存在 
-os.rename('oldname','newname')  #重命名文件（目录）文件或目录都是使用这条命令 
- 
+shutil.copyfile('oldfile','newfile')    #复制文件，oldfile和newfile都只能是文件
+shutil.copy('oldfile','newfile')    #复制文件夹，oldfile只能是文件夹，newfile可以是文件，也可以是目标目录
+shutil.copytree('olddir','newdir')  #复制文件夹，olddir和newdir都只能是目录，且newdir必须不存在
+os.rename('oldname','newname')  #重命名文件（目录）文件或目录都是使用这条命令
+
 shutil.move(“oldpos”,”newpos”)  #移动文件（目录）
 os.remove('file') #删除文件
-#删除目录 
-os.removedirs(r'D:\Game')  #删除整个目录,目录必须是空的，否则会报错 
-os.rmdir('dir')     #只能删除空目录 
-shutil.rmtree('dir')    #空目录、有内容的目录都可以删 
+#删除目录
+os.removedirs(r'D:\Game')  #删除整个目录,目录必须是空的，否则会报错
+os.rmdir('dir')     #只能删除空目录
+shutil.rmtree('dir')    #空目录、有内容的目录都可以删
 
 os.chdir(“path”)    #转换目录
 
