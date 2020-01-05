@@ -62,16 +62,18 @@ def getDistance(latA, lonA, latB, lonB):
     radLonA = radians(lonA)
     radLatB = radians(latB)
     radLonB = radians(lonB)
-
-    pA = atan(rb / ra * tan(radLatA))
-    pB = atan(rb / ra * tan(radLatB))
-    x = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB) * cos(radLonA - radLonB))
-    c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
-    c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
-    dr = flatten / 8 * (c1 - c2)
-    distance = ra * (x + dr)
-    return distance
-
+    # 如果源小区和目标小区经纬度相同，会出现除于0的情况报错，所以要确保经纬度不同再开始计算
+    if latA != latB and lonA != lonB:
+        pA = atan(rb / ra * tan(radLatA))
+        pB = atan(rb / ra * tan(radLatB))
+        x = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB) * cos(radLonA - radLonB))
+        c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
+        c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
+        dr = flatten / 8 * (c1 - c2)
+        distance = ra * (x + dr)
+        return distance
+    else:
+        return 0
 
 print('**********汇总原始数据!**********')
 

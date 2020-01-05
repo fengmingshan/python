@@ -18,7 +18,6 @@ import os
 # ADD 1X_NGHBRLIST_L:POS="1"-"0"-"0"-"32",NCELLSYSTEM=,NCELL=,NGHBR_CONFIG=0,SEARCH_PRIORITY=0,ACCESS_ENTRY_HO=Disable,FREQ_INCL=NOT_INC,ACCESS_HO_ALLOWED=Disable,TIMING_INCL=NOT_INC,NGHBR_TX_OFFSET=0,NGHBR_TX_DURATION=3,NGHBR_TX_PERIOD=0,ADD_PILOT_REC_INCL=NOT_INC,NGHBR_PILOT_REC_TYPE=0,SRCH_OFFSET_NGHBR=0;
 # DEL 1X_NGHBRLIST:POS="1"-"0"-"0"-"21",ISEACHOTHER=NO;
 
-
 # =============================================================================
 # 设置环境变量
 # =============================================================================
@@ -27,9 +26,6 @@ cmd_path = r'd:/_小程序/3G邻区自动优化/邻区修改脚本输出/'
 
 if not os.path.exists(cmd_path):
     os.mkdir(cmd_path)
-旧文件 = os.listdir(cmd_path)
-for file in 旧文件:
-    os.remove(cmd_path + file)
 
 cell_neighbor_file = [x for x in os.listdir(data_path) if '小区邻区检查结果' in x ]
 carrie_neighbor_file = [x for x in os.listdir(data_path) if '载频邻区检查结果' in x ]
