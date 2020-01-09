@@ -30,7 +30,7 @@ df_user = df_user[['手机号', '终端', '归属省', '归属地市', '总流�
 
 df_flow = df_user.groupby(by = '手机号',as_index = False)['总流量(MB)'].sum()
 df_flow = df_flow.set_index('手机号')
-flow_dict = df_flow.to_dict()
+flow_dict = df_flow['总流量(MB)'].to_dict()
 
 df_home_index = df_user.groupby(['手机号'])['7天内占用小区次数'].idxmax()
 home_index = list(df_home_index.values)
@@ -44,8 +44,8 @@ country_set = set(df_home.区县)
 for country in country_set:
     with pd.ExcelWriter('./结果输出/' + country + '_清单.xlsx') as writer:
         df_country = df_home[df_home['区县'] == country]
-        df_country.to_excel(writer, country + '县', index=False)
+        df_country.to_excel(writer, country + '县总', index=False)
         town_set = set(df_country.支局)
         for town in town_set:
-            df_town = df_country[df_country['区县'] == town]
-            df_town.to_excel(writer, town, index=False)
+            df_town = df_country[df_country['支局'] == town]
+            df_town.to_excel(writer, town, index = False)
