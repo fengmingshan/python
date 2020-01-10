@@ -18,23 +18,30 @@ df_cell_info = pd.read_excel('./物理站址与支局对应清单.xlsx')
 df_cell_info['eNodeB'] = df_cell_info['小区号'].map(lambda x: int(x.split('_')[0]))
 df_cell_info['cell'] = df_cell_info['小区号'].map(lambda x: int(x.split('_')[1]))
 df_cell_info['CID'] = df_cell_info['eNodeB'] * 256 + df_cell_info['cell']
+
 df_user = pd.merge(df, df_cell_info, how='left', on='CID')
 df_user = df_user[~df_user['支局'].isnull()]
 df_user.sort_values(by=['手机号', '7天内占用小区次数'], ascending=[True, False], inplace=True)  # 按时间顺序升序排列
 df_user.reset_index(inplace=True, drop=True)
 df_user['总流量（单位：byte）'] = df_user['总流量（单位：byte）'] / (1024 * 1024)
-df_user['总流量（单位：byte）'] = round(df_user['总流量（单位：byte）'],1)
+df_user['总流量（单位：byte）'] = round(df_user['总流量（单位：byte）'], 1)
 df_user.rename(columns={'总流量（单位：byte）': '总流量(MB)'}, inplace=True)
 df_user = df_user[['手机号', '终端', '归属省', '归属地市', '总流量(MB)', '7天内占用小区次数', '小区号',
                    '中文站名', '区县', '区域', '频段', '支局', 'eNodeB', 'cell']]
 
-df_flow = df_user.groupby(by = '手机号',as_index = False)['总流量(MB)'].sum()
+df_substation = df_user.groupby(by=['手机号', '支局'], as_index=False)['7天内占用小区次数'].sum()
+df_substation.sort_values(by=['手机号', '7天内占用小区次数'], ascending=[True, False], inplace=True)
+df_substation.rename(columns={'7天内占用小区次数': '7天内在本支局上网次数'}, inplace=True)
+
+df_user = pd.merge(df_user, df_substation, how='left', on=['手机号', '支局'])
+df_user.sort_values(by=['手机号','7天内在本支局上网次数', '支局','7天内占用小区次数'],
+                    ascending=[True, False, True, False], inplace=True)
+
+df_flow = df_user.groupby(by='手机号', as_index=False)['总流量(MB)'].sum()
 df_flow = df_flow.set_index('手机号')
 flow_dict = df_flow['总流量(MB)'].to_dict()
 
-df_home_index = df_user.groupby(['手机号'])['7天内占用小区次数'].idxmax()
-home_index = list(df_home_index.values)
-df_home = df_user[df_user.index.isin(home_index)]
+df_home = df_user.groupby(by='手机号', as_index=False).head(3)
 df_home['周总流量(MB)'] = df_home['手机号'].map(flow_dict)
 
 with pd.ExcelWriter('./结果输出/全市总表.xlsx') as writer:
@@ -48,4 +55,4 @@ for country in country_set:
         town_set = set(df_country.支局)
         for town in town_set:
             df_town = df_country[df_country['支局'] == town]
-            df_town.to_excel(writer, town, index = False)
+            df_town.to_excel(writer, town, index=False)
