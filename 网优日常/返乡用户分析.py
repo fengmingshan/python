@@ -41,7 +41,7 @@ df_flow = df_user.groupby(by='手机号', as_index=False)['总流量(MB)'].sum()
 df_flow = df_flow.set_index('手机号')
 flow_dict = df_flow['总流量(MB)'].to_dict()
 
-df_home = df_user.groupby(by='手机号', as_index=False).head(3)
+df_home = df_user.groupby(by='手机号', as_index=False).head(1)
 df_home['周总流量(MB)'] = df_home['手机号'].map(flow_dict)
 
 with pd.ExcelWriter('./结果输出/全市总表.xlsx') as writer:
