@@ -24,7 +24,7 @@ from keras.layers.recurrent import LSTM
 from keras.layers.core import Dense, Dropout, Activation
 from keras.models import model_from_yaml
 
-data_path = 'D:/_python/python/机器学习_神经网络/文本分类/LSTM_word2vec文本分类/data'
+data_path = 'd:/_python/python/机器学习_神经网络/NLP自然语言处理/LSTM_word2vec文本分类'
 os.chdir(data_path)
 
 np.random.seed(1337)  # For Reproducibility
@@ -68,7 +68,7 @@ def getstopword(stopwordPath):
 #divide the sentence and remove the disused words
 def wordsege(text):
     # get disused words set
-    stopwordPath = open('/data/stopwords.txt', 'r')
+    stopwordPath = open('./data/stopwords.txt', 'r',encoding ='utf-8')
     stoplist = getstopword(stopwordPath)
     stopwordPath.close()
 
@@ -149,7 +149,7 @@ def word2vec_train(combined):
     # train the word vector model
     model.train(combined, total_examples=model.corpus_count, epochs=50)
     # save the trained model
-    model.save('/data/liuhua/code/kerasTest/data/Word2vec_model.pkl')
+    model.save('./data/Word2vec_model.pkl')
     # index, word vector matrix and the sentence with an unifying length and indexed based on the trained model
     index_dict, word_vectors, combined = create_dictionaries(model=model, combined=combined)
 
@@ -196,9 +196,9 @@ def train_lstm(n_symbols, embedding_weights, x_train, y_train, x_test, y_test):
                            batch_size=batch_size)
     # save the trained lstm model
     yaml_string = model.to_yaml()
-    with open('/data/liuhua/code/kerasTest/data/lstm.yml', 'w') as outfile:
+    with open('/data/lstm.yml', 'w') as outfile:
         outfile.write(yaml.dump(yaml_string, default_flow_style=True))
-    model.save_weights('/data/liuhua/code/kerasTest/data/lstm.h5')
+    model.save_weights('/data/lstm.h5')
     print ('Test score:', score)
 
 
@@ -249,15 +249,14 @@ def lstm_predict(string):
 
 
 if __name__ == '__main__':
-    #train()
-    # string='电池充完了电连手机都打不开.简直烂的要命.真是金玉其外,败絮其中!连5号电池都不如'
-    # string='牛逼的手机，从3米高的地方摔下去都没坏，质量非常好'
-    # string='酒店的环境非常好，价格也便宜，值得推荐'
-    string='屏幕较差，拍照也很粗糙。'
-    # string='我是傻逼'
-    # string='你是傻逼'
+    train()
+    string='电池充完了电连手机都打不开.简直烂的要命.真是金玉其外,败絮其中!连5号电池都不如'
+    # string= '牛逼的手机，从3米高的地方摔下去都没坏，质量非常好'
+    # string= '酒店的环境非常好，价格也便宜，值得推荐'
+    #string= '屏幕较差，拍照也很粗糙。'
+    # string= '我是傻逼'
+    # string= '你是傻逼'
     # string = '屏幕较差，拍照也很粗糙。'
     # string='质量不错，是正品 ，安装师傅也很好，才要了83元材料费'
     # string='东西非常不错，安装师傅很负责人，装的也很漂亮，精致，谢谢安装师傅！'
-
     lstm_predict(string)
