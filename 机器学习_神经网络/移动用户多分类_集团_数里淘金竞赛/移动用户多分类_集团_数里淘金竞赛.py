@@ -12,6 +12,9 @@ from datetime import date
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
+from sklearn.cross_validation import train_test_split
+from sklearn.ensemble import RandomForestClassifier # 随机森林
+from sklearn.metrics import confusion_matrix,recall_score,classification_report
 
 from keras.layers.embeddings import Embedding
 from keras.models import Sequential
@@ -29,7 +32,7 @@ df_period = pd.read_csv('./data/prd_data.csv', engine='python', encoding='utf-8'
 df_terminal = pd.read_csv('./data/trmnl_data.csv', engine='python', encoding='utf-8')
 
 # =============================================================================
-# 数据清洗 & 空值填充 &
+# 数据清洗 & 空值填充
 # =============================================================================
 
 # 按照用户特征的大类来进行缺失值处理：
@@ -115,47 +118,95 @@ df.isnull().any()
 # =============================================================================
 
 # 数值型的特征全部一起进行  z-score 归一化
+num_feature = []
+# 按df_call 、 df_customer 、 df_dpi 、 df_period 、 df_terminal 找出数值特征。
+num_feature.extend(list(df_call.drop('user',axis =1).columns))
+num_feature.extend(list(df_customer.drop(['user','credit_level','membership_level','gender','star_level'],axis =1).columns))
+num_feature.extend(list(df_dpi.drop('user',axis =1).columns))
+num_feature.extend(list(df_period.drop(['user','product_nbr'],axis =1).columns))
+num_feature.extend(list(df_terminal.drop(['user','pro_brand','term_model'],axis =1).columns))
 
-# df_call 直接进行
-columns = [x for x in df_call.columns if x != 'user']
-Standard_date = StandardScaler().fit_transform(df_call.drop('user', axis=1))
-df_Standard = pd.DataFrame(Standard_date, columns=columns)
-df_call_Standard = pd.concat([df_call.user, df_Standard], axis=1)
+Standard_date = StandardScaler().fit_transform(df[num_feature])
+df_Standard = pd.DataFrame(Standard_date, columns= num_feature)
+for col in num_feature:
+    df[col] = df_Standard[col]
 
-# df_customer归一化 和 onehot编码
-# 有几个level属性以及 'gender' 属性 都是离散值，将它们都转成 onehot编码
-level_feature = ['gender', 'credit_level', 'membership_level', 'star_level']
-value_feature = [x for x in df_customer.columns if x not in level_feature and x != 'user']
-df_customer_onehot = pd.get_dummies(df_customer[level_feature], columns=level_feature, sparse=False)
-# 再进行z-score归一化
-Standard_date = StandardScaler().fit_transform(df_customer[value_feature])
-df_Standard = pd.DataFrame(Standard_date, columns=value_feature)
-df_customer_Standard = pd.concat([df_call.user, df_customer_onehot, df_Standard], axis=1)
+# =============================================================================
+# 维度较少的特征（ <= 4），进行onehot编码
+# =============================================================================
+df.credit_level.unique() # 7个种类
+df.membership_level.unique() # 4个种类
+df.gender.unique() # 3个种类
+df.star_level.unique() # 10个种类
 
-# df_dpi 直接进行 z-score 归一化
-columns = [x for x in df_dpi.columns if x != 'user']
-Standard_date = StandardScaler().fit_transform(df_dpi.drop('user', axis=1))
-df_Standard = pd.DataFrame(Standard_date, columns=columns)
-df_dpi_Standard = pd.concat([df_call.user, df_Standard], axis=1)
+fewer_kind_feature = []
+fewer_kind_feature.append('membership_level')
+fewer_kind_feature.append('gender')
 
-# df_period 归一化 和 分类特征降维
-len(df_period.product_nbr.unique())
-# df_period 的 'product_nbr' 用户产品编号 特征有98种取值不能进行onehot
+df_onehot = pd.get_dummies(df, columns=fewer_kind_feature, sparse=False)
+
+# =============================================================================
+# 维度较多的分类特征，用 Embedding层 进行降维
+# =============================================================================
+len(df.credit_level.unique()) # 7类
+len(df.star_level.unique()) # 10类
+len(df.product_nbr.unique()) # 98类
+len(df.pro_brand.unique()) # 185类
+len(df.term_model.unique()) # 2870类
+
+major_kind_feature = []
+major_kind_feature.append('credit_level')
+major_kind_feature.append('star_level')
+major_kind_feature.append('product_nbr')
+major_kind_feature.append('pro_brand')
+major_kind_feature.append('term_model')
+
+# 降维 'credit_level' 信用等级，特征有7种取值不建议进行onehot
+model_7 = Sequential()
+model_7.add(Embedding(7, 2, input_length=1))  # 我们把7个分类的数据降到2维
+model_7.compile('rmsprop', 'mse')
+le = LabelEncoder()
+le.fit(df.credit_level.values.tolist())
+input_array = le.transform(df.credit_level.values.tolist())
+output_array = model_7.predict(input_array)
+output_array = output_array.reshape((402164,2))
+df_credit_level = pd.DataFrame(
+    output_array,
+    columns = [
+        'credit_level1',
+        'credit_level2'])
+
+# 降维 'star_level' 用户星级，特征有10种取值不建议进行onehot
+model_10 = Sequential()
+model_10.add(Embedding(10, 2, input_length=1))  # 我们把7个分类的数据降到2维
+model_10.compile('rmsprop', 'mse')
+le = LabelEncoder()
+le.fit(df.star_level.values.tolist())
+input_array = le.transform(df.star_level.values.tolist())
+output_array = model_10.predict(input_array)
+output_array = output_array.reshape((402164,2))
+df_star_level = pd.DataFrame(
+    output_array,
+    columns = [
+        'star_level1',
+        'star_level2'])
+
+# 降维 'product_nbr' 用户产品编号 特征有98种取值不能进行onehot
 # 所以这里通过神经网络的 Embedding层 对其进行降维度
 # 输入数据是 402164 * 1，402164个样本，1个类别特征，且类别特征的可能值是0到97之间（98个）
 # 对这1个特征做one-hot的话，应该为402164*98，
 # embedding就是使原本应该one-hot的98维变为4维（也可以设为其他值）
 # 这样输出结果应该是 402164*3
 # 搭建模型
-model = Sequential()
-model.add(Embedding(98, 6, input_length=1))  # 我们把98个分类的数据降到4维
-model.compile('rmsprop', 'mse')
+model_98 = Sequential()
+model_98.add(Embedding(98, 5, input_length=1))  # 我们把98个分类的数据降到4维
+model_98.compile('rmsprop', 'mse')
 # 处理输入数据
 le = LabelEncoder()
-le.fit(df_period.product_nbr.values.tolist())
-input_array = le.transform(df_period.product_nbr.values.tolist())
-output_array = model.predict(input_array)
-output_array = output_array.reshape((402164,6))
+le.fit(df.product_nbr.values.tolist())
+input_array = le.transform(df.product_nbr.values.tolist())
+output_array = model_98.predict(input_array)
+output_array = output_array.reshape((402164,5))
 df_product_nbr = pd.DataFrame(
     output_array,
     columns = [
@@ -163,29 +214,22 @@ df_product_nbr = pd.DataFrame(
         'product_nbr2',
         'product_nbr3',
         'product_nbr4',
-        'product_nbr5',
-        'product_nbr6'])
-Standard_date = StandardScaler().fit_transform(df_period.open_date.values.reshape(-1,1))
-Standard_date.shape
-Standard_date = Standard_date.reshape(402164,)
-df_Standard = pd.DataFrame(Standard_date, columns =['open_date'])
-df_period_Standard = pd.concat([df_period.user, df_product_nbr,df_Standard,df_period.last_year_capture_user_flag], axis=1)
+        'product_nbr5'])
 
-# df_terminal 归一化，分类特征降维
-# 'pro_brand'厂家, 'term_model'型号，两个字段都是分类特征。
-len(df_terminal.pro_brand.unique())
-len(df_terminal.term_model.unique())
+# df_terminal 的 'pro_brand'厂家, 'term_model'型号，两个字段都是分类特征。
+len(df.pro_brand.unique())
+len(df.term_model.unique())
 # 但是 'pro_brand'有185种, 'term_model'有2870种，如果进行onehot，会导致维度灾难。
 # 所以我们还是用神经网络的 Embedding层 对其进行降维
 # 搭建一个神经网络对 'pro_brand' 进行降维
 model_185 = Sequential()
-model_185.add(Embedding(185, 7, input_length=1))  # 我们把98个分类的数据降到4维
+model_185.add(Embedding(185, 6, input_length=1))  # 我们把98个分类的数据降到4维
 model_185.compile('rmsprop', 'mse')
 le = LabelEncoder()
-le.fit(df_terminal.pro_brand.values.tolist())
-input_array = le.transform(df_terminal.pro_brand.values.tolist())
+le.fit(df.pro_brand.values.tolist())
+input_array = le.transform(df.pro_brand.values.tolist())
 output_array = model_185.predict(input_array)
-output_array = output_array.reshape((len(output_array),7))
+output_array = output_array.reshape((len(output_array),6))
 df_pro_brand = pd.DataFrame(
     output_array,
     columns = [
@@ -194,17 +238,17 @@ df_pro_brand = pd.DataFrame(
         'pro_brand3',
         'pro_brand4',
         'pro_brand5',
-        'pro_brand6',
-        'pro_brand7'])
+        'pro_brand6'])
+
 # 搭建一个神经网络对 'term_model' 进行降维
 model_2870 = Sequential()
-model_2870.add(Embedding(2870, 10, input_length=1))  # 我们把98个分类的数据降到4维
+model_2870.add(Embedding(2870, 9, input_length=1))  # 我们把98个分类的数据降到4维
 model_2870.compile('rmsprop', 'mse')
 le = LabelEncoder()
-le.fit(df_terminal.term_model.values.tolist())
-input_array = le.transform(df_terminal.term_model.values.tolist())
+le.fit(df.term_model.values.tolist())
+input_array = le.transform(df.term_model.values.tolist())
 output_array = model_2870.predict(input_array)
-output_array = output_array.reshape((len(output_array),10))
+output_array = output_array.reshape((len(output_array),9))
 df_term_model = pd.DataFrame(
     output_array,
     columns = [
@@ -216,11 +260,90 @@ df_term_model = pd.DataFrame(
         'term_model6',
         'term_model7',
         'term_model8',
-        'term_model9',
-        'term_model10'])
+        'term_model9'])
 
+df_onehot.drop(major_kind_feature,axis = 1,inplace = True)
+df_result = pd.concat([df_onehot,df_credit_level,df_star_level,df_product_nbr,df_pro_brand,df_term_model],axis = 1)
 
-# with open('用户数据_合.csv','w') as writer:
-#    df.to_csv(writer,index =False)
+df_label = pd.read_csv('./data/train_result.csv', engine='python', encoding='utf-8')
+le = LabelEncoder()
+le.fit(df_label.label.values.tolist())
+df_label.label = le.transform(df_label.label.values.tolist())
 
-#df = pd.read_csv('用户数据_合.csv', engine='python')
+df_result = pd.merge(df_result ,df_label ,how = 'left', on ='user')
+df_result = df_result[~df_result.label.isnull()]
+#with open('用户数据_完成预处理.csv','w') as writer:
+#    df_result.to_csv(writer,index =False)
+
+#df_result = pd.read_csv('用户数据_合.csv', engine='python')
+
+# =============================================================================
+# 拆分 训练集 和 测试集
+# =============================================================================
+X = df_result.drop(['user','label'],axis = 1)
+y = df_result.label.values
+X_train, X_valid, y_train, y_valid = train_test_split(X,y,test_size = 0.2, random_state = 0)
+X_train.shape
+y_train.shape
+X_valid.shape
+y_valid.shape
+
+# =============================================================================
+# 建模训练
+# =============================================================================
+rf = RandomForestClassifier(random_state=420)
+rf.fit(X_train, y_train) #训练模型
+
+y_pred = rf.predict(X_valid)
+
+recall_acc = recall_score(y_valid,y_pred,average='micro')
+print('召回率 = {0} %'.format(round(recall_acc*100,2)))
+
+import matplotlib.pyplot as plt
+import itertools
+
+#混淆矩阵可视化
+import itertools
+# 定义绘制混淆矩阵的函数
+def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    Input
+    - cm : 计算出的混淆矩阵的值
+    - classes : 混淆矩阵中每一行每一列对应的列
+    - normalize : True:显示百分比, False:显示个数
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+    print(cm)
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+rf_matrix = confusion_matrix(y_valid,y_pred)
+
+print("召回率: ", rf_matrix[1,1]/(rf_matrix[1,0]+rf_matrix[1,1]))
+
+# 绘制
+class_names = [0,1,2,3,4]
+plt.figure()
+plot_confusion_matrix(rf_matrix ,
+                      classes=class_names ,
+                      normalize=False ,
+                      title='Confusion matrix')
+plt.show()
