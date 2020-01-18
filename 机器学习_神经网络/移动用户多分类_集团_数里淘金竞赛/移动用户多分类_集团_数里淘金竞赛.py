@@ -4,6 +4,8 @@ Created on Tue Dec 17 15:41:10 2019
 
 @author: Administrator
 """
+import itertools
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
@@ -12,9 +14,12 @@ from datetime import date
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
-from sklearn.cross_validation import train_test_split
-from sklearn.ensemble import RandomForestClassifier # 随机森林
-from sklearn.metrics import confusion_matrix,recall_score,classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier  # 随机森林
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
 from keras.layers.embeddings import Embedding
 from keras.models import Sequential
@@ -120,24 +125,25 @@ df.isnull().any()
 # 数值型的特征全部一起进行  z-score 归一化
 num_feature = []
 # 按df_call 、 df_customer 、 df_dpi 、 df_period 、 df_terminal 找出数值特征。
-num_feature.extend(list(df_call.drop('user',axis =1).columns))
-num_feature.extend(list(df_customer.drop(['user','credit_level','membership_level','gender','star_level'],axis =1).columns))
-num_feature.extend(list(df_dpi.drop('user',axis =1).columns))
-num_feature.extend(list(df_period.drop(['user','product_nbr'],axis =1).columns))
-num_feature.extend(list(df_terminal.drop(['user','pro_brand','term_model'],axis =1).columns))
+num_feature.extend(list(df_call.drop('user', axis=1).columns))
+num_feature.extend(list(df_customer.drop(
+    ['user', 'credit_level', 'membership_level', 'gender', 'star_level'], axis=1).columns))
+num_feature.extend(list(df_dpi.drop('user', axis=1).columns))
+num_feature.extend(list(df_period.drop(['user', 'product_nbr'], axis=1).columns))
+num_feature.extend(list(df_terminal.drop(['user', 'pro_brand', 'term_model'], axis=1).columns))
 
 Standard_date = StandardScaler().fit_transform(df[num_feature])
-df_Standard = pd.DataFrame(Standard_date, columns= num_feature)
+df_Standard = pd.DataFrame(Standard_date, columns=num_feature)
 for col in num_feature:
     df[col] = df_Standard[col]
 
 # =============================================================================
 # 维度较少的特征（ <= 4），进行onehot编码
 # =============================================================================
-df.credit_level.unique() # 7个种类
-df.membership_level.unique() # 4个种类
-df.gender.unique() # 3个种类
-df.star_level.unique() # 10个种类
+df.credit_level.unique()  # 7个种类
+df.membership_level.unique()  # 4个种类
+df.gender.unique()  # 3个种类
+df.star_level.unique()  # 10个种类
 
 fewer_kind_feature = []
 fewer_kind_feature.append('membership_level')
@@ -148,11 +154,11 @@ df_onehot = pd.get_dummies(df, columns=fewer_kind_feature, sparse=False)
 # =============================================================================
 # 维度较多的分类特征，用 Embedding层 进行降维
 # =============================================================================
-len(df.credit_level.unique()) # 7类
-len(df.star_level.unique()) # 10类
-len(df.product_nbr.unique()) # 98类
-len(df.pro_brand.unique()) # 185类
-len(df.term_model.unique()) # 2870类
+len(df.credit_level.unique())  # 7类
+len(df.star_level.unique())  # 10类
+len(df.product_nbr.unique())  # 98类
+len(df.pro_brand.unique())  # 185类
+len(df.term_model.unique())  # 2870类
 
 major_kind_feature = []
 major_kind_feature.append('credit_level')
@@ -169,10 +175,10 @@ le = LabelEncoder()
 le.fit(df.credit_level.values.tolist())
 input_array = le.transform(df.credit_level.values.tolist())
 output_array = model_7.predict(input_array)
-output_array = output_array.reshape((402164,2))
+output_array = output_array.reshape((402164, 2))
 df_credit_level = pd.DataFrame(
     output_array,
-    columns = [
+    columns=[
         'credit_level1',
         'credit_level2'])
 
@@ -184,10 +190,10 @@ le = LabelEncoder()
 le.fit(df.star_level.values.tolist())
 input_array = le.transform(df.star_level.values.tolist())
 output_array = model_10.predict(input_array)
-output_array = output_array.reshape((402164,2))
+output_array = output_array.reshape((402164, 2))
 df_star_level = pd.DataFrame(
     output_array,
-    columns = [
+    columns=[
         'star_level1',
         'star_level2'])
 
@@ -206,10 +212,10 @@ le = LabelEncoder()
 le.fit(df.product_nbr.values.tolist())
 input_array = le.transform(df.product_nbr.values.tolist())
 output_array = model_98.predict(input_array)
-output_array = output_array.reshape((402164,5))
+output_array = output_array.reshape((402164, 5))
 df_product_nbr = pd.DataFrame(
     output_array,
-    columns = [
+    columns=[
         'product_nbr1',
         'product_nbr2',
         'product_nbr3',
@@ -229,10 +235,10 @@ le = LabelEncoder()
 le.fit(df.pro_brand.values.tolist())
 input_array = le.transform(df.pro_brand.values.tolist())
 output_array = model_185.predict(input_array)
-output_array = output_array.reshape((len(output_array),6))
+output_array = output_array.reshape((len(output_array), 6))
 df_pro_brand = pd.DataFrame(
     output_array,
-    columns = [
+    columns=[
         'pro_brand1',
         'pro_brand2',
         'pro_brand3',
@@ -248,10 +254,10 @@ le = LabelEncoder()
 le.fit(df.term_model.values.tolist())
 input_array = le.transform(df.term_model.values.tolist())
 output_array = model_2870.predict(input_array)
-output_array = output_array.reshape((len(output_array),9))
+output_array = output_array.reshape((len(output_array), 9))
 df_term_model = pd.DataFrame(
     output_array,
-    columns = [
+    columns=[
         'term_model1',
         'term_model2',
         'term_model3',
@@ -262,27 +268,31 @@ df_term_model = pd.DataFrame(
         'term_model8',
         'term_model9'])
 
-df_onehot.drop(major_kind_feature,axis = 1,inplace = True)
-df_result = pd.concat([df_onehot,df_credit_level,df_star_level,df_product_nbr,df_pro_brand,df_term_model],axis = 1)
+df_onehot.drop(major_kind_feature, axis=1, inplace=True)
+df_result = pd.concat([df_onehot, df_credit_level, df_star_level,
+                       df_product_nbr, df_pro_brand, df_term_model], axis=1)
 
 df_label = pd.read_csv('./data/train_result.csv', engine='python', encoding='utf-8')
-le = LabelEncoder()
-le.fit(df_label.label.values.tolist())
-df_label.label = le.transform(df_label.label.values.tolist())
 
-df_result = pd.merge(df_result ,df_label ,how = 'left', on ='user')
+label_list = sorted(df_label.label.unique())
+label2num_dict = {k: v for v, k in enumerate(label_list)}
+num2label_dict = {k: v for k, v in enumerate(label_list)}
+df_label.label = df_label.label.map(label2num_dict)
+
+df_result = pd.merge(df_result, df_label, how='left', on='user')
 df_result = df_result[~df_result.label.isnull()]
-#with open('用户数据_完成预处理.csv','w') as writer:
-#    df_result.to_csv(writer,index =False)
 
+# with open('用户数据_完成预处理.csv','w') as writer:
+#    df_result.to_csv(writer,index =False)
 #df_result = pd.read_csv('用户数据_合.csv', engine='python')
 
 # =============================================================================
 # 拆分 训练集 和 测试集
 # =============================================================================
-X = df_result.drop(['user','label'],axis = 1)
+X = df_result.drop(['user', 'label'], axis=1)
 y = df_result.label.values
-X_train, X_valid, y_train, y_valid = train_test_split(X,y,test_size = 0.2, random_state = 0)
+X_train, X_valid, y_train, y_valid = train_test_split(
+    X, y, test_size=0.3, stratify=y, shuffle=True, random_state=42)
 X_train.shape
 y_train.shape
 X_valid.shape
@@ -292,20 +302,29 @@ y_valid.shape
 # 建模训练
 # =============================================================================
 rf = RandomForestClassifier(random_state=420)
-rf.fit(X_train, y_train) #训练模型
+rf.fit(X_train, y_train)  # 训练模型
 
 y_pred = rf.predict(X_valid)
 
-recall_acc = recall_score(y_valid,y_pred,average='micro')
-print('召回率 = {0} %'.format(round(recall_acc*100,2)))
+recall_score = recall_score(y_valid, y_pred, average='micro')
+accuracy_score = accuracy_score(y_valid, y_pred)
+F1_score = 2 * accuracy_score * recall_acc / (accuracy_score + recall_score)
+F1_2_score = F1_score**2
+print('召回率 = {0} %'.format(round(recall_score * 100, 2)))
+print('准确率 = {0} %'.format(round(accuracy_score * 100, 2)))
+print('F1 = {0}'.format(F1_score)
+print('(F1)2 = {0}'.format(F1_2_score))
 
-import matplotlib.pyplot as plt
-import itertools
 
-#混淆矩阵可视化
-import itertools
+# 混淆矩阵可视化
+
 # 定义绘制混淆矩阵的函数
-def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+def plot_confusion_matrix(
+        cm,
+        classes,
+        normalize=False,
+        title='Confusion matrix',
+        cmap=plt.cm.Blues):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -335,15 +354,14 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-rf_matrix = confusion_matrix(y_valid,y_pred)
 
-print("召回率: ", rf_matrix[1,1]/(rf_matrix[1,0]+rf_matrix[1,1]))
-
-# 绘制
-class_names = [0,1,2,3,4]
+rf_matrix = confusion_matrix(y_valid, y_pred)
+# 绘制混淆矩阵
+class_names = [0, 1, 2, 3, 4]
 plt.figure()
-plot_confusion_matrix(rf_matrix ,
-                      classes=class_names ,
-                      normalize=False ,
+plot_confusion_matrix(rf_matrix,
+                      classes=class_names,
+                      normalize=False,
                       title='Confusion matrix')
 plt.show()
+
