@@ -31,6 +31,11 @@ print(cday)
 now = datetime.now()
 print(now.strftime('%a, %b %d %H:%M'))
 
+today1 = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+# '2020-01-21 23:40:38'
+today2 = datetime.today().strftime("%Y-%m-%d")
+# '2020-01-21'
+
 # datetime的加减
 from datetime import timedelta
 
