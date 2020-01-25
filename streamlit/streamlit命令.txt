@@ -5,7 +5,7 @@ streamlit config show
 streamlit run D:/_python/python/streamlit/first_app.py --server.port 80
 streamlit run D:/_python/python/streamlit/web_report.py --server.port 80
 
-streamlit run D:/_python/python/streamlit/春节日报.py --server.port 888
+streamlit run D:/Test/春节日报/网页日报.py --server.port 8001
 
 streamlit cache clear
 
