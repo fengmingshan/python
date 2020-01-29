@@ -10,7 +10,7 @@ import os
 path = 'D:/2020年工作/2020年1月春节返乡用户分析'
 os.chdir(path)
 
-df = pd.read_excel('./曲靖返乡用户v1.xlsx')
+df = pd.read_excel('./曲靖从湖北返乡用户.xlsx')
 df.rename(columns={'小区': 'CID'}, inplace=True)
 df['CID'] = df['CID'].map(lambda x: int(str(x)[6:]))
 

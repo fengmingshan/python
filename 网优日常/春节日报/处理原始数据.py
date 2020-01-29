@@ -20,6 +20,7 @@ plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 sche = sched.scheduler(time.time, time.sleep)
 path = 'D:/Test/春节日报'
+
 os.chdir(path)
 
 df_enodeb_name = pd.read_excel('./物理站址清单.xlsx', encoding='utf-8')

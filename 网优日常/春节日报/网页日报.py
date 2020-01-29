@@ -30,8 +30,6 @@ df_suboffice_flow_day = pd.read_excel('./节日原始数据.xlsx',sheet_name = '
 
 
 #网页开始
-country = '麒麟'
-suboffice = '寥廓'
 today = datetime.today().strftime("%Y-%m-%d")
 
 option1 = st.sidebar.selectbox(
@@ -42,16 +40,14 @@ st.title('春节期间4G话务日报 {day}'.format(day = today))
 '你选择的是：', option1
 country = option1
 
-suboffice_list = list(df_suboffice_user_busy['支局'].unique())
+df_tmp = df_suboffice_user_busy[df_suboffice_user_busy['区县'] == country]
+suboffice_list = list(df_tmp['支局'].unique())
 
 option2 = st.sidebar.selectbox(
     '你要查看哪个支局的报表?',
      suboffice_list)
 '你选择的是：', option2
 suboffice = option2
-
-country = '麒麟'
-suboffice = '开发区'
 
 df_tmp = df_suboffice_user_busy[df_suboffice_user_busy['区县'] == country]
 
@@ -137,7 +133,10 @@ for b,d in zip(bars,data):
     plt.text(b.get_width()+b.get_width()*0.05,b.get_y()+b.get_height()/2,'{}'.format(d))
 st.pyplot()
 
-df_sub = df_flow_busy[(df_flow_busy['区县'] ==country)&(df_flow_busy['支局'] == suboffice)]
+
+df_sub = df_BTS_flow[(df_BTS_flow['区县'] ==country)&(df_BTS_flow['支局'] == suboffice)]
+df_sub = df_sub.groupby(by=['区县', '支局','中文站名'])['总流量(GB)'].sum()
+df_sub = df_sub.reset_index()
 
 st.header('{sub}支局流量top20小区(GB)'.format(sub = suboffice))
 df_sub.sort_values(by='总流量(GB)', ascending= False, inplace=True)
@@ -153,6 +152,7 @@ for b,d in zip(bars,data):
     plt.text(b.get_width()+b.get_width()*0.05,b.get_y()+b.get_height()/2,'{}'.format(d))
 st.pyplot()
 
+df_sub = df_flow_busy[(df_flow_busy['区县'] ==country)&(df_flow_busy['支局'] == suboffice)]
 
 st.header('{coun}支局无线带宽利用率最高top20小区(%)'.format(coun = country))
 df_sub.sort_values(by='PRB利用率', ascending= False, inplace=True)
