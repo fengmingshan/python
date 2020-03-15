@@ -347,7 +347,9 @@ with open(data_path + '全网layer规划.xlsx', 'w') as writer:
     df_cell.to_csv(writer, index=False)
 
 
+# =============================================================================
 # 通过多列的数据计算生成一个新的列：
+# =============================================================================
 def Judge_MOD3(a, b, c, d):  # 定义计算函数
     if a % 3 == b % 3 and d-c <= 3:
         return 1
@@ -356,3 +358,22 @@ def Judge_MOD3(a, b, c, d):  # 定义计算函数
 # 使用apply函数将表格的多列输入到Judge_MOD3进行计算，得到一个新的列
 df_all['Neighbor1_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(
     x.ServingCell_PCI, x.Neighbor1_PCI, x.Neighbor1_RSRP, x.ServingCell_RSRP), axis=1)
+
+# =============================================================================
+# 将包含多个值的一行拆分成多行
+# =============================================================================
+import pandas as pd
+
+df = pd.DataFrame({'Country':['China','US','Japan','EU','UK/Australia', 'UK/Netherland'],
+               'Number':[100, 150, 120, 90, 30, 2],
+               'Value': [1, 2, 3, 4, 5, 6],
+               'label': list('abcdef')})
+df
+
+df_new = df.drop('Country', axis=1).join(df['Country'].str.split('/',
+                expand=True).stack().reset_index(level=1, drop=True).rename('Country'))
+
+# 过程分布介绍
+df['Country'].str.split('/', expand=True).stack()
+df['Country'].str.split('/', expand=True).stack().reset_index(level=1, drop=True)
+df['Country'].str.split('/', expand=True).stack().reset_index(level=1, drop=True).rename('Country')
