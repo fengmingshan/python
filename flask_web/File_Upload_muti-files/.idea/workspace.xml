@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="30c0d395-9ea5-47e7-8c8d-1cd14badbcdc" name="默认的" comment="" />
+    <list default="true" id="30c0d395-9ea5-47e7-8c8d-1cd14badbcdc" name="默认的" comment="">
+      <change afterPath="$PROJECT_DIR$/../File_Upload_excel_files/templates/browser.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../File_Upload_excel_files/templates/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../File_Upload_excel_files/templates/manage.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/File_Upload_excel_files.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/File_Upload_excel_files.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/File_Upload_excel_files.py" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/File_Upload_excel_files.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manage.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,10 +45,11 @@
     <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RunManager">
     <configuration name="File_Upload_muti-files" type="PythonConfigurationType" factoryName="Python" singleton="true">
@@ -78,10 +89,38 @@
       <workItem from="1584402075097" duration="71000" />
       <workItem from="1584402226526" duration="11000" />
       <workItem from="1584402279835" duration="38000" />
+      <workItem from="1584610133906" duration="13000" />
+      <workItem from="1584610155305" duration="1165000" />
+      <workItem from="1584611718992" duration="926000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="401" y="0" key="#File_Upload_muti-files" timestamp="1584613432801">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="401" y="0" key="#File_Upload_muti-files/0.0.1366.728@0.0.1366.728" timestamp="1584613432801" />
+    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1584610220949">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1584610220949" />
+    <state x="184" y="0" key="SettingsEditor" timestamp="1584613451220">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="184" y="0" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584613451220" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/File_Upload_muti-files.py</url>
+          <line>34</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
