@@ -9,7 +9,7 @@ app.config['UPLOADED_PHOTOS_DEST'] = os.getcwd()
 
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
-patch_request_class(app)  # 文件大小限制，默认为16MB
+patch_request_class(app, 32 * 1024 * 1024)  # 文件大小限制32MB，如果不设置默认为16MB
 
 html = '''
     <!DOCTYPE html>
@@ -26,7 +26,7 @@ html = '''
 def upload_file():
     if request.method == 'POST' and 'photo' in request.files:
         filename = photos.save(request.files['photo'])
-        file_url = photos.url(filename).replace('\\','/')
+        file_url = photos.url(filename)
         return html + '<br><img src=' + file_url + '>'
     return html
 

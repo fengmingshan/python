@@ -9,7 +9,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/../File_Upload\templates" />
+        <option value="$MODULE_DIR$/../File_Upload_full_versions\templates" />
       </list>
     </option>
   </component>
