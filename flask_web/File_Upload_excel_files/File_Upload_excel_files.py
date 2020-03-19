@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import pandas as pd
 import time
 import hashlib
 
@@ -49,7 +50,12 @@ def manage_file():
 @app.route('/open/<filename>')
 def open_file(filename):
     file_url = excels.url(filename)
-    return render_template('browser.html', file_url=file_url)
+    if filename.split('.')[1] == 'xlsx' or filename.split('.')[1] == 'xls':
+        df = pd.read_excel("./upload/" + filename)
+    else:
+        df = pd.read_csv("./upload/" + filename, engine = 'python', encoding = 'gbkt')
+    table_html = df.head().to_html(index = False)
+    return render_template('browser.html',file_url = file_url, table_html = table_html)
 
 
 @app.route('/delete/<filename>')

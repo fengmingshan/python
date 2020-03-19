@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="30c0d395-9ea5-47e7-8c8d-1cd14badbcdc" name="默认的" comment="">
-      <change afterPath="$PROJECT_DIR$/../File_Upload_excel_files/templates/browser.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../File_Upload_excel_files/templates/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../File_Upload_excel_files/templates/manage.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/File_Upload_excel_files.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/File_Upload_excel_files.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/File_Upload_excel_files.py" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/File_Upload_excel_files.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../File_Upload_excel_files/templates/browser.html" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_excel_files/templates/browser.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manage.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,6 +87,7 @@
       <workItem from="1584610133906" duration="13000" />
       <workItem from="1584610155305" duration="1165000" />
       <workItem from="1584611718992" duration="926000" />
+      <workItem from="1584630246602" duration="721000" />
     </task>
     <servers />
   </component>

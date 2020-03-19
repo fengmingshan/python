@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7800343a-09aa-4052-bc2b-6a0513ee01eb" name="默认的" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/browser.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/manage.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/File_Upload_excel_files.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/File_Upload_excel_files.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/File_Upload_excel_files.py" beforeDir="false" afterPath="$PROJECT_DIR$/File_Upload_excel_files.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/browser.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/browser.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../File_Upload_muti-files/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_muti-files/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../File_Upload_muti-files/templates/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_muti-files/templates/manage.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +75,8 @@
       <updated>1584373178466</updated>
       <workItem from="1584609929014" duration="225000" />
       <workItem from="1584610223624" duration="3435000" />
+      <workItem from="1584629843565" duration="2296000" />
+      <workItem from="1584632178979" duration="45000" />
     </task>
     <servers />
   </component>
@@ -91,32 +88,43 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="401" y="0" key="#File_Upload_excel_files/0.0.1366.728@0.0.1366.728" timestamp="1584610805726" />
-    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1584611715964">
+    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1584630243794">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1584611715964" />
-    <state width="1322" height="174" key="GridCell.Tab.0.bottom" timestamp="1584627899043">
+    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1584630243794" />
+    <state width="1322" height="174" key="GridCell.Tab.0.bottom" timestamp="1584632223894">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584627899043" />
-    <state width="1322" height="174" key="GridCell.Tab.0.center" timestamp="1584627899041">
+    <state width="1322" height="174" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
+    <state width="1322" height="174" key="GridCell.Tab.0.center" timestamp="1584632223894">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584627899041" />
-    <state width="1322" height="174" key="GridCell.Tab.0.left" timestamp="1584627899041">
+    <state width="1322" height="174" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
+    <state width="1322" height="174" key="GridCell.Tab.0.left" timestamp="1584632223894">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584627899041" />
-    <state width="1322" height="174" key="GridCell.Tab.0.right" timestamp="1584627899042">
+    <state width="1322" height="174" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
+    <state width="1322" height="174" key="GridCell.Tab.0.right" timestamp="1584632223894">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584627899042" />
+    <state width="1322" height="174" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
     <state x="184" y="0" key="SettingsEditor" timestamp="1584613595305">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="184" y="0" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584613595305" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/File_Upload_excel_files.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/File_Upload_excel_files$File_Upload_excel_files.coverage" NAME="File_Upload_excel_files Coverage Results" MODIFIED="1584613497122" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/File_Upload_excel_files$File_Upload_excel_files.coverage" NAME="File_Upload_excel_files Coverage Results" MODIFIED="1584632186600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
