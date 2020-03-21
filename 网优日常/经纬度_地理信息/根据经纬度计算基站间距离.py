@@ -50,7 +50,7 @@ os.chdir(data_path)
 source_cell_info = 'source_bts_info.xlsx'
 destination_cell_info = 'destination_bts_info.xlsx'
 
-max_distance = 2000
+max_distance = 15000
 
 df_source_cell = pd.read_excel(source_cell_info)
 df_source_cell['lon'] = df_source_cell['lon'].map(lambda x: round(x, 5))
@@ -98,7 +98,7 @@ df_res = pd.concat(list_res, axis=0)
 df_res = df_res[['s_name', 's_eNodeB', 's_lon', 's_lat', 'des_name',
                  'des_eNodeB', 'des_lon', 'des_lat', 'distance']]
 df_res['distance'] = df_res['distance'].map(lambda x: ceil(x))
-with open('距离计算结果.csv', 'w') as writer:
+with open('距离计算结果.csv', 'w', newline = '') as writer:
     df_res.to_csv(writer, index=False)
 print('\n' + '结果已输出到：{path}，请到该目录查看！'.format(path=os.getcwd().replace('\\\\', '\\') + '\\'))
 os.startfile(data_path)

@@ -359,6 +359,37 @@ def Judge_MOD3(a, b, c, d):  # 定义计算函数
 df_all['Neighbor1_IS_MOD3'] = df_all.apply(lambda x: Judge_MOD3(
     x.ServingCell_PCI, x.Neighbor1_PCI, x.Neighbor1_RSRP, x.ServingCell_RSRP), axis=1)
 
+
+df4 = pd.DataFrame({'区县': ['富源', '会泽', '陆良', '罗平', '马龙', '麒麟', '师宗', '宣威', '沾益', '合计'],
+                    '物理站址数量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '上周语音话务量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周语音话务量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '话务量环比变化': np.random.randint(90, 400, size=10, dtype='int'),
+                    '上周DO流量': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周DO流量': np.random.randint(90, 400, size=10, dtype='int'),
+                    'DO流量环比变化': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周DO在线用户数': np.random.randint(90, 400, size=10, dtype='int'),
+                    '本周忙时登记用户数': np.random.randint(90, 400, size=10, dtype='int')
+                    })
+
+def judge_cell(x,y):
+    if x < 200:
+        return '低话务基站'
+    if 200 < x < 300:
+        return '中话务基站'
+    if  x > 300:
+        return '高话务基站'
+    if 200 < x < 300:
+        return '高话务基站'
+    if y < 200:
+        return '低流量基站'
+    if 200 < y < 300:
+        return '中流量基站'
+    if  y > 300:
+        return '高流量基站'
+
+df4['小区类型'] = df4.apply(lambda x:judge_cell(x['本周语音话务量'],x['本周DO流量']),axis =1)
+
 # =============================================================================
 # 将包含多个值的一行拆分成多行
 # =============================================================================
@@ -372,8 +403,19 @@ df
 
 df_new = df.drop('Country', axis=1).join(df['Country'].str.split('/',
                 expand=True).stack().reset_index(level=1, drop=True).rename('Country'))
-
-# 过程分布介绍
+# 过程分步介绍
 df['Country'].str.split('/', expand=True).stack()
 df['Country'].str.split('/', expand=True).stack().reset_index(level=1, drop=True)
 df['Country'].str.split('/', expand=True).stack().reset_index(level=1, drop=True).rename('Country')
+
+# =============================================================================
+# 读取多个包含sheet的表格
+# =============================================================================
+xlsx_file = pd.ExcelFile('D:/2020年工作/2020年3月非800M用户分析/曲靖总流量TOP5小区用户.xlsx')
+df_list = []
+for name in xlsx_file.sheet_names:
+    df_tmp = pd.read_excel('D:/2020年工作/2020年3月非800M用户分析/曲靖总流量TOP5小区用户.xlsx',sheet_name = name)
+    df_list.append(df_tmp)
+df_resident_cell = pd.concat(df_list, axis = 0)
+
+
