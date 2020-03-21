@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7800343a-09aa-4052-bc2b-6a0513ee01eb" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/File_Upload_excel_files.py" beforeDir="false" afterPath="$PROJECT_DIR$/File_Upload_excel_files.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/browser.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/browser.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../File_Upload_muti-files/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../File_Upload_muti-files/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="7800343a-09aa-4052-bc2b-6a0513ee01eb" name="默认的" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,6 +72,7 @@
       <workItem from="1584610223624" duration="3435000" />
       <workItem from="1584629843565" duration="2296000" />
       <workItem from="1584632178979" duration="45000" />
+      <workItem from="1584804017500" duration="48000" />
     </task>
     <servers />
   </component>
