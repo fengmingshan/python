@@ -61,7 +61,7 @@ from pyecharts.charts import Line
 
 x_data = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 y_data = [820, 932, 901, 934, 1290, 1330, 1320]
-y_data2 = [720, 865, 910, 875, 1200, 1310, 1350]
+y_data2 = [620, 765, 710, 775, 900, 810, 1150]
 
 
 (

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7800343a-09aa-4052-bc2b-6a0513ee01eb" name="默认的" comment="" />
+    <list default="true" id="7800343a-09aa-4052-bc2b-6a0513ee01eb" name="默认的" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/File_Upload_excel_files.py" beforeDir="false" afterPath="$PROJECT_DIR$/File_Upload_excel_files.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/browser.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/browser.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/calc.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../绘图/pyecharts常用图形.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../绘图/pyecharts常用图形.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -73,6 +79,7 @@
       <workItem from="1584629843565" duration="2296000" />
       <workItem from="1584632178979" duration="45000" />
       <workItem from="1584804017500" duration="48000" />
+      <workItem from="1585122136208" duration="377000" />
     </task>
     <servers />
   </component>
@@ -88,22 +95,22 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1584630243794" />
-    <state width="1322" height="174" key="GridCell.Tab.0.bottom" timestamp="1584632223894">
+    <state width="1322" height="174" key="GridCell.Tab.0.bottom" timestamp="1585122517259">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
-    <state width="1322" height="174" key="GridCell.Tab.0.center" timestamp="1584632223894">
+    <state width="1322" height="174" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1585122517259" />
+    <state width="1322" height="174" key="GridCell.Tab.0.center" timestamp="1585122517259">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
-    <state width="1322" height="174" key="GridCell.Tab.0.left" timestamp="1584632223894">
+    <state width="1322" height="174" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1585122517259" />
+    <state width="1322" height="174" key="GridCell.Tab.0.left" timestamp="1585122517259">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
-    <state width="1322" height="174" key="GridCell.Tab.0.right" timestamp="1584632223894">
+    <state width="1322" height="174" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1585122517259" />
+    <state width="1322" height="174" key="GridCell.Tab.0.right" timestamp="1585122517259">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584632223894" />
+    <state width="1322" height="174" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1585122517259" />
     <state x="184" y="0" key="SettingsEditor" timestamp="1584613595305">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -121,6 +128,6 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/File_Upload_excel_files$File_Upload_excel_files.coverage" NAME="File_Upload_excel_files Coverage Results" MODIFIED="1584632186600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/File_Upload_excel_files$File_Upload_excel_files.coverage" NAME="File_Upload_excel_files Coverage Results" MODIFIED="1585122225934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

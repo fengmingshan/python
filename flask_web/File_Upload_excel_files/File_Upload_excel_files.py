@@ -53,7 +53,7 @@ def open_file(filename):
     if filename.split('.')[1] == 'xlsx' or filename.split('.')[1] == 'xls':
         df = pd.read_excel("./upload/" + filename)
     else:
-        df = pd.read_csv("./upload/" + filename, engine = 'python', encoding = 'gbkt')
+        df = pd.read_csv("./upload/" + filename, engine = 'python', encoding = 'gbk')
     table_html = df.head().to_html(index = False)
     return render_template('browser.html',file_url = file_url, table_html = table_html)
 
