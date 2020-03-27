@@ -9,7 +9,7 @@ import sys
 print(sys.path)
 
 # 将自定义包的路径添加在系统路径中
-sys.path.append('D:\\_python\\custom-package')
+sys.path.append('D:\\_python\\python\\custom-package')
 
 # 删除自定义路径
 # sys.path.remove('D:\\_python\\custom-package')
@@ -20,4 +20,4 @@ sys.path.append('D:\\_python\\custom-package')
 # 必须这样导入你的包 from xxx.yyy import zzz
 # xxx 为文件夹名
 # yyy 为.py文件名
-# yyy 为.py文件里面的类名
+# zzz 为.py文件里面的类名

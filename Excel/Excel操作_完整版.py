@@ -89,7 +89,7 @@ reader = pd.read_csv(path + file, engine='python', iterator=True)
 
 
 user_data = pd.read_csv(data_path + file, engine='python',
-                        encoding='utf-8',  chunksize=100000)
+                        encoding='utf-8',  chunksize=10000)
 df_user_record = pd.DataFrame()
 i = 0
 for df_tmp in user_data:
@@ -98,8 +98,8 @@ for df_tmp in user_data:
         df_user_record = df_user_record.append(df_tmp)
     except:
         print("Iteration is stopped.")
-    if i % 100 == 0:
-        print('finished:{} ,total:{}'.format(i, len(user_data)))
+    if i % 10 == 0:
+        print('finished:{} W,total:{}'.format(i*10, len(user_data)))
 
 # =============================================================================
 # 常用统计信息
