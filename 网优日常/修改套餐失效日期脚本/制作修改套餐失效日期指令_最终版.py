@@ -82,7 +82,6 @@ for i, file in enumerate(user_files):
         list_df_lose.append(df_lose_file)
     print('完成第{}个文件，共{}行!'.format(i + 1, len(df_file)))
 
-invalid_date = '20200311130751'
 # 将所有打开文件产生的表格合并成一张表
 if len(list_df_file) > 1:
     df = pd.concat(list_df_file, axis=0)
