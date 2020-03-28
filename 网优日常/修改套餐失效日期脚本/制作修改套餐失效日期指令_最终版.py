@@ -40,9 +40,9 @@ while True:
         if len(invalid_date) == 14 and invalid_date.isdigit():
             print('你输入的时间是：' + invalid_date)
             break
-    except BaseException:
-        print('您输入的日期不合规,格式为 20200311130751 ,请重新输入: ')
-
+    except KeyboardInterrupt :
+        print('检测到CTRL+C,准备退出程序!')
+        quit()
 
 work_path = 'D:/_python/python/网优日常/修改套餐失效日期脚本'
 os.chdir(work_path)
@@ -104,28 +104,84 @@ df_78 = df[(df['PAKID'] == '70000') | (df['PAKID'] == '80000')]
 with open('./结果输出/回滚脚本.txt', 'w') as f:
     for i in range(ceil(len(df_78) / 200000)):
         if (i + 1) * 200000 < len(df_78):
-            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'.format(ISDN=isdn, PAKINSTID=pakinsrid, PAKID=pakid, BEGINDATE=begindate, ENDDATE=endate) for isdn, pakinsrid, pakid, begindate, endate in zip(
-                df_78.ISDN[i * 200000: (i + 1) * 200000], df_78.PAKINSTID[i * 200000: (i + 1) * 200000], df_78.PAKID[i * 200000: (i + 1) * 200000], df_78.BEGINDATE[i * 200000: (i + 1) * 200000], df_78.ENDDATE[i * 200000: (i + 1) * 200000])]
+            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'
+                        .format(ISDN=isdn,
+                            PAKINSTID=pakinsrid,
+                            PAKID=pakid,
+                            BEGINDATE=begindate,
+                            ENDDATE=endate
+                        )
+                        for isdn, pakinsrid, pakid, begindate, endate in
+                            zip(df_78.ISDN[i * 200000: (i + 1) * 200000],
+                                df_78.PAKINSTID[i * 200000: (i + 1) * 200000],
+                                df_78.PAKID[i * 200000: (i + 1) * 200000],
+                                df_78.BEGINDATE[i * 200000: (i + 1) * 200000],
+                                df_78.ENDDATE[i * 200000: (i + 1) * 200000]
+                            )
+                        ]
         elif (i + 1) * 200000 >=  len(df_78):
-            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'.format(ISDN=isdn, PAKINSTID=pakinsrid, PAKID=pakid, BEGINDATE=begindate, ENDDATE=endate) for isdn, pakinsrid, pakid, begindate, endate in zip(
-                df_78.ISDN[i * 200000: len(df_78)], df_78.PAKINSTID[i * 200000: len(df_78)], df_78.PAKID[i * 200000: len(df_78)], df_78.BEGINDATE[i * 200000: len(df_78)], df_78.ENDDATE[i * 200000:len(df_78)])]
+            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'
+                         .format(ISDN=isdn,
+                             PAKINSTID=pakinsrid,
+                             PAKID=pakid, BEGINDATE=begindate,
+                             ENDDATE=endate
+                        )
+                        for isdn, pakinsrid, pakid, begindate, endate in
+                            zip(df_78.ISDN[i * 200000: len(df_78)],
+                                df_78.PAKINSTID[i * 200000: len(df_78)],
+                                df_78.PAKID[i * 200000: len(df_78)],
+                                df_78.BEGINDATE[i * 200000: len(df_78)],
+                                df_78.ENDDATE[i * 200000:len(df_78)]
+                            )
+                        ]
         lines = '\n'.join(line_list)
         f.writelines(lines + '\n')
-        print('制作回滚脚本，总共{}行，已写入{}行，剩余{}行'.format(len(df_78),
-                                                 (i + 1) * 200000, len(df_78) - (i + 1) * 200000))
+        print('制作回滚脚本，总共{}行，已写入{}行，剩余{}行'
+              .format(len(df_78),
+                  (i + 1) * 200000,
+                  len(df_78) - (i + 1) * 200000)
+              )
 
 with open('./结果输出/割接脚本.txt', 'w') as f:
     for i in range(ceil(len(df_78) / 200000)):
         if (i + 1) * 200000 < len(df_78):
-            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'.format(ISDN=isdn, PAKINSTID=pakinsrid, PAKID=pakid, BEGINDATE=begindate, ENDDATE=endate) for isdn, pakinsrid, pakid, begindate, endate in zip(
-                df_78.ISDN[i * 200000: (i + 1) * 200000], df_78.PAKINSTID[i * 200000: (i + 1) * 200000], df_78.PAKID[i * 200000: (i + 1) * 200000], df_78.BEGINDATE[i * 200000: (i + 1) * 200000], df_78.invalid_date[i * 200000: (i + 1) * 200000])]
+            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'
+                         .format(ISDN=isdn,
+                             PAKINSTID=pakinsrid,
+                             PAKID=pakid,
+                             BEGINDATE=begindate,
+                             ENDDATE=endate
+                         )
+                         for isdn, pakinsrid, pakid, begindate, endate in
+                             zip(df_78.ISDN[i * 200000: (i + 1) * 200000],
+                                df_78.PAKINSTID[i * 200000: (i + 1) * 200000],
+                                df_78.PAKID[i * 200000: (i + 1) * 200000],
+                                df_78.BEGINDATE[i * 200000: (i + 1) * 200000],
+                                df_78.invalid_date[i * 200000: (i + 1) * 200000]
+                            )
+                        ]
         elif (i + 1) * 200000 >=  len(df_78):
-            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'.format(ISDN=isdn, PAKINSTID=pakinsrid, PAKID=pakid, BEGINDATE=begindate, ENDDATE=endate) for isdn, pakinsrid, pakid, begindate, endate in zip(
-                df_78.ISDN[i * 200000: len(df_78)], df_78.PAKINSTID[i * 200000: len(df_78)], df_78.PAKID[i * 200000: len(df_78)], df_78.BEGINDATE[i * 200000: len(df_78)], df_78.invalid_date[i * 200000:len(df_78)])]
+            line_list = ['Set PakList:ISDN={ISDN},PAKINSTIDLIST={PAKINSTID},PAKNameList={PAKID},PBEGINDATEList={BEGINDATE},PENDDATEList={ENDDATE};'
+                         .format(ISDN=isdn,
+                             PAKINSTID=pakinsrid,
+                             PAKID=pakid, BEGINDATE=begindate,
+                             ENDDATE=endate
+                         )
+                        for isdn, pakinsrid, pakid, begindate, endate in
+                            zip(df_78.ISDN[i * 200000: len(df_78)],
+                                df_78.PAKINSTID[i * 200000: len(df_78)],
+                                df_78.PAKID[i * 200000: len(df_78)],
+                                df_78.BEGINDATE[i * 200000: len(df_78)],
+                                df_78.invalid_date[i * 200000:len(df_78)]
+                            )
+                        ]
         lines = '\n'.join(line_list)
         f.writelines(lines + '\n')
-        print('制作割接脚本，总共{}行，已写入{}行，剩余{}行'.format(len(df_78),
-                                                 (i + 1) * 200000, len(df_78) - (i + 1) * 200000))
+        print('制作割接脚本，总共{}行，已写入{}行，剩余{}行'
+              .format(len(df_78),
+                  (i + 1) * 200000,
+                  len(df_78) - (i + 1) * 200000)
+              )
 
 with open('./结果输出/缺失数据.csv', 'w', newline='') as writer:
     df_lose.to_csv(writer, index=False)
