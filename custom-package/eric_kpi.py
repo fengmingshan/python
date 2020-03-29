@@ -9,7 +9,12 @@ import pandas as pd
 import numpy as np
 
 
-def zte_KPI_busy_rename(df):
+def eric_KPI_modify_dtyps(df):
+    df['DATE_ID'] = df['DATE_ID'].map(lambda x:x.replace('\'',''))
+    df['eNodeB'] = df['eNodeB'].map(lambda x:int(x.replace('\'','')))
+    return df
+
+def eric_KPI_rename(df):
     df.rename(columns={"RRC连接重建比例_1": "RRC连接重建比例",
                        "UE上下文掉线率_1": "UE上下文掉线率",
                        "RAB掉线率_1": "RAB掉线率",
