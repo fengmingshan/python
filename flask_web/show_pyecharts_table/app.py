@@ -5,7 +5,7 @@ from pyecharts.charts import Bar, Line, Pie
 from pyecharts.faker import Faker
 
 app = Flask(__name__, static_folder="templates")
-
+app.debug = True
 
 def draw_bar():
     c = (

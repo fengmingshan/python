@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>动态数据库展示</title>
+    <style>
+        table{
+
+            border: 5px dashed gold;
+            background-color: blueviolet;
+            padding: 10px;
+
+        }
+    </style>
+</head>
+<body>
+    <table border="1">
+        {# 对数据进行遍历输出，循环tr标签 #}
+        {% for i in item %}
+            <tr>
+                <td>{{ i }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br/><br/>
+
+    <table border="1">
+        {# 对数据进行遍历输出，循环tr标签 #}
+        {% for i in list_item %}
+            <tr>
+                <td>{{ i.id }}</td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.password }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

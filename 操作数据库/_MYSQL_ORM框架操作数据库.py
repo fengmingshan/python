@@ -3,10 +3,10 @@
 Created on Sat Jan 27 21:26:21 2018
 如果写程序用pymysql和程序交互，那就要写原生sql语句。如果进行复杂的查询，那sql语句就要进行一点一点拼接，而且不太有重用性，
 扩展不方便。而且写的sql语句可能不高效，导致程序运行也变慢。 为了避免把sql语句写死在代码里，
-有没有一种方法直接把原生sql封装好了并且以你熟悉的方式操作，像面向对象那样？ 
+有没有一种方法直接把原生sql封装好了并且以你熟悉的方式操作，像面向对象那样？
 orm（object relational mapping）,就是对象映射关系程序， 通过orm将编程语言的对象模型和数据库的关系模型建立映射关系，
 这样我们在使用编程语言对数据库进行操作的时候可以直接使用编程语言的对象模型进行操作就可以了，而不用直接使用sql语言。
-ORM 相当于把数据库也给你实例化了，在代码操作mysql中级又加了orm这一层。 
+ORM 相当于把数据库也给你实例化了，在代码操作mysql中级又加了orm这一层。
 @author: Administrator
 """
 import sqlalchemy
@@ -15,8 +15,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 
-engine=create_engine('mysql+pymysql://root:123456@218.63.75.42:3306/test?charset=utf8',echo=False)
-DBSession=sessionmaker(bind=engine) 
+engine=create_engine('mysql+pymysql://root:a123456@localhost:3306/first_flask?charset=utf8',echo=False)
+DBSession=sessionmaker(bind=engine)
 session=DBSession()
 
 Base = declarative_base()   #创建对象Base将ORM基类declarative_base()实例化
@@ -26,26 +26,26 @@ class User(Base):  #这里的User是ORM对象，user是数据库中的表格，�
     # 表的名字:
     __tablename__ = 'user'
     # 表的结构:
-    id = Column(String(20), primary_key=True)
+    id = Column(Integer(), primary_key=True)
     name = Column(String(20))
     password = Column(String(64))
-Base.metadata.create_all(engine) #调用父类Base类中的方法（函数）.create_all创建表结构 
+Base.metadata.create_all(engine) #调用父类Base类中的方法（函数）.create_all创建表结构
 session.commit()    #确认修改
 session.close()     #关闭会话
 
 #刚才表格已经创建完成了，可以连上数据库看看，
 #下面可以在表格中插入记录了
 session=DBSession()     #创建session对象，因为刚才的session被关闭了
-new_user = User(id='5', name='Bob')     #创建新对象new_user带有两个参数
+new_user = User(id= 5, name='Bob', password = 'c123456')     #创建新对象new_user带有两个参数
 session.add(new_user)
 session.commit()
 session.close()
 
-#下面看一下怎么查询记录
+# 查询记录
 # 创建Session:
 session = DBSession()   #创建session对象,因为刚才的session被关闭了
 # 创建Query查询，filter是where条件，最后调用one()返回唯一行，如果调用all()则返回所有行:
-user = session.query(User).filter(User.id=='5').one() 
+user = session.query(User).filter(User.id=='5').one()
 # 打印类型和对象的name属性:
 print('type:', type(user))
 print('name:', user.name)
@@ -65,7 +65,8 @@ Base = declarative_base()   #生成ORM对象的基类
 
 #创建表
 metadata = MetaData()
-user = Table('user', metadata,     #定义SQL表格user,这里建立了两个表：一个是表元数据metadata，一个是表结构user
+user = Table('user', metadata,
+#定义SQL表格user,这里建立了两个表：一个是表元数据metadata，一个是表结构user
             Column('id', Integer, primary_key=True),
             Column('name', String(50)),
             Column('password', String(12))
@@ -79,7 +80,7 @@ class User(object):     #定义ORM类User
     def __repr__(self):     #定义查询数据返回的格式，前面加上了字段名，如果不定义该段，查询返回只有值，可读性不好
         return "<User(id='%s',name='%s',  password='%s')>" % (self.id,
         self.name, self.password)
-        
+
 mapper(User, user)  #对象User 和 表格user关联起来
 Base.metadata.create_all(engine)  #创建表
 
@@ -134,7 +135,7 @@ def __repr__(self):
 
 session=DBSession()     #创建session对象/实例
 
-my_user = session.query(User).filter_by(name="fgf").first()  # 带条件查询，filter_by就是where条件:name='gfg'。.first()表示返回第一条记录 
+my_user = session.query(User).filter_by(name="fgf").first()  # 带条件查询，filter_by就是where条件:name='gfg'。.first()表示返回第一条记录
 print(my_user)  #这里my_user是一个查询结果，被映射成一个对象。所以打印不出来。如果创建表格的时候定义了返回格式，那么返回的内容直接可读
 print(my_user.id,my_user.name,my_user.password)     #这样写就能看到内容了
 
@@ -150,10 +151,10 @@ session.add(user_obj3)   #在表格中添加元素
 session.commit()    #确认修改
 
 my_user = session.query(User).filter_by().all() #查询全部，.all()就是返回所有记录
-print(my_user) 
+print(my_user)
 
 my_user = session.query(User.name,User.id).all() #查询全部记录返回name，id字段等同于select name，id，.all()就是返回所有记录
-print(my_user)     
+print(my_user)
 
 #.filter与.filter_by
 my_user1 = session.query(User).filter(User.id>2).all()
@@ -163,31 +164,31 @@ print(my_user1,'\n',my_user2,'\n',my_user3)
 
 #多条件查询
 my_user = session.query(User).filter(User.id>0).filter(User.id<20).all()    #两个条件查询
-print(my_user)  
+print(my_user)
 
 my_user = session.query(User).filter(User.id.between(1, 10), User.name == 'gqy').all()  #两个条件查询
-print(my_user)  
+print(my_user)
 
 my_user = session.query(User).filter(User.id.in_([1,10,20])).all()  #id在列表中
-print(my_user) 
+print(my_user)
 
 my_user = session.query(User).filter(~User.id.in_([1,10,20])).all()  #id不在列表中，~表示取反的意思
-print(my_user) 
+print(my_user)
 
 my_user=session.query(User).filter(User.id.in_(session.query(User.id).filter(User.id>20))).all()    #查询嵌套,查询User.id>20的所有记录
-print(my_user) 
+print(my_user)
 
 my_user=session.query(User).filter(User.id.in_(session.query(User.id).filter_by(name='gqy'))).all()   #查询嵌套,查询User.name=‘gqy’的完整记录
-print(my_user) 
+print(my_user)
 
 #多条件查询 and_ 和 or_
 from sqlalchemy import and_, or_   #首先要导入and和or函数
 
 my_user = session.query(User).filter(and_(User.id > 10, User.name == 'jyg')).all()
-print(my_user) 
+print(my_user)
 
 my_user = session.query(User).filter(or_(User.id < 20, User.name == 'fms')).all()
-print(my_user) 
+print(my_user)
 
 my_user = session.query(User).filter(
     or_(
@@ -195,25 +196,25 @@ my_user = session.query(User).filter(
         and_(User.name == 'syl', User.id > 10),
         User.password=='654321'
     )).all()
-print(my_user) 
+print(my_user)
 
 # 通配符,字符串查询
 my_user1 = session.query(User).filter(User.name.like('s%')).all()
 my_user2 = session.query(User).filter(~User.name.like('%y%')).all()
-print(my_user1,'\n',my_user2) 
+print(my_user1,'\n',my_user2)
 
 # 切片
 my_user = session.query(User)[0:2]
-print(my_user) 
+print(my_user)
 
 my_user = session.query(User)[-2:]
-print(my_user) 
+print(my_user)
 
 # 排序
 my_user1 = session.query(User).order_by(User.id.desc()).all()  #User.id倒序
 my_user2 = session.query(User).order_by(User.name.desc(), User.id.asc()).all() #User.name倒序，并且User.id正序
-print(my_user1) 
-print(my_user2) 
+print(my_user1)
+print(my_user2)
 
 # 分组
 from sqlalchemy.sql import func
@@ -262,9 +263,9 @@ class Server(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     hostname = Column(String(64), unique=True, nullable=False)
     port = Column(Integer, default=22)
-    
-Base.metadata.create_all(engine)  #创建表    
-session.commit()    #确认修改 
+
+Base.metadata.create_all(engine)  #创建表
+session.commit()    #确认修改
 #连接表
 tab1 = session.query(User, Favor).filter(User.id == Favor.nid).all()
 tab2 = session.query(Person).join(Favor).all()
@@ -307,7 +308,7 @@ class Role(Base):
     def __repr__(self):
         output = "Role(rid='%s',role_name='%s')" %(self.rid,self.role_name)
         return output
-    
+
 class Userinfo(Base):
     __tablename__ = 'userinfo'
     __table_args__ = {"useexisting": True}      #如果已存在就直接使用
@@ -360,7 +361,7 @@ class Userinfo(Base):
 res = session.query(Userinfo).all()  #查询所有的用户和角色
 for i in res:
     print(i.name,i.group.role_name)    #此时的i.group 就是role表对应的关系
-    
+
 res1 = session.query(Userinfo).filter(Userinfo.name=='fuzj').first()  #查询fuzj用户和角色
 print(res1.name,res1.group.role_name)
 #正向查找： 先从user表中查到符合name的用户之后，此时结果中已经存在和role表中的对应关系，
@@ -368,7 +369,7 @@ print(res1.name,res1.group.role_name)
 
 #反向查询：
 res = session.query(Role).filter(Role.role_name =='dba').first()   #查找dba组下的所有用户
-print(res.uuu)  
+print(res.uuu)
 for i in res.uuu:
     print(i.name,res.role_name)
 #反向查找：relationship参数中backref='uuu'，会在role表中的每个字段中加入uuu，而uuu对应的就是本字段在user表中对应的所有用户，所以，obj.uuu.name会取出来用户名

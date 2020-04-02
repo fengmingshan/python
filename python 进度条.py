@@ -14,10 +14,6 @@ for i in tqdm(range(50)):
     time.sleep(0.1)
     pass
 
-
-# In[ ]:
-
-
 # 在使用tqdm的时候，可以将tqdm(range(100))替换为trange(100)代码如下
 from tqdm import tqdm,trange
 import time
@@ -27,10 +23,7 @@ for i in trange(50):
   pass
 
 
-# # 显示当前处理的数据
-
-# In[ ]:
-
+# 显示当前处理的数据
 
 # 通过tqdm提供的set_description方法可以实时查看每次处理的数据内容
 from tqdm import tqdm
@@ -57,9 +50,6 @@ with tqdm(total=100) as t:
         t.update(1)
 
 
-# In[ ]:
-
-
 # 除了使用with之外，还可以使用另外一种方法实现上面的效果
 #total参数设置进度条的总长度
 pbar = tqdm(total=100)
@@ -72,9 +62,6 @@ pbar.close()
 
 
 # # 自定义进度条显示信息
-
-# In[ ]:
-
 
 # 通过set_description和set_postfix方法设置进度条显示信息
 from tqdm import trange
@@ -118,10 +105,7 @@ for i in tqdm(range(20), ascii=True,desc="1st loop"):
   for j in tqdm(range(10), ascii=True,desc="2nd loop"):
     time.sleep(0.2)
 
-# # 递归使用进度条
-
-# In[6]:
-
+# 递归使用进度条
 
 from tqdm import tqdm
 import os.path
@@ -179,17 +163,11 @@ df.progress_apply(lambda x: x**2)
 
  # print和进度条一起使用
 
-# In[5]:
-
-
 # 在使用tqdm显示进度条的时候，如果代码中存在print可能会导致输出多行进度条，此时可以将print语句改为tqdm.write
 import time
 for i in tqdm(range(10),ascii=True):
     tqdm.write("come on")
     time.sleep(0.5)
-
-
-# In[ ]:
 
 
 

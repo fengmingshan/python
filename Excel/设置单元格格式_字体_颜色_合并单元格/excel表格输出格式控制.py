@@ -77,6 +77,7 @@ with pd.ExcelWriter('3G话务周报示例.xlsx') as writer:
         index=False,
         startcol=0,
         startrow=3)
+
     worksheet1 = writer.sheets[u'话务周报样例']
 
     # 写入列名，格式设置为 col_fmt
@@ -135,10 +136,10 @@ with pd.ExcelWriter('3G话务周报示例.xlsx') as writer:
 # 数字格式示例
 # =============================================================================
 # format1.set_num_format('dd mm yyyy')  # Format string.
-# worksheet.write(1, 0, 2019-11-12, format1)       # -> 3.142
+# worksheet.write(1, 0, 2019-11-12, format1)       # -> 12 11 2019
 
 # format2.set_num_format(0x0F)          # Format index.
-# worksheet.write(1, 1, 17, format2)       # -> 3.142
+# worksheet.write(1, 1, 17, format2)       # -> 0x11
 
 # format01.set_num_format('0.000')
 # worksheet.write(1, 0, 3.1415926, format01)       # -> 3.142
