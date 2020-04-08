@@ -9,5 +9,5 @@ sys.path.insert(0, "D:/_python/python/flask_web/show_pyecharts_table")
 
 from app import app
 s = HTTPServer(WSGIContainer(app))
-s.listen(8008) # 监听 9900 端口
+s.listen(8001) # 监听 9900 端口
 IOLoop.current().start()
