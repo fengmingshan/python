@@ -1,4 +1,7 @@
 from flask import Flask, render_template, url_for
+from pyecharts import options as opts
+from pyecharts.charts import Bar, Line, Pie
+from pyecharts.faker import Faker
 import os
 import pandas
 

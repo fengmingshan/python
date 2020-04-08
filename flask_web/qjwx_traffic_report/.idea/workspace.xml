@@ -30,7 +30,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../File_Upload_muti-files/templates/index.html" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../show_pyecharts_table/app.py" />
     <property name="settings.editor.selected.configurable" value="preferences.general" />
   </component>
   <component name="RecentsManager">
@@ -66,6 +66,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585842679982</updated>
       <workItem from="1585842681230" duration="2935000" />
+      <workItem from="1585918641626" duration="2185000" />
     </task>
     <servers />
   </component>
@@ -73,10 +74,10 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1585844450471">
+    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1585918711418">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1585844450471" />
+    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1585918711418" />
     <state width="1322" height="174" key="GridCell.Tab.0.bottom" timestamp="1585845644496">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
