@@ -44,6 +44,8 @@ for user in userlist:
 for user in userlist:
     print(user.id,' ',user.name,' ',user.password)
 
+# 指定字段查询
+user_list = User.query.with_entities(User.name,User.password).distinct().all()
 
 # 原生数据库语句_推荐
 item = db.session.execute('select * from user order by id asc')

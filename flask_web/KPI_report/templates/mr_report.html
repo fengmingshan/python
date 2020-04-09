@@ -2,33 +2,63 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>炫酷的ECharts</title>
+    <title>曲靖MR指标监控</title>
     <!-- 引入 echarts.js -->
     <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
 </head>
 
 <body>
     <!== 为pyecharts图形准备好指定宽高的容器 ==>
-    <h1>柱状图</h1>
-    <div id="bar" style="width:900px; height:500px;"></div>
-    <h1>折线图</h1>
-    <div id="line" style="width:900px; height:500px;"></div>
-    <h1>饼图</h1>
-    <div id="pie" style="width:900px; height:500px;"></div>
-    <h1>柱状图叠加折线图</h1>
-    <div id="bar_line" style="width:900px; height:500px;"></div>
+    <h1>全省指标</h1>
+    <div id="pro" style="width:1400px; height:300px;"></div>
+    <div id="city" style="width:1400px; height:300px;"></div>
+    <div id="line2" style="width:1200px; height:500px;">
+    <h1>L1800M和800M指标对比</h1>
+        <h1>曲靖1800M指标</h1>
+        <div id="city1800" style="width:600px;">
+        </div>
+        <h1>曲靖800M指标</h1>
+        <div id="city800" style="width:600px;">
+        </div>
+    </div>
+    <div id="line3" style="width:1200px; height:500px;">
+    <h1>中兴指标对比</h1>
+        <div id="zte800" style="width:600px;">
+        <h1>中兴800M指标</h1>
+        </div>
+        <div id="zte_all" style="width:600px;">
+        <h1>中兴整体指标</h1>
+        </div>
+    </div>
+    <div id="line4" style="width:1200px; height:500px;">
+    <h1>爱立信指标对比</h1>
+        <div id="eric800" style="width:600px;">
+        <h1>爱立信800M指标</h1>
+        </div>
+        <div id="eric_all" style="width:600px;">
+        <h1></h1>
+        </div>
+    </div>
     <script type="text/javascript">
         //基于准备好的容器，初始化echarts实例
-        var bar_chart = echarts.init(document.getElementById('bar'));
-        var line_chart = echarts.init(document.getElementById('line'));
-        var pie_chart = echarts.init(document.getElementById('pie'));
-        var bar_line_chart = echarts.init(document.getElementById('bar_line'));
+        var pro_chart = echarts.init(document.getElementById('pro'));
+        var city_chart = echarts.init(document.getElementById('city'));
+        var city1800_chart = echarts.init(document.getElementById('city1800'));
+        var city800_chart = echarts.init(document.getElementById('city800'));
+        var zte800_chart = echarts.init(document.getElementById('zte800'));
+        var zte_all_chart = echarts.init(document.getElementById('zte_all'));
+        var eric800_chart = echarts.init(document.getElementById('eric800'));
+        var eric_all_chart = echarts.init(document.getElementById('eric_all'));
 
         //用.py文件中定义好的配置项和数据显示图表
-        bar_chart.setOption({{bar_options | safe}});
-        line_chart.setOption({{line_options | safe}});
-        pie_chart.setOption({{pie_options | safe}});
-        bar_line_chart.setOption({{bar_line_options | safe}});
+        pro_chart.setOption({{pro_options | safe}});
+        city_chart.setOption({{city_options | safe}});
+        city1800_chart.setOption({{city1800_options | safe}});
+        city800_chart.setOption({{city800_options | safe}});
+        zte800_chart.setOption({{zte800_options | safe}});
+        zte_all_chart.setOption({{zte_all_options | safe}});
+        eric800_chart.setOption({{eric800_options | safe}});
+        eric_all_chart.setOption({{eric_all_options | safe}});
     </script>
 </body>
 </html>
