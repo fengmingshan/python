@@ -13,6 +13,7 @@ from datetime import datetime
 from math import sin
 from math import cos
 from math import tan
+from math import asin
 from math import acos
 from math import degrees
 from math import radians
@@ -21,27 +22,14 @@ from math import atan
 from math import ceil
 
 
-def getDistance(latA, lonA, latB, lonB):
-    ra = 6378140  # radius of equator: meter
-    rb = 6356755  # radius of polar: meter
-    flatten = (ra - rb) / ra  # Partial rate of the earth
-    # change angle to radians
-    radLatA = radians(latA)
-    radLonA = radians(lonA)
-    radLatB = radians(latB)
-    radLonB = radians(lonB)
-    # 如果源小区和目标小区经纬度相同，会出现除于0的情况报错，所以要确保经纬度不同再开始计算
-    if latA != latB and lonA != lonB:
-        pA = atan(rb / ra * tan(radLatA))
-        pB = atan(rb / ra * tan(radLatB))
-        x = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB) * cos(radLonA - radLonB))
-        c1 = (sin(x) - x) * (sin(pA) + sin(pB))**2 / cos(x / 2)**2
-        c2 = (sin(x) + x) * (sin(pA) - sin(pB))**2 / sin(x / 2)**2
-        dr = flatten / 8 * (c1 - c2)
-        distance = ra * (x + dr)
-        return distance
-    else:
-        return 0
+def calc_Distance(lon1,lat1,lon2,lat2):
+    lon1, lat1, lon2, lat2 = map(radians, [float(lon1), float(lat1), float(lon2), float(lat2)]) # 经纬度转换成弧度
+    dlon = lon2-lon1
+    dlat = lat2-lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    distance=2*asin(sqrt(a))*6371*1000 # 地球平均半径，6371km
+    distance=round(distance,0)
+    return distance
 
 
 data_path = 'D:/_python小程序/根据经纬度计算基站间距离'
@@ -79,11 +67,11 @@ with tqdm(total=len(df_source_cell)) as t:
         df_tmp['s_lon'] = df_source_cell.loc[i, 'lon']
         df_tmp['s_lat'] = df_source_cell.loc[i, 'lat']
         df_tmp['distance'] = df_tmp.apply(
-            lambda x: getDistance(
-                x.s_lat,
+            lambda x: calc_Distance(
                 x.s_lon,
-                x.des_lat,
-                x.des_lon),
+                x.s_lat,
+                x.des_lon,
+                x.des_lat),
             axis=1)
         df_tmp = df_tmp[df_tmp['distance'] <= max_distance]
         list_res.append(df_tmp)

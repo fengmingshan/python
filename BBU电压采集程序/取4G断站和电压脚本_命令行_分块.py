@@ -115,7 +115,7 @@ def task():
     # =============================================================================
 
     for i in range(0,3,1):
-        bsc = os.popen(r'E:\netnumen\ems\ums-client\client.exe')
+        bsc = `
         bsc.close()
         time.sleep(3)
     

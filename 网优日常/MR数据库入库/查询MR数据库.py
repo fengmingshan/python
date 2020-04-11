@@ -31,18 +31,19 @@ class Mr_summary(db.Model):
     primary_key = db.Column(db.String(255), primary_key=True)
     area = db.Column(db.String(255))
     date = db.Column(db.Date)
-    cell_num = db.Column(db.Integer)
-    is_800 = db.Column(db.String(10))
+    static_zone = db.Column(db.String(10))
     above105 = db.Column(db.Float)
     between110and105 = db.Column(db.Float)
     between115and110 = db.Column(db.Float)
     between120and115 = db.Column(db.Float)
     inf = db.Column(db.Float)
+    total = db.Column(db.Integer)
+    mr_good = db.Column(db.Integer)
     mr_good_rate = db.Column(db.Float)
 
     def __repr__(self):
         return '<User area: {}, date: {}, is_800: {}, mr_good_rate: {}>'.format(
-            self.area, self.date, self.is_800, self.mr_good_rate)
+            self.area, self.date, self.static_zone, self.mr_good_rate)
 
 # 建立Mr_summary数据库类，用来映射到数据库中的mr_summary表
 class Mr_detail(db.Model):
@@ -54,7 +55,7 @@ class Mr_detail(db.Model):
     date = db.Column(db.Date)
     NAME = db.Column(db.String(255))
     factory = db.Column(db.String(20))
-    is_800 = db.Column(db.String(10))
+    static_zone = db.Column(db.String(10))
     avg_rsrp = db.Column(db.Float)
     above105 = db.Column(db.Integer)
     between110and105 = db.Column(db.Integer)
@@ -67,22 +68,11 @@ class Mr_detail(db.Model):
 
     def __repr__(self):
         return '<User area: {}, date: {}, is_800: {}, avg_rsrp: {}, total: {}, mr_good: {}, mr_good_rate: {}>'.format(
-            self.area, self.date, self.is_800, self.avg_rsrp, self.total, self.mr_good, self.mr_good_rate)
+            self.area, self.date, self.static_zone, self.avg_rsrp, self.total, self.mr_good, self.mr_good_rate)
 db.create_all()
 
-pro_y_name1 = Mr_summary.query.with_entities(Mr_summary.area).distinct().all()
-pro_y_name1 = [x[0] for x in pro_y_name1]
-
-pro_y_name2 = db.session.execute('select distinct area from mr_summary')
-pro_y_name2 = [x[0] for x in pro_y_name2]
-
-pro_y_data1 = db.session.query(Mr_summary.area, func.avg(Mr_summary.mr_good_rate)).group_by(Mr_summary.area)
-pro_y_data1 = list(pro_y_data1)
-pro_y_name1 = [x[0] for x in pro_y_data1]
-pro_y_value1 = [x[1] for x in pro_y_data1]
-
-
-pro_y_data2 = db.session.execute('select distinct area,round(avg(mr_good_rate),4) from mr_summary group by area')
-pro_y_data2 = list(pro_y_data2)
-pro_y_name2 = [x[0] for x in pro_y_data2]
-pro_y_value2 = [x[1] for x in pro_y_data2]
+pro_data = db.session.execute(
+    "select area,round(sum(mr_good)/sum(total),4)*100 from mr_summary where static_zone = '全市' group by area order by round(sum(mr_good)/sum(total),4)*100 desc")
+pro_data = list(pro_data)
+pro_x_axis = [x[0] for x in pro_data]
+pro_y_data = [x[1] for x in pro_data]
