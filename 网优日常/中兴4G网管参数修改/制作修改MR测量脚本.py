@@ -44,8 +44,6 @@ df_OMMB2 =  df_OMMB2.reset_index()
 df_OMMB3 =  df_top[df_top['OMMB']=='OMMB3']
 df_OMMB3 =  df_OMMB3.reset_index()
 
-
-
 with open(out_path + current_date+ '_' +  'Modify_MR_OMMB1.txt','w') as f:
     for i in range(0,len(df_OMMB1),1):
         line = r'UPDATE:MOC="EUtranCellMeasurement",MOI="{0}",ATTRIBUTES="intraFPeriodMeasSwitch=0",EXTENDS="";'\
