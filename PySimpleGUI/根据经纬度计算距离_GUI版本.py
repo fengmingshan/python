@@ -127,6 +127,7 @@ while True:
             with open('距离计算结果.csv', 'w', newline = '') as writer:
                 df_res.to_csv(writer, index=False)
             sg.Print('\n' + '结果已输出到：{path}，请到该目录查看！'.format(path=os.getcwd().replace('\\\\', '\\') + '\\'))
+            time.sleep(6)
             os.startfile(data_path)
         else:
             sg.Print('你的输入信息不全，请检查源小区、目标小区及最大相邻距离是否都已经设置！')
