@@ -74,10 +74,7 @@ def draw_bar(y_name1,y_data1,x_axis,title):
         Bar()
             .add_xaxis(x_axis)
             .add_yaxis(y_name1, y_data1,category_gap="60%")
-            .set_global_opts(
-                title_opts=opts.TitleOpts(title=title),
-                xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(rotate=-30)),
-            )
+            .set_global_opts(title_opts=opts.TitleOpts(title=title))
     )
     return c
 

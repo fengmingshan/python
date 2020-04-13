@@ -42,7 +42,7 @@ class Mr_summary(db.Model):
     mr_good_rate = db.Column(db.Float)
 
     def __repr__(self):
-        return '<User area: {}, date: {}, is_800: {}, mr_good_rate: {}>'.format(
+        return '<User area: {}, date: {}, static_zone: {}, mr_good_rate: {}>'.format(
             self.area, self.date, self.static_zone, self.mr_good_rate)
 
 # 建立Mr_summary数据库类，用来映射到数据库中的mr_summary表
@@ -67,7 +67,7 @@ class Mr_detail(db.Model):
     mr_good_rate = db.Column(db.Float)
 
     def __repr__(self):
-        return '<User area: {}, date: {}, is_800: {}, avg_rsrp: {}, total: {}, mr_good: {}, mr_good_rate: {}>'.format(
+        return '<User area: {}, date: {}, static_zone: {}, avg_rsrp: {}, total: {}, mr_good: {}, mr_good_rate: {}>'.format(
             self.area, self.date, self.static_zone, self.avg_rsrp, self.total, self.mr_good, self.mr_good_rate)
 db.create_all()
 
@@ -76,3 +76,4 @@ pro_data = db.session.execute(
 pro_data = list(pro_data)
 pro_x_axis = [x[0] for x in pro_data]
 pro_y_data = [x[1] for x in pro_data]
+
