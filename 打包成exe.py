@@ -1,8 +1,10 @@
 #含有pandas库的容易报错，需要加以下参数
-pyinstaller --clean --win-private-assemblies -F MR.py
+pyinstaller --clean --win-private-assemblies -F -win MR.py
+pyinstaller --clean --win-private-assemblies -F -win D:\py2exe\check.py
 pyinstaller --clean --win-private-assemblies -F MR-win.py
 
-pyinstaller --clean --win-private-assemblies -F CQI_LC.py
+pyinstaller --clean -F -w -d d:/py2exe/check.py
+pyinstaller --clean -F -w -i "D:\py2exe\file_merge.ico" d:/py2exe/check.py
 
 pyinstaller -F -c -i GRAPH.ICO Ui_文件编辑器.py
 

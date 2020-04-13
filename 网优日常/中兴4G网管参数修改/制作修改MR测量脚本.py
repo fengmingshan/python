@@ -9,13 +9,16 @@ import os
 from datetime import datetime
 current_date = str(datetime.now()).split('.')[0].split(' ')[0]
 
-path = r'D:\MR报表' + '\\'
-data_path =  r'D:\MR报表\需修改TOP小区' + '\\'
-out_path = r'D:\MR报表\修改脚本' + '\\'
-config_files = [x for x in os.listdir(path) if 'Measurement' in x ]
+path = 'D:/_python小程序/MR报表/'
+os.chdir(path)
+if not os.path.exists('修改脚本'):
+    os.mkdir('修改脚本')
+top_file ='MR_TOP小区.xlsx'
+
+config_files = [x for x in os.listdir('./配置数据') if 'Measurement' in x ]
 df_CELL_info = pd.DataFrame()
 for file in config_files:
-    df_tmp = pd.read_excel(path + file,encoding='utf-8',sheet_name ='EUtranCellMeasurement')
+    df_tmp = pd.read_excel('./配置数据/' + file,encoding='utf-8',sheet_name ='EUtranCellMeasurement')
     df_tmp = df_tmp.drop([0,1,2],axis=0)
     df_tmp = df_tmp[['MOI','SubNetwork','MEID','description']]
     df_tmp['description'] = df_tmp['description'].map(lambda x:x.split('=')[1])
@@ -23,15 +26,10 @@ for file in config_files:
     df_tmp['OMMB'] = file.split('_')[1][0:5]
     df_CELL_info = df_CELL_info.append(df_tmp)
 
-
-top_files = os.listdir(data_path)
-df_top = pd.DataFrame()
-for file in top_files:
-    df_tmp = pd.read_excel(data_path + file,encoding='utf-8')
-    df_top = df_top.append(df_tmp)
-df_top = df_top[['区域','NAME']]
-df_top['eNB'] = df_top['NAME'].map(lambda x:x.split('_')[0])
-df_top['cell'] = df_top['NAME'].map(lambda x:x.split('_')[1])
+df_top = pd.read_excel(top_file,encoding='utf-8')
+df_top = df_top[['cell_name','avg_good_rate']]
+df_top['eNB'] = df_top['cell_name'].map(lambda x:x.split('_')[0])
+df_top['cell'] = df_top['cell_name'].map(lambda x:x.split('_')[1])
 df_top['cell_id'] = df_top['eNB'] + '_' + df_top['cell']
 df_top = pd.merge(df_top,df_CELL_info,how ='left',on = 'cell_id' )
 
