@@ -8,8 +8,13 @@ pyinstaller --clean -F -w -i "D:\py2exe\file_merge.ico" d:/py2exe/check.py
 
 pyinstaller -F -c -i GRAPH.ICO Ui_文件编辑器.py
 
+# 打包时隐含导入所需的包
+pyinstaller --clean --hidden-import PyQt5.sip --hidden-import openpyxl -F -w  d:\py2exe\Ui_文件合并程序.py
+
+# 指定图标文件打包，图标文件只能是.ICO格式
+pyinstaller --clean -F -w -i "d:\py2exe\file_merge.ico" d:\py2exe\check.py
 # =============================================================================
-# 打包pyqt程序运行时报错，添加--hidden-import PyQt5.sip
+# 缺少pyqt库，程序运行时报错，添加--hidden-import PyQt5.sip
 # =============================================================================
 
 # =============================================================================
