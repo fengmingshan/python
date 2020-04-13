@@ -19,7 +19,7 @@ class Mr_summary(db.Model):
     primary_key = db.Column(db.String(255), primary_key=True)
     area = db.Column(db.String(255))
     date_time = db.Column(db.Date)
-    is_800 = db.Column(db.String(10))
+    static_zone = db.Column(db.String(10))
     above105 = db.Column(db.Float)
     between110and105 = db.Column(db.Float)
     between115and110 = db.Column(db.Float)
@@ -30,8 +30,8 @@ class Mr_summary(db.Model):
     mr_good_rate = db.Column(db.Float)
 
     def __repr__(self):
-        return '<User area: {}, date: {}, is_800: {}, mr_good_rate: {}>'.format(
-            self.area, self.date, self.is_800, self.mr_good_rate)
+        return '<User area: {}, date: {}, static_zone: {}, mr_good_rate: {}>'.format(
+            self.area, self.date, self.static_zone, self.mr_good_rate)
 
 # 建立 Mr_detail 数据库类，用来映射到数据库中的 mr_detail 表
 class Mr_detail(db.Model):
@@ -43,7 +43,7 @@ class Mr_detail(db.Model):
     date_time = db.Column(db.Date)
     NAME = db.Column(db.String(255))
     factory = db.Column(db.String(20))
-    is_800 = db.Column(db.String(10))
+    static_zone = db.Column(db.String(10))
     avg_rsrp = db.Column(db.Float)
     above105 = db.Column(db.Integer)
     between110and105 = db.Column(db.Integer)
@@ -55,8 +55,8 @@ class Mr_detail(db.Model):
     mr_good_rate = db.Column(db.Float)
 
     def __repr__(self):
-        return '<User area: {}, date: {}, is_800: {}, avg_rsrp: {}, total: {}, mr_good: {}, mr_good_rate: {}>'.format(
-            self.area, self.date, self.is_800, self.avg_rsrp, self.total, self.mr_good, self.mr_good_rate)
+        return '<User area: {}, date: {}, static_zone: {}, avg_rsrp: {}, total: {}, mr_good: {}, mr_good_rate: {}>'.format(
+            self.area, self.date, self.static_zone, self.avg_rsrp, self.total, self.mr_good, self.mr_good_rate)
 db.create_all()
 
 # def draw_bar():
