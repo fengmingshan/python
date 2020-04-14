@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+	<h1>index</h1>
+    <p>用户:{{ u_name }}的页面</p>
+    {% if  n_range%}
+    {% for num in n_range %}
+    <p>{{ num }}</p>
+    {% endfor %}
+    {% endif %}
+    {{ context }}
+	<p>userneme: {{ context.username }}</p>
+	<p>userneme: {{ context['age'] }}</p>
+	<p>userneme: {{ context.height }}</p>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>query</title>
+</head>
+<body>
+	<h5>query_Database</h5>
+    <p>你查询的是{{ query_date_num }}日的报表</p>
+    {% if  report%}
+    {% for line in report %}
+    <p>{{ line }}</p>
+    {% endfor %}
+    {% endif %}
+</body>
+</html>

@@ -59,15 +59,6 @@ class Mr_detail(db.Model):
             self.area, self.date, self.static_zone, self.avg_rsrp, self.total, self.mr_good, self.mr_good_rate)
 db.create_all()
 
-# def draw_bar():
-#     c = (
-#         Bar()
-#             .add_xaxis(["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"])
-#             .add_yaxis("商家A", [5, 20, 36, 10, 75, 90])
-#             .add_yaxis("商家B", [15, 25, 16, 55, 48, 8])
-#             .set_global_opts(title_opts=opts.TitleOpts(title="柱状图示例", subtitle="A,B商家销售数据对比"))
-#     )
-#     return c
 
 def draw_bar(y_name1,y_data1,x_axis,title):
     c = (
@@ -81,29 +72,118 @@ def draw_bar(y_name1,y_data1,x_axis,title):
     )
     return c
 
-
-def draw_line(x_axis,y_name,y_data):
+def draw_line3(title,x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3):
     c = (
         Line()
             .add_xaxis(xaxis_data=x_axis)
             .add_yaxis(
-            series_name=y_name,
-            y_axis=y_data,
+            series_name=y_name1,
+            y_axis=y_data1,
             symbol="circle",
             symbol_size=10,
             is_symbol_show=True,
             label_opts=opts.LabelOpts(is_show=True),
             linestyle_opts=opts.LineStyleOpts(width=3)
-        )
+            )
+            .add_yaxis(
+            series_name=y_name2,
+            y_axis=y_data2,
+            symbol="circle",
+            symbol_size=10,
+            is_symbol_show=True,
+            label_opts=opts.LabelOpts(is_show=True),
+            linestyle_opts=opts.LineStyleOpts(width=3)
+            )
+            .add_yaxis(
+            series_name=y_name3,
+            y_axis=y_data3,
+            symbol="circle",
+            symbol_size=10,
+            is_symbol_show=True,
+            label_opts=opts.LabelOpts(is_show=True),
+            linestyle_opts=opts.LineStyleOpts(width=3)
+            )
             .set_global_opts(
             tooltip_opts=opts.TooltipOpts(is_show=False),
-            xaxis_opts=opts.AxisOpts(type_="category"),
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                axislabel_opts=opts.LabelOpts(rotate=-30),
+            ),
             yaxis_opts=opts.AxisOpts(
                 type_="value",
                 axistick_opts=opts.AxisTickOpts(is_show=True),
                 splitline_opts=opts.SplitLineOpts(is_show=True),
             ),
-        )
+            title_opts=opts.TitleOpts(title=title),
+            )
+    )
+    return c
+
+def draw_line2(title,x_axis,y_name1,y_data1,y_name2,y_data2):
+    c = (
+        Line()
+            .add_xaxis(xaxis_data=x_axis)
+            .add_yaxis(
+            series_name=y_name1,
+            y_axis=y_data1,
+            symbol="circle",
+            symbol_size=10,
+            is_symbol_show=True,
+            label_opts=opts.LabelOpts(is_show=True),
+            linestyle_opts=opts.LineStyleOpts(width=3)
+            )
+            .add_yaxis(
+            series_name=y_name2,
+            y_axis=y_data2,
+            symbol="circle",
+            symbol_size=10,
+            is_symbol_show=True,
+            label_opts=opts.LabelOpts(is_show=True),
+            linestyle_opts=opts.LineStyleOpts(width=3)
+            )
+            .set_global_opts(
+            tooltip_opts=opts.TooltipOpts(is_show=False),
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                axislabel_opts=opts.LabelOpts(rotate=-30),
+                ),
+            yaxis_opts=opts.AxisOpts(
+                type_="value",
+                axistick_opts=opts.AxisTickOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+                ),
+            title_opts=opts.TitleOpts(title=title),
+            )
+    )
+    return c
+
+
+def draw_line(x_axis,y_name1,y_data1):
+    c = (
+        Line()
+            .add_xaxis(xaxis_data=x_axis)
+            .add_yaxis(
+            series_name=y_name1,
+            y_axis=y_data1,
+            symbol="circle",
+            symbol_size=10,
+            is_symbol_show=True,
+            label_opts=opts.LabelOpts(is_show=True),
+            linestyle_opts=opts.LineStyleOpts(width=3)
+            )
+            .set_global_opts(
+                tooltip_opts=opts.TooltipOpts(is_show=False),
+                xaxis_opts=opts.AxisOpts(
+                    type_="category",
+                    axislabel_opts=opts.LabelOpts(rotate=-30),
+                ),
+                yaxis_opts=opts.AxisOpts(
+                    type_="value",
+                    axistick_opts=opts.AxisTickOpts(is_show=True),
+                    splitline_opts=opts.SplitLineOpts(is_show=True),
+                ),
+                title_opts=opts.TitleOpts(title=title),
+            )
     )
     return c
 
@@ -140,48 +220,34 @@ def show_mr_kpi():
     qj_data = list(qj_data)
     qj_x_axis = [x[0] for x in qj_data]
     qj_y_data = [round(x[1]*100,2) for x in qj_data]
-    qj = draw_line(qj_x_axis, '曲靖全月MR指标', qj_y_data)
-
     qj1800_data = db.session.execute("select date_time,mr_good_rate from mr_summary where area = '曲靖市' and static_zone = '1800M' order by date_time asc")
     qj1800_data = list(qj1800_data)
-    qj1800_x_axis = [x[0] for x in qj1800_data]
     qj1800_y_data = [round(x[1]*100,2) for x in qj1800_data]
-    qj1800 = draw_line(qj1800_x_axis,'曲靖1800M网络MR指标',qj1800_y_data)
-    
     qj800_data = db.session.execute("select date_time,mr_good_rate from mr_summary where area = '曲靖市' and static_zone = '800M' order by date_time asc")
     qj800_data = list(qj800_data)
-    qj800_x_axis = [x[0] for x in qj800_data]
     qj800_y_data = [round(x[1]*100,2) for x in qj800_data]
-    qj800 = draw_line(qj800_x_axis,'曲靖800M网络MR指标',qj800_y_data)
-    
+    qj = draw_line3('曲靖全市两网指标对比',qj_x_axis, '曲靖全月', qj_y_data,'曲靖1800M', qj1800_y_data,'曲靖800M', qj800_y_data)
+
     zte_all_data = db.session.execute("select date_time,mr_good_rate from mr_summary where area = '曲靖市' and static_zone = '中兴' order by date_time asc")
     zte_all_data = list(zte_all_data)
     zte_all_x_axis = [x[0] for x in zte_all_data]
     zte_all_y_data = [round(x[1]*100,2) for x in zte_all_data]
-    zte_all = draw_line(zte_all_x_axis,'中兴全网MR指标',zte_all_y_data)
-    
     zte1800_data = db.session.execute("select date_time,mr_good_rate from mr_summary where area = '曲靖市' and static_zone = '中兴1800M' order by date_time asc")
     zte1800_data = list(zte1800_data)
-    zte1800_x_axis = [x[0] for x in zte1800_data]
     zte1800_y_data = [round(x[1]*100,2) for x in zte1800_data]
-    zte1800 = draw_line(zte1800_x_axis,'中兴1800M网络MR指标',zte1800_y_data)
-    
     zte800_data = db.session.execute("select date_time,mr_good_rate from mr_summary where area = '曲靖市' and static_zone = '中兴800M' order by date_time asc")
     zte800_data = list(zte800_data)
-    zte800_x_axis = [x[0] for x in zte800_data]
     zte800_y_data = [round(x[1]*100,2) for x in zte800_data]
-    zte800 = draw_line(zte800_x_axis,'中兴800M网络MR指标',zte800_y_data)
+    zte = draw_line3('中兴两网指标对比',zte_all_x_axis, '中兴全网MR指标', zte_all_y_data,'中兴1800M', zte1800_y_data,'中兴800M', zte800_y_data)
 
     eric800_data = db.session.execute("select date_time,mr_good_rate from mr_summary where area = '曲靖市' and static_zone = '爱立信800M' order by date_time asc")
     eric800_data = list(eric800_data)
     eric800_x_axis = [x[0] for x in eric800_data]
     eric800_y_data = [round(x[1]*100,2) for x in eric800_data]
-    eric800 = draw_line(eric800_x_axis,'爱立信800M网络MR指标',eric800_y_data)
+    eric_zte = draw_line2('爱立信中兴800M指标对比',eric800_x_axis,'爱立信800M',eric800_y_data,'中兴800M',zte800_y_data)
     return render_template('mr_report.html', pro_options=pro.dump_options(), pro_not800_options=pro_not800.dump_options(),
                            pro_800_options=pro_800.dump_options(), qj_options=qj.dump_options(),
-                           qj1800_options=qj1800.dump_options(), qj800_options=qj800.dump_options(),
-                           zte_all_options=zte_all.dump_options(), zte1800_options=zte1800.dump_options(),
-                           zte800_options=zte800.dump_options(),eric800_options=eric800.dump_options())
+                           zte_options=zte.dump_options(),eric_zte_options=eric_zte.dump_options())
 
 
 if __name__ == "__main__":
