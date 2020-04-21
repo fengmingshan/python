@@ -36,8 +36,7 @@ def index():
 # 传入用户名显示：用户:xxx的页面
 @app.route('/user/<name>')
 def name(name):
-    u_name = name
-    return render_template('user_index.html',u_name = u_name)
+    return render_template('user_index.html',u_name = name)
 
 # 传入一个数字显示一个range
 @app.route('/range/<int:num_range>')

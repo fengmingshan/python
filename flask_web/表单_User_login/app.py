@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Length, Email
@@ -18,12 +18,20 @@ class LoginForm(FlaskForm):
                              validators=[DataRequired(message=u'验证码不能为空')])
     submit = SubmitField(u'登录')
 
-
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        pass
+        return '<h3>Hello, {}!</h3>'.format(request.form['email'])
     return render_template('login.html', form=form)
 
-app.run()
+@app.route('/login', methods=['POST'])
+def user_index():
+    form = LoginForm()
+    if form.validate_on_submit():
+        return '<h3>Hello, {}!</h3>'.format(request.form['email'])
+    return render_template('login.html', form=form)
+
+
+if __name__ == '__main__':
+    app.run()

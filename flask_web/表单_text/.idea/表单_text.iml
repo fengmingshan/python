@@ -12,7 +12,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/../Form_datebase_united\templates" />
+        <option value="$MODULE_DIR$/../表单_text\templates" />
       </list>
     </option>
   </component>

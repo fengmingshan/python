@@ -11,9 +11,9 @@ import numpy as np
 L1800_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,49, 50, 51, 52, 53, 54, 55, 56, 129, 130, 131, 132, 133, 134, 135, 136,177, 178, 179, 180, 181, 182]
 L800_list = [17, 18, 19, 20, 21, 22,145, 146, 147, 148, 149,150]
 
-data_path = 'D:/_小程序/超忙小区分析'
+data_path = 'D:/_python小程序/超忙小区分析/'
 os.chdir(data_path)
-zte_file = '中兴2019-09忙时.csv'
+zte_file = '2020_04_20_16_21_50_718_qj_wxzx_zhatianxing_7599.csv'
 df_zte = pd.read_csv(zte_file ,engine= 'python')
 
 df_zte['空口上行用户面流量（MByte）_1'] = df_zte['空口上行用户面流量（MByte）_1'].map(lambda x:str(x).replace(',',''))

@@ -8,12 +8,11 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
 db = SQLAlchemy(app)
 
-dates = db.session.execute("select distinct date_time from mr_summary where month(date_time)= 4 ")
-dates = list(dates)
-dates = [str(x[0])[5:] for x in dates]
-
 @app.route('/')
 def hello_world():
+    dates = db.session.execute("select distinct date_time from mr_summary where month(date_time)= 4 ")
+    dates = list(dates)
+    dates = [str(x[0])[5:] for x in dates]
     return render_template('index.html',dates = dates)
 
 if __name__ == '__main__':

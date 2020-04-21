@@ -30,6 +30,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.general" />
   </component>
   <component name="RunManager">
@@ -60,6 +61,10 @@
       <option name="presentableId" value="Default" />
       <updated>1586826570814</updated>
       <workItem from="1586826573347" duration="2043000" />
+      <workItem from="1587113362930" duration="117000" />
+      <workItem from="1587113500085" duration="16000" />
+      <workItem from="1587113606933" duration="338000" />
+      <workItem from="1587171460613" duration="9000" />
     </task>
     <servers />
   </component>
@@ -67,24 +72,24 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1322" height="174" key="GridCell.Tab.0.bottom" timestamp="1586828747416">
+    <state width="1322" height="174" key="GridCell.Tab.0.bottom" timestamp="1587113944793">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1586828747416" />
-    <state width="1322" height="174" key="GridCell.Tab.0.center" timestamp="1586828747416">
+    <state width="1322" height="174" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1587113944793" />
+    <state width="1322" height="174" key="GridCell.Tab.0.center" timestamp="1587113944793">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1586828747416" />
-    <state width="1322" height="174" key="GridCell.Tab.0.left" timestamp="1586828747416">
+    <state width="1322" height="174" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1587113944793" />
+    <state width="1322" height="174" key="GridCell.Tab.0.left" timestamp="1587113944793">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1586828747416" />
-    <state width="1322" height="174" key="GridCell.Tab.0.right" timestamp="1586828747416">
+    <state width="1322" height="174" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1587113944793" />
+    <state width="1322" height="174" key="GridCell.Tab.0.right" timestamp="1587113944793">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1322" height="174" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1586828747416" />
+    <state width="1322" height="174" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1587113944793" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/for$for.coverage" NAME="在网页中使用for循环 Coverage Results" MODIFIED="1586828674239" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/for$for.coverage" NAME="在网页中使用for循环 Coverage Results" MODIFIED="1587113694311" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
