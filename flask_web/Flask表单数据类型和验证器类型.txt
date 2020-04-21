@@ -7,7 +7,7 @@ HiddenField	隐藏域
 DateField	日期
 DateTimeField	日期时间
 IntegerField	整形
-FloatFIeld	浮点型
+FloatField	浮点型
 RadioField	单选字段
 SelectField	下拉
 FileField	文件上传字段

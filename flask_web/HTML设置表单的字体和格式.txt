@@ -18,7 +18,7 @@ color:：设置颜色
 {{ form.text}}
 <style type="text/css">
 .text{
-    border:2'
+    border:2;
     font-size: 40px;
     color: black;
 }
