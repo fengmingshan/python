@@ -22,22 +22,22 @@
         <p class="table">
             {{ form.serial_number.label }}&emsp;
             {{ form.serial_number}}
-            {% if form.errors%}
-            <span style="color:#ff1212;">{{ form.errors.serial_number.0 }}</span>
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.serial_numberu.0 }}</span>
             {% endif %}
         </p>
         <p class="table">
             {{ form.content.label }}&emsp;
             {{ form.content}}
-            {% if form.errors%}
-            <span style="color:#ff1212;">{{ form.errors.content.0 }}</span>
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.content.0 }}</span>
             {% endif %}
         </p>
         <p class="table">
             {{ form.result.label }}&emsp;
             {{ form.result}}
-            {% if form.errors%}
-            <span style="color:#ff1212;">{{ form.errors.result.0 }}</span>
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.result.0 }}</span>
             {% endif %}
         </p>
          <p class="table">

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投诉工单数据入库</title>
+</head>
+<body>
+    <h1>投诉工单数据入库</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.serial_number.label }}&emsp;
+            {{ form.serial_number}}
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.serial_number.0 }}</span>
+            {% endif %}
+        </p>
+        <p>
+            {{ form.content.label }}&emsp;
+            {{ form.content}}
+        </p>
+        <p>
+            {{ form.result.label }}&emsp;
+            {{ form.result}}
+        </p>
+        <p>
+            {{ form.country.label }}&emsp;
+            {{ form.country}}&emsp;&emsp;
+        </p>
+        <p>
+            {{ form.submit() }}&emsp;
+        </p>
+    </form>
+</body>
+</html>

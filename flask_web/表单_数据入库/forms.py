@@ -20,9 +20,9 @@ class Complaint_form(FlaskForm):
     village = StringField('自然村/小区',
                           render_kw={'class': 'info', 'text-body': '', 'cols': 10, 'rows': 1,
                                      'placeholder': u'投诉工单关联的自然村或小区。'})
-    lon = FloatField('自然村经度',
+    lon = StringField('自然村经度',
                      render_kw={'class': 'info', 'text-body': '', 'cols': 10, 'rows': 1, 'placeholder': u'103.xxxx'})
-    lat = FloatField('自然村纬度',
+    lat = StringField('自然村纬度',
                      render_kw={'class': 'info', 'text-body': '', 'cols': 10, 'rows': 1, 'placeholder': u'25.xxxx'})
     bts_id = StringField('基站代码',
                          render_kw={'class': 'info', 'text-body': '', 'rows': 1, 'placeholder': u'投诉工单关联基站代码。'})
