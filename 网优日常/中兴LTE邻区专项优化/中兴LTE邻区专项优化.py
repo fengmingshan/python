@@ -64,15 +64,15 @@ dict_HandInSucc = df['切换入成功次数'].to_dict()
 df.reset_index(inplace=True)
 
 
-#df_1800 = pd.read_excel('./曲靖电信LTE1.8G工参2020420.xls',sheet_name = 'CXT')
+#df_1800 = pd.read_excel('./曲靖电信LTE1.8G工参20200421.xls',sheet_name = 'CXT')
 #df_1800.drop(['是否边界'],axis = 1, inplace = True)
-#df_800 = pd.read_excel('./曲靖电信LTE800M工参2020420.xls',sheet_name = 'CXT')
+#df_800 = pd.read_excel('./曲靖电信LTE800M工参20200421.xls',sheet_name = 'CXT')
 #df_800.drop(['是否共C网', '是非边界', '逻辑根'],axis = 1, inplace = True)
 #df_bts = df_1800.append(df_800)
 #df_bts['cell_index'] = df_bts['ENODEBID'].map(str) + '_' +df_bts['CELLID'].map(str)
 #df_bts.set_index('cell_index',inplace = True)
 #name_dict = df_bts['CELLNAME'].to_dict()
-# with open('name_dict.txt','w') as f:
+#with open('name_dict.txt','w') as f:
 #    f.write(str(name_dict))
 
 with open('name_dict.txt', 'r') as f:
@@ -90,7 +90,6 @@ df_cur_config = pd.read_excel('./全网已配置邻区_简.xlsx', enging='python
 df_cur_config['Scell'] = df_cur_config['MEID'].map(str) + '_' + df_cur_config['CellId'].map(str)
 df_cur_config['Ncell'] = df_cur_config['eNBId'].map(str) + '_' + df_cur_config['NCellId'].map(str)
 df_cur_config['relations'] = df_cur_config['Scell'] + '-' + df_cur_config['Ncell']
-
 df_cur_config = df_cur_config[df_cur_config['relations'].isin(df['relations'])]
 df_cur_config['Scell_name'] = df_cur_config['Scell'].map(name_dict)
 df_cur_config['Scell_lon'] = df_cur_config['Scell'].map(lambda x: lonlat_dict.get(x, (0, 0))[1])
@@ -98,6 +97,8 @@ df_cur_config['Scell_lat'] = df_cur_config['Scell'].map(lambda x: lonlat_dict.ge
 df_cur_config['Ncell_name'] = df_cur_config['Ncell'].map(name_dict)
 df_cur_config['Ncell_lon'] = df_cur_config['Ncell'].map(lambda x: lonlat_dict.get(x, (0, 0))[1])
 df_cur_config['Ncell_lat'] = df_cur_config['Ncell'].map(lambda x: lonlat_dict.get(x, (0, 0))[1])
+df_miss_info = pd.DataFrame({'cell_index':df_cur_config['Scell'][pd.isnull(df_cur_config['Scell_name'])].unique()})
+
 df_cur_config = df_cur_config[df_cur_config['Scell_lon'] != 0]
 df_cur_config['distance'] = df_cur_config.apply(
     lambda x: calc_Distance(
@@ -191,45 +192,57 @@ df_zero_handover = df_zero_handover[[
 df_neighbor_all = df_cur_config.append(df_not_configured)
 df_neighbor_all.reset_index(inplace =True, drop = True)
 df_neighbor_all.sort_values(by = 'HandReq',ascending = False, inplace =True)
+
 add_list_same = []
-drop_list_same = []
-need2add_list_same = []
 add_list_diff = []
+drop_list_same = []
 drop_list_diff = []
+need2add_list_same = []
 need2add_list_diff = []
-
 for cell in tqdm(set(df_neighbor_all['Scell'])):
-    cell = '729915_49'
-    df_cell_old = df_cur_config[df_cur_config['Scell']==cell]
-    df_cell_new = df_neighbor_all[df_neighbor_all['Scell']==cell]
-    df_old_same = df_cur_config[(df_cur_config['Scell']==cell)&(df_cur_config['neib_type']=='same_frq')]
-    if len(df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')])>=60:
-        df_new_same = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')].iloc[:60,:]
-        df_need2add_same = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')].iloc[60:,:]
+    df_cell_old_same = df_cur_config[(df_cur_config['Scell']==cell)&(df_cur_config['neib_type']=='same_frq')]
+    df_cell_new_same = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')]
+    df_cell_old_diff = df_cur_config[(df_cur_config['Scell']==cell)&(df_cur_config['neib_type']=='diff_frq')]
+    df_cell_new_diff = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='diff_frq')]
+    if len(df_cell_new_same)>=60:
+        df_new_same = df_cell_new_same.iloc[:60,:]
+        df_need2add_same = df_cell_new_same.iloc[60:,:]
     else:
-        df_new_same = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')]
+        df_new_same = df_cell_new_same
         df_need2add_same = pd.DataFrame(columns = df_neighbor_all.columns)
-    df_add_same = df_new_same[~df_new_same['relations'].isin(df_old_same['relations'])]
-    df_drop_same = df_old_same[~df_old_same['relations'].isin(df_new_same['relations'])]
-
-    df_old_diff = df_cur_config[(df_cur_config['Scell']==cell)&(df_cur_config['neib_type']=='diff_frq')]
-    if len(df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')])>=60:
-        df_new_diff = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')].iloc[:60,:]
-        df_need2add_diff = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')].iloc[60:,:]
+    df_add_same = df_new_same[~df_new_same['relations'].isin(df_cell_old_same['relations'])]
+    df_drop_same = df_cell_old_same[~df_cell_old_same['relations'].isin(df_new_same['relations'])]
+    if len(df_cell_new_diff)>=60:
+        df_new_diff = df_cell_new_diff.iloc[:60,:]
+        df_need2add_diff = df_cell_new_diff.iloc[60:,:]
     else:
-        df_new_diff = df_neighbor_all[df_neighbor_all['Scell']==cell]
-        df_need2add_same = pd.DataFrame(columns = df_neighbor_all.columns)
-    df_add_diff = df_new_diff[~df_new_diff['relations'].isin(df_old_diff['relations'])]
-    df_drop_diff = df_old_diff[~df_old_diff['relations'].isin(df_new_diff['relations'])]
+        df_new_diff = df_cell_new_diff
+        df_need2add_diff = pd.DataFrame(columns = df_neighbor_all.columns)
+    df_add_diff = df_new_diff[~df_new_diff['relations'].isin(df_cell_old_diff['relations'])]
+    df_drop_diff = df_cell_old_diff[~df_cell_old_diff['relations'].isin(df_new_diff['relations'])]
 
-    add_list.append(df_add)
-    drop_list.append(df_drop)
-    need2add_list.append(df_need2add)
+    add_list_same.append(df_add_same)
+    add_list_diff.append(df_add_diff)
+    drop_list_same.append(df_drop_same)
+    drop_list_diff.append(df_drop_diff)
+    need2add_list_same.append(df_need2add_same)
+    need2add_list_diff.append(df_need2add_diff)
+
+df_add = pd.concat(add_list_same + add_list_diff, axis =0)
+df_drop = pd.concat(drop_list_same + drop_list_diff, axis =0)
+df_need2add = pd.concat(need2add_list_same + need2add_list_diff, axis =0)
+
+with pd.ExcelWriter('./结果输出/待添加邻区.xlsx') as f:
+    df_add.to_excel(f, '添加邻区', index=False)
+
+with pd.ExcelWriter('./结果输出/待删除邻区.xlsx') as f:
+    df_drop.to_excel(f, '添加邻区', index=False)
+
+with pd.ExcelWriter('./结果输出/邻区列表满无法添加的邻区.xlsx') as f:
+    df_need2add.to_excel(f, '邻区列表满无法添加的邻区', index=False)
+
+with pd.ExcelWriter('./结果输出/网优工参无信息.xlsx') as f:
+    df_miss_info.to_excel(f, '网优工参无信息', index=False)
 
 with pd.ExcelWriter('./结果输出/已配置无切换邻区对.xlsx') as f:
     df_zero_handover.to_excel(f, '已配置无切换邻区对', index=False)
-
-with pd.ExcelWriter('./结果输出/超出60个需删除邻区.xlsx') as f:
-    df_not_configured.to_excel(f, 'L1800M', index=False)
-    df_not_configured.to_excel(f, 'L800M', index=False)
-
