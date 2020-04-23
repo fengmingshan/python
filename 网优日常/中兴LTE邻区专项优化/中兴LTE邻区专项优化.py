@@ -112,20 +112,20 @@ df_cur_config['HandOutSucc'] = df_cur_config['relations'].map(dict_HandOutSucc)
 df_cur_config['HandInSucc'] = df_cur_config['relations'].map(dict_HandInSucc)
 df_cur_config['neib_type'] = df_cur_config['relations'].map(lambda x:judge_neighbor_type(x))
 df_cur_config = df_cur_config[[
-    'Scell',
-    'Ncell',
-    'relations',
     'Scell_name',
-    'Scell_lon',
-    'Scell_lat',
     'Ncell_name',
-    'Ncell_lon',
-    'Ncell_lat',
     'distance',
     'HandReq',
     'HandOutSucc',
     'HandInSucc',
-    'neib_type']]
+    'neib_type',
+    'Scell',
+    'Ncell',
+    'relations',
+    'Scell_lon',
+    'Scell_lat',
+    'Ncell_lon',
+    'Ncell_lat']]
 
 
 df_not_configured = df[~df['relations'].isin(df_cur_config['relations'])]
@@ -157,37 +157,37 @@ df_not_configured['HandReq'] = df_not_configured['relations'].map(dict_HandReq)
 df_not_configured['HandOutSucc'] = df_not_configured['relations'].map(dict_HandOutSucc)
 df_not_configured['HandInSucc'] = df_not_configured['relations'].map(dict_HandInSucc)
 df_not_configured = df_not_configured[[
-    'Scell',
-    'Ncell',
-    'relations',
     'Scell_name',
-    'Scell_lon',
-    'Scell_lat',
     'Ncell_name',
-    'Ncell_lon',
-    'Ncell_lat',
     'distance',
     'HandReq',
     'HandOutSucc',
     'HandInSucc',
-    'neib_type']]
+    'neib_type',
+    'Scell',
+    'Ncell',
+    'relations',
+    'Scell_lon',
+    'Scell_lat',
+    'Ncell_lon',
+    'Ncell_lat']]
 
-df_zero_handover = df_cur_config[df_cur_config['HandReq'] ==0]
+df_zero_handover = df_cur_config[(df_cur_config['HandReq'] ==0)&(df_cur_config['HandOutSucc'] ==0)]
 df_zero_handover = df_zero_handover[[
-    'Scell',
-    'Ncell',
-    'relations',
     'Scell_name',
-    'Scell_lon',
-    'Scell_lat',
     'Ncell_name',
-    'Ncell_lon',
-    'Ncell_lat',
     'distance',
     'HandReq',
     'HandOutSucc',
     'HandInSucc',
-    'neib_type']]
+    'neib_type',
+    'Scell',
+    'Ncell',
+    'relations',
+    'Scell_lon',
+    'Scell_lat',
+    'Ncell_lon',
+    'Ncell_lat']]
 
 df_neighbor_all = df_cur_config.append(df_not_configured)
 df_neighbor_all.reset_index(inplace =True, drop = True)
