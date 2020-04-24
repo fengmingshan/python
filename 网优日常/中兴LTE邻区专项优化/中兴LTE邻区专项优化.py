@@ -172,7 +172,7 @@ df_not_configured = df_not_configured[[
     'Ncell_lon',
     'Ncell_lat']]
 
-df_zero_handover = df_cur_config[(df_cur_config['HandReq'] ==0)&(df_cur_config['HandOutSucc'] ==0)]
+df_zero_handover = df_cur_config[df_cur_config['HandOutSucc'] <10]
 df_zero_handover = df_zero_handover[[
     'Scell_name',
     'Ncell_name',
@@ -190,8 +190,9 @@ df_zero_handover = df_zero_handover[[
     'Ncell_lat']]
 
 df_neighbor_all = df_cur_config.append(df_not_configured)
+df_neighbor_all[df_not_configured['HandOutSucc'] >=10]
 df_neighbor_all.reset_index(inplace =True, drop = True)
-df_neighbor_all.sort_values(by = 'HandReq',ascending = False, inplace =True)
+df_neighbor_all.sort_values(by = 'HandOutSucc',ascending = False, inplace =True)
 
 add_list_same = []
 add_list_diff = []
@@ -233,16 +234,16 @@ df_drop = pd.concat(drop_list_same + drop_list_diff, axis =0)
 df_need2add = pd.concat(need2add_list_same + need2add_list_diff, axis =0)
 
 with pd.ExcelWriter('./结果输出/待添加邻区.xlsx') as f:
-    df_add.to_excel(f, '添加邻区', index=False)
+    df_add.to_excel(f, '待添加邻区', index=False)
 
-with pd.ExcelWriter('./结果输出/待删除邻区.xlsx') as f:
-    df_drop.to_excel(f, '添加邻区', index=False)
+with pd.ExcelWriter('./结果输出/有切换需瘦身邻区对.xlsx') as f:
+    df_drop.to_excel(f, '有切换需瘦身邻区对', index=False)
 
-with pd.ExcelWriter('./结果输出/邻区列表满无法添加的邻区.xlsx') as f:
-    df_need2add.to_excel(f, '邻区列表满无法添加的邻区', index=False)
+with pd.ExcelWriter('./结果输出/邻区表满无法添加的邻区.xlsx') as f:
+    df_need2add.to_excel(f, '邻区表满无法添加的邻区', index=False)
 
-with pd.ExcelWriter('./结果输出/网优工参无信息.xlsx') as f:
+with pd.ExcelWriter('./结果输出/网优工参基础信息缺失.xlsx') as f:
     df_miss_info.to_excel(f, '网优工参无信息', index=False)
 
-with pd.ExcelWriter('./结果输出/已配置无切换邻区对.xlsx') as f:
-    df_zero_handover.to_excel(f, '已配置无切换邻区对', index=False)
+with pd.ExcelWriter('./结果输出/无切换可删除邻区对.xlsx') as f:
+    df_zero_handover.to_excel(f, '无切换可删除邻区对', index=False)

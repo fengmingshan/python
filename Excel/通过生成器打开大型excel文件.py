@@ -16,11 +16,6 @@ def read_csv_partly(file):
         yield df_tmp
 
 
-def split_to_mutilines(df,col):
-    df_tmp = df[col].str.split('$', expand=True).stack(
-    ).reset_index(level=1, drop=True).rename(col)
-    return df_tmp
-
 work_path = 'D:/_python/python/网优日常/修改套餐失效日期脚本'
 os.chdir(work_path)
 if not os.path.exists('结果输出'):
