@@ -6,7 +6,7 @@ Created on Thu Apr 23 15:33:05 2020
 """
 
 # 添加邻接小区
-command1 = r'CREATE:MOC="ExternalEUtranCellFDD",\
+add_ExternalCell_cmd = r'CREATE:MOC="ExternalEUtranCellFDD",\
 MOI="SubNetwork=530306,MEID=730593,\
 ENBFunctionFDD=730593,\
 ExternalEUtranCellFDD=11",\
@@ -39,13 +39,14 @@ freqBandPriInd=0",\
 EXTENDS="";'
 
 # 添加邻接关系
-command2 = r'CREATE:MOC="EUtranRelation",\
+add_EUtranRelation_cmd = r'CREATE:MOC="EUtranRelation",\
 MOI="SubNetwork=530306,\
 MEID=730593,\
 ENBFunctionFDD=730593,\
 EUtranCellFDD=1,\
 EUtranRelation=14",\
-ATTRIBUTES="refEUtranCellFDD=null,\
+ATTRIBUTES="\
+refExternalEUtranCellFDD=\"SubNetwork={subnet},MEID={meid},ConfigSet=0,ENBFunctionFDD={end2},ExternalEUtranCellFDD={extcell}\",\
 coperType=0,\
 isRemoveAllowed=1,\
 switchonTimeWindow=1,\
@@ -70,11 +71,6 @@ cellIndivOffset=15,\
 refExternalEUtranCellTDD=null,\
 coperModSwch=0,\
 supportMRO=1,\
-refExternalEUtranCellFDD=\"SubNetwork=530306,\
-MEID=730593,\
-ConfigSet=0,\
-ENBFunctionFDD=730593,\
-ExternalEUtranCellFDD=0\",\
 hSpeedRailCellInd=0,\
 noSupMobilitySwch=0,\
 numRRCCntNumCov=100,\
