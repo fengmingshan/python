@@ -10,11 +10,14 @@ from ftplib import FTP
 import time
 import tarfile
 
+
 #连接ftp
 def ftpconnect(host,port, username, password):
     ftp = FTP()
+    ftp.encoding = 'gb2312'
+    ftp.set_pasv(False)
     # 打开调试级别2，显示详细信息
-    # ftp.set_debuglevel(2)
+    ftp.set_debuglevel(2)
     ftp.connect(host, port)
     ftp.login(username, password)
     return ftp
@@ -39,6 +42,21 @@ def uploadfile(ftp, remotepath, localpath):
     fp.close()
 
 
+#ftp = ftpconnect("218.63.75.43", 2121,"qjwx", "Qjwx123456!")
+#print(ftp.getwelcome())# 打印出欢迎信息
+## 获取当前路径
+#pwd_path = ftp.pwd()
+#print("FTP当前路径:", pwd_path)
+## 设置FTP当前操作的路径
+#ftp.dir()
+#des_folder = '/jupyter备份/'
+#ftp.cwd(des_folder)
+## 返回一个文件名列表
+#filename_list = ftp.nlst()
+#print(filename_list)
+#downloadfile(ftp, "/jupyter备份/ipython_config.py", r"d:\Test\ipython_config.py")
+
+
 if __name__ == "__main__":
     ftp = ftpconnect("135.32.1.36", 2121,"ftpuser", "ftpoptr")
     print(ftp.getwelcome())# 打印出欢迎信息
@@ -46,7 +64,10 @@ if __name__ == "__main__":
     pwd_path = ftp.pwd()
     print("FTP当前路径:", pwd_path)
     # 设置FTP当前操作的路径
-    ftp.cwd('/MR报表/日报表')
+    ftp.dir()
+    ftp.nlst()
+    des_folder = '/MR报表/日报表'
+    ftp.cwd(des_folder)
     # 返回一个文件名列表
     filename_list = ftp.nlst()
     print(filename_list)

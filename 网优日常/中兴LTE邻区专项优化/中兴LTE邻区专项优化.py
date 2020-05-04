@@ -11,11 +11,12 @@ from tqdm import tqdm
 from math import sin, cos, asin, sqrt, radians
 
 
-work_path = 'D:/2020年工作/2020年4月4G邻区专项优化'
+work_path = 'D:/2020年工作/2020年4月中兴LTE邻区专项优化'
 if not os.path.exists('./结果输出'):
     os.mkdir('./结果输出')
 os.chdir(work_path)
 
+min_hand_num = 3
 
 def calc_Distance(lon1, lat1, lon2, lat2):
 
@@ -64,16 +65,16 @@ dict_HandInSucc = df['切换入成功次数'].to_dict()
 df.reset_index(inplace=True)
 
 
-#df_1800 = pd.read_excel('./曲靖电信LTE1.8G工参20200421.xls',sheet_name = 'CXT')
-#df_1800.drop(['是否边界'],axis = 1, inplace = True)
-#df_800 = pd.read_excel('./曲靖电信LTE800M工参20200421.xls',sheet_name = 'CXT')
-#df_800.drop(['是否共C网', '是非边界', '逻辑根'],axis = 1, inplace = True)
-#df_bts = df_1800.append(df_800)
-#df_bts['cell_index'] = df_bts['ENODEBID'].map(str) + '_' +df_bts['CELLID'].map(str)
-#df_bts.set_index('cell_index',inplace = True)
-#name_dict = df_bts['CELLNAME'].to_dict()
-#with open('name_dict.txt','w') as f:
-#    f.write(str(name_dict))
+df_1800 = pd.read_excel('./曲靖电信LTE1.8G工参20200421.xls',sheet_name = 'CXT')
+df_1800.drop(['是否边界'],axis = 1, inplace = True)
+df_800 = pd.read_excel('./曲靖电信LTE800M工参20200421.xls',sheet_name = 'CXT')
+df_800.drop(['是否共C网', '是非边界', '逻辑根'],axis = 1, inplace = True)
+df_bts = df_1800.append(df_800)
+df_bts['cell_index'] = df_bts['ENODEBID'].map(str) + '_' +df_bts['CELLID'].map(str)
+df_bts.set_index('cell_index',inplace = True)
+name_dict = df_bts['CELLNAME'].to_dict()
+with open('name_dict.txt','w') as f:
+    f.write(str(name_dict))
 
 with open('name_dict.txt', 'r') as f:
     name_dict = eval(f.read())
@@ -172,7 +173,7 @@ df_not_configured = df_not_configured[[
     'Ncell_lon',
     'Ncell_lat']]
 
-df_zero_handover = df_cur_config[df_cur_config['HandOutSucc'] <10]
+df_zero_handover = df_cur_config[df_cur_config['HandOutSucc'] <min_hand_num]
 df_zero_handover = df_zero_handover[[
     'Scell_name',
     'Ncell_name',
@@ -190,60 +191,38 @@ df_zero_handover = df_zero_handover[[
     'Ncell_lat']]
 
 df_neighbor_all = df_cur_config.append(df_not_configured)
-df_neighbor_all[df_not_configured['HandOutSucc'] >=10]
+with open('./结果输出/统计信息全部邻区.csv','w',encoding = 'utf-8', newline = '') as f:
+    df_neighbor_all.to_csv(f, index=False)
+
+
+df_neighbor_all = df_neighbor_all[df_neighbor_all['HandOutSucc'] >=min_hand_num]
 df_neighbor_all.reset_index(inplace =True, drop = True)
 df_neighbor_all.sort_values(by = 'HandOutSucc',ascending = False, inplace =True)
 
-add_list_same = []
-add_list_diff = []
-drop_list_same = []
-drop_list_diff = []
-need2add_list_same = []
-need2add_list_diff = []
-for cell in tqdm(set(df_neighbor_all['Scell'])):
-    df_cell_old_same = df_cur_config[(df_cur_config['Scell']==cell)&(df_cur_config['neib_type']=='same_frq')]
-    df_cell_new_same = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='same_frq')]
-    df_cell_old_diff = df_cur_config[(df_cur_config['Scell']==cell)&(df_cur_config['neib_type']=='diff_frq')]
-    df_cell_new_diff = df_neighbor_all[(df_neighbor_all['Scell']==cell)&(df_neighbor_all['neib_type']=='diff_frq')]
-    if len(df_cell_new_same)>=60:
-        df_new_same = df_cell_new_same.iloc[:60,:]
-        df_need2add_same = df_cell_new_same.iloc[60:,:]
-    else:
-        df_new_same = df_cell_new_same
-        df_need2add_same = pd.DataFrame(columns = df_neighbor_all.columns)
-    df_add_same = df_new_same[~df_new_same['relations'].isin(df_cell_old_same['relations'])]
-    df_drop_same = df_cell_old_same[~df_cell_old_same['relations'].isin(df_new_same['relations'])]
-    if len(df_cell_new_diff)>=60:
-        df_new_diff = df_cell_new_diff.iloc[:60,:]
-        df_need2add_diff = df_cell_new_diff.iloc[60:,:]
-    else:
-        df_new_diff = df_cell_new_diff
-        df_need2add_diff = pd.DataFrame(columns = df_neighbor_all.columns)
-    df_add_diff = df_new_diff[~df_new_diff['relations'].isin(df_cell_old_diff['relations'])]
-    df_drop_diff = df_cell_old_diff[~df_cell_old_diff['relations'].isin(df_new_diff['relations'])]
+df_neighbor_same = df_neighbor_all[df_neighbor_all['neib_type'] =='same_frq']
+df_neighbor_same = df_neighbor_same.groupby('Scell',as_index=False).head(60)
 
-    add_list_same.append(df_add_same)
-    add_list_diff.append(df_add_diff)
-    drop_list_same.append(df_drop_same)
-    drop_list_diff.append(df_drop_diff)
-    need2add_list_same.append(df_need2add_same)
-    need2add_list_diff.append(df_need2add_diff)
+df_neighbor_diff = df_neighbor_all[df_neighbor_all['neib_type'] =='diff_frq']
+df_neighbor_diff = df_neighbor_diff.groupby('Scell',as_index=False).head(60)
 
-df_add = pd.concat(add_list_same + add_list_diff, axis =0)
-df_drop = pd.concat(drop_list_same + drop_list_diff, axis =0)
-df_need2add = pd.concat(need2add_list_same + need2add_list_diff, axis =0)
+df_add = df_not_configured[(df_not_configured['relations'].isin(df_neighbor_same['relations']))|
+                               (df_not_configured['relations'].isin(df_neighbor_diff['relations']))]
 
-with pd.ExcelWriter('./结果输出/待添加邻区.xlsx') as f:
-    df_add.to_excel(f, '待添加邻区', index=False)
+df_deltel = df_cur_config[~(df_cur_config['relations'].isin(df_neighbor_same['relations']))&
+                               ~(df_cur_config['relations'].isin(df_neighbor_diff['relations']))]
 
-with pd.ExcelWriter('./结果输出/有切换需瘦身邻区对.xlsx') as f:
-    df_drop.to_excel(f, '有切换需瘦身邻区对', index=False)
+df_need2addd = df_neighbor_all[~(df_neighbor_all['relations'].isin(df_neighbor_same['relations']))&
+                               ~(df_neighbor_all['relations'].isin(df_neighbor_diff['relations']))]
 
-with pd.ExcelWriter('./结果输出/邻区表满无法添加的邻区.xlsx') as f:
-    df_need2add.to_excel(f, '邻区表满无法添加的邻区', index=False)
 
-with pd.ExcelWriter('./结果输出/网优工参基础信息缺失.xlsx') as f:
-    df_miss_info.to_excel(f, '网优工参无信息', index=False)
+with open('./结果输出/添加邻区.csv','w',newline = '') as f:
+    df_add.to_csv(f, index=False)
 
-with pd.ExcelWriter('./结果输出/无切换可删除邻区对.xlsx') as f:
-    df_zero_handover.to_excel(f, '无切换可删除邻区对', index=False)
+with open('./结果输出/邻区表满无法添加的邻区.csv','w',newline = '') as f:
+    df_need2addd.to_csv(f, index=False)
+
+with open('./结果输出/网优工参基础信息缺失.csv','w',newline = '') as f:
+    df_miss_info.to_csv(f, index=False)
+
+with open('./结果输出/删除邻区.csv','w',newline = '') as f:
+    df_deltel.to_csv(f, index=False)
