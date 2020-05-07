@@ -13,7 +13,6 @@ work_path = 'D:/_python小程序/投诉清单添加区县'
 os.chdir(work_path)
 list_df = [pd.read_excel(file,header =2) for file in os.listdir('./')]
 df_all = pd.concat(list_df,axis = 0)
-df_all.columns
 df_all['区县'] = ''
 def country(x):
     if '麒麟' in x:

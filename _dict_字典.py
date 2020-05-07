@@ -15,9 +15,9 @@ print ("dict2['Age']: ", dict2['Age'])
 dict2['Age']
 dict2['Age'] = 10  #更新元素
 dict2['school']='菜鸟教程'#增加元素
-print ("dict2['age']: ", dict2['age'])
+print ("dict2['Age']: ", dict2['Age'])
 print ("dict2['school']: ", dict2['school'])
-del dict2['age']
+del dict2['Age']
 dict.clear()  #清除键值对，保留字典
 del dict2   #删除整个字典
 
@@ -40,12 +40,18 @@ for i in d.keys():
     print(i)
 
 # 通过 Dataframe 创建，index 做为key，columns的值做为value
-df_dict = df1.to_dict()['columns']
-
+df_dict = df1['columns'].to_dict()
 df_dict = df1.to_dict()
 
 
+# 将字典保存到txt文件：
+with open('dict3.txt','w') as f:
+    f.write(str(dict3))
+# 从txt文件读取字典：
+with open('dict3.txt', 'r') as f:
+    dict3 = eval(f.read())
 
+dict3
 
 
 # =============================================================================

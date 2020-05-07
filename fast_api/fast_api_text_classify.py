@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Apr 18 23:59:24 2020
+Created on Wed May  6 23:07:03 2020
 
 @author: Administrator
 """
 
+from fastapi import FastAPI
 import os
 import jieba
 import re
@@ -13,6 +14,9 @@ from sklearn.externals import joblib
 import gensim
 from keras.models import load_model
 from keras.preprocessing import sequence
+
+app = FastAPI()
+
 
 work_path = 'D:/2020年工作/2020年工单智能化项目/'
 os.chdir(work_path)
@@ -133,15 +137,9 @@ msg3 = '''
 msg3_class = 54
 
 
-y_pred1 = pred_class(msg1)
-y_pred2 = pred_class(msg2)
-y_pred3 = pred_class(msg3)
 
-for cla,y in  zip([msg1_class,msg2_class,msg3_class],[y_pred1,y_pred2,y_pred3]):
-    print(
-        'msg1 class is : {cla}, msg1 prediction is : {pred}'.format(
-            cla=cla,
-            pred=y))
-
-
-
+@app.get("/classify")
+async def read_msg(content: str, clas:int = None):
+    y_pred = pred_class(content)
+    class_text = label_dict.get(y_pred)
+    return {"pred": y_pred, "text": class_text, "class": clas}
