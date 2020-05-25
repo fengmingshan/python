@@ -1,70 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="590c03b9-518c-4a40-9d1c-bfb331e789a6" name="默认更改列表" comment="" />
+    <list default="true" id="5010a659-f938-4ddd-b810-30c6ccc573ab" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DatabaseView">
-    <option name="SHOW_INTERMEDIATE" value="true" />
-    <option name="GROUP_DATA_SOURCES" value="true" />
-    <option name="GROUP_SCHEMA" value="true" />
-    <option name="GROUP_CONTENTS" value="false" />
-    <option name="SORT_POSITIONED" value="false" />
-    <option name="SHOW_EMPTY_GROUPS" value="false" />
-    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
-    <option name="HIDDEN_KINDS">
-      <set />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
     </option>
-    <expand>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="mr_report@218.63.75.44" type="feb32156:DbDataSourceImpl" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="mr_report@218.63.75.44" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="mr_report@218.63.75.44" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="mr_report: schema" type="76f4a085:MysqlImplModel$Schema" />
-      </path>
-    </expand>
-    <select />
-  </component>
-  <component name="FavoritesManager">
-    <favorites_list name="KPI_report" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="ProjectId" id="1aHkU21v9WAbXUDCVA6vvJ3mUpz" />
+  <component name="JupyterTrust" id="9eedadaa-355a-4c36-9fb4-45f82b960938" />
+  <component name="ProjectId" id="1bvBvEPDwZHywhQbsmTYhG0ABLx" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
-    <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DatabaseDriversLRU" value="mysql" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-  </component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\_python\python\flask_web\KPI_report\static" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\_python\python\flask_web\KPI_report\templates" />
-      <recent name="D:\_python\python\flask_web\KPI_report\static" />
-    </key>
   </component>
   <component name="RunManager">
     <configuration name="KPI_report" type="PythonConfigurationType" factoryName="Python">
@@ -95,79 +60,74 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="590c03b9-518c-4a40-9d1c-bfb331e789a6" name="默认更改列表" comment="" />
-      <created>1586399918366</created>
+      <changelist id="5010a659-f938-4ddd-b810-30c6ccc573ab" name="Default Changelist" comment="" />
+      <created>1589502915929</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1586399918366</updated>
-      <workItem from="1586399923654" duration="3945000" />
-      <workItem from="1586415321958" duration="3998000" />
-      <workItem from="1586419913225" duration="91000" />
-      <workItem from="1586420083101" duration="19000" />
-      <workItem from="1586420170972" duration="4732000" />
-      <workItem from="1586481288209" duration="9010000" />
-      <workItem from="1586512136425" duration="30000" />
-      <workItem from="1586569317556" duration="1742000" />
-      <workItem from="1586572375697" duration="320000" />
-      <workItem from="1586793149709" duration="1177000" />
-      <workItem from="1586794377025" duration="453000" />
-      <workItem from="1586794858763" duration="40000" />
-      <workItem from="1586794921340" duration="494000" />
-      <workItem from="1586795528657" duration="409000" />
-      <workItem from="1586796015394" duration="62000" />
-      <workItem from="1586811884463" duration="2518000" />
-      <workItem from="1586814430800" duration="1402000" />
-      <workItem from="1586826296337" duration="17000" />
+      <updated>1589502915929</updated>
+      <workItem from="1589502919535" duration="6601000" />
+      <workItem from="1589872803060" duration="5475000" />
+      <workItem from="1589935563555" duration="10408000" />
+      <workItem from="1589954231238" duration="1889000" />
+      <workItem from="1589966961446" duration="883000" />
+      <workItem from="1590022108051" duration="1257000" />
+      <workItem from="1590112961391" duration="6000" />
+      <workItem from="1590377218072" duration="427000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="WindowStateProjectService">
-    <state x="275" y="21" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586572416494">
+    <state width="1322" height="137" key="GridCell.Tab.0.bottom" timestamp="1590032513668">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="275" y="21" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1586572416494" />
-    <state width="661" height="139" key="GridCell.Tab.0.bottom" timestamp="1586815833712">
+    <state width="1322" height="137" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1590032513668" />
+    <state width="1322" height="137" key="GridCell.Tab.0.center" timestamp="1590032513667">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="661" height="139" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1586815833712" />
-    <state width="661" height="139" key="GridCell.Tab.0.center" timestamp="1586815833711">
+    <state width="1322" height="137" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1590032513667" />
+    <state width="1322" height="137" key="GridCell.Tab.0.left" timestamp="1590032513667">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="661" height="139" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1586815833711" />
-    <state width="661" height="139" key="GridCell.Tab.0.left" timestamp="1586815833711">
+    <state width="1322" height="137" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1590032513667" />
+    <state width="1322" height="137" key="GridCell.Tab.0.right" timestamp="1590032513667">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="661" height="139" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1586815833711" />
-    <state width="661" height="139" key="GridCell.Tab.0.right" timestamp="1586815833711">
+    <state width="1322" height="137" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1590032513667" />
+    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup" timestamp="1589504142470">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="661" height="139" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1586815833711" />
-    <state width="220" height="477" key="HiddenNamespacesPopup" timestamp="1586572387038">
-      <screen x="0" y="0" width="1366" height="728" />
-    </state>
-    <state width="220" height="477" key="HiddenNamespacesPopup/0.0.1366.728@0.0.1366.728" timestamp="1586572387038" />
-    <state x="505" y="51" key="com.intellij.database.view.ui.DbObjectDialog" timestamp="1586572422798">
-      <screen x="0" y="0" width="1366" height="728" />
-    </state>
-    <state x="505" y="51" key="com.intellij.database.view.ui.DbObjectDialog/0.0.1366.728@0.0.1366.728" timestamp="1586572422798" />
+    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup/0.0.1366.728@0.0.1366.728" timestamp="1589504142470" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/func.py</url>
+          <line>199</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/func.py</url>
+          <line>249</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/func.py</url>
+          <line>80</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/func.py</url>
+          <line>5</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/KPI_report$KPI_report.coverage" NAME="KPI_report Coverage Results" MODIFIED="1586815738179" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/KPI_report$KPI_report.coverage" NAME="KPI_report Coverage Results" MODIFIED="1590022531292" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

@@ -87,7 +87,7 @@ class Eric_day(db.Model):
             self.key, self.week, self.eNodeB, self.EUTRANCELLFDD, self.Acc_WirelessConnSucRate, self.Acc_ERAB_droppingrate)
 
 
-db.drop_all()
+#db.drop_all()
 db.create_all()
 
 # =============================================================================

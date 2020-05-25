@@ -34,10 +34,13 @@ from PyQt5.QtWidgets import QWidget,QFileDialog
 from pandas import ExcelWriter,DataFrame,read_excel,read_csv
 from os import startfile
 
+coding = 'gbk' # 'gb2312','utf-8'
+
 class Ui_MainWindow(QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(720, 453)
+
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.centralWidget)
@@ -203,10 +206,10 @@ class Ui_MainWindow(QWidget):
         df_merge = DataFrame()
         if isinstance(fname,list):
             for file in fname:
-                df_tmp = read_excel(file,skiprows = self.skip_rows)
+                df_tmp = read_excel(file,skiprows = self.skip_rows,encoding = coding)
                 df_merge = df_merge.append(df_tmp)
         else :
-            df_merge = read_excel(fname,skiprows = self.skip_rows)
+            df_merge = read_excel(fname,skiprows = self.skip_rows,encoding = coding)
         file_path = self.get_file_path(fname)
         with ExcelWriter(file_path + '合并后文件'+ '.xlsx') as writer:
             df_merge.to_excel(writer,'合并后',index = False)
@@ -215,10 +218,10 @@ class Ui_MainWindow(QWidget):
         df_merge = DataFrame()
         if isinstance(fname,list):
             for file in fname:
-                df_tmp = read_csv(file, engine = 'python')
+                df_tmp = read_csv(file, engine = 'python',encoding = coding)
                 df_merge = df_merge.append(df_tmp)
         else :
-            df_merge = read_csv(fname, engine = 'python')
+            df_merge = read_csv(fname, engine = 'python',encoding = coding)
         file_path = self.get_file_path(fname)
         with open(file_path + '合并后文件'+ '.csv','w') as writer:
             df_merge.to_csv(writer,index = False)

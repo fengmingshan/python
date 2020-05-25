@@ -9,6 +9,6 @@ class Text_form(FlaskForm):
                                        'placeholder': u'文本内容'})
     cutword = TextAreaField('分词结果', render_kw={'class': 'table', 'text-body': '', 'cols': 80, 'rows': 4,
                                        'placeholder': u'分词结果。'})
-    result = TextAreaField('处理结果', render_kw={'class': 'table', 'text-body': '', 'cols': 80, 'rows': 4,
+    result = TextAreaField('分类结果', render_kw={'class': 'table', 'text-body': '', 'cols': 80, 'rows': 4,
                                       'placeholder': u'分类结果。'})
     submit = SubmitField('提交', render_kw={'class': 'table', 'text-body': '', 'rows': 2})

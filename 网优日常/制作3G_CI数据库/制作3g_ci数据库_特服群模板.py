@@ -26,5 +26,5 @@ df_template['区县'] = df_template['区县'].apply(
     lambda x: x.replace('西片','麒麟'))
 
 df_template = df_template[["特服群模板号", "特服用户群", "特服号码", "号码属性", "用户标识", "区县", "用户别名", "地域", "备份局局向号"]]
-with open('./输出/特服群模板.csv', 'w', encoding='utf-8') as writer:  # 输出到excel
+with open('./输出/特服群模板.csv', 'w', encoding='utf-8',newline = '') as writer:  # 输出到excel
     df_template.to_csv(writer, index=False)
