@@ -30,6 +30,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="kite.configurable" />
   </component>
   <component name="RunManager">
     <configuration name="KPI_report" type="PythonConfigurationType" factoryName="Python">
@@ -48,6 +49,28 @@
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="KPI_report" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -73,6 +96,12 @@
       <workItem from="1590022108051" duration="1257000" />
       <workItem from="1590112961391" duration="6000" />
       <workItem from="1590377218072" duration="427000" />
+      <workItem from="1590393744925" duration="608000" />
+      <workItem from="1590394376305" duration="528000" />
+      <workItem from="1590394924391" duration="11000" />
+      <workItem from="1590394959942" duration="228000" />
+      <workItem from="1590395218196" duration="7000" />
+      <workItem from="1590395246008" duration="2008000" />
     </task>
     <servers />
   </component>
@@ -96,6 +125,10 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state width="1322" height="137" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1590032513667" />
+    <state x="184" y="0" key="SettingsEditor" timestamp="1590394785889">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="184" y="0" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1590394785889" />
     <state x="346" y="49" width="672" height="678" key="search.everywhere.popup" timestamp="1589504142470">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
