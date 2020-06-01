@@ -18,6 +18,7 @@ os.chdir(path)
 app = Flask(__name__)
 app.jinja_env.filters['zip'] = zip
 
+
 engine_mr = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/mr_report?charset=utf8", pool_recycle=7200)
 engine_cqi = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/cqi_report?charset=utf8", pool_recycle=7200)
 engine_tousu = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/qjwx_tousu?charset=utf8",
@@ -83,7 +84,12 @@ def draw_bar(x_axis,y_name,y_data,title):
         .add_yaxis(y_name, y_data)
         .reversal_axis()
         .set_series_opts(label_opts=opts.LabelOpts(position="right"))
-        .set_global_opts(title_opts=opts.TitleOpts(title=title))
+        .set_global_opts(
+            title_opts=opts.TitleOpts(
+                title=title,
+                pos_top='top',
+            ),
+        )
     ).render("./bar_reversal_axis.html")
 
 def draw_bar_stack(x_axis,y_name1,y_data1,y_name2,y_data2,title):
@@ -110,4 +116,6 @@ handin_succ_ratio = [float(x.切换入成功率.replace('%','')) for x in recon_
 
 rev_line = draw_line(neibor,'切换出成功率',handout_succ_ratio,'切换出成功率')
 rev_bar = draw_bar(neibor, '切换出成功率', handout_succ_ratio, '切换出成功率')
-ar_stack = draw_bar_stack(neibor, '切换出成功次数', handout_succ_cnt, '切换出失败次数', handout_faied_cnt,  '切换出次数')
+bar_stack = draw_bar_stack(neibor, '切换出成功次数', handout_succ_cnt, '切换出失败次数', handout_faied_cnt,  '切换出次数')
+#hand_succ = draw_bar_stack(neibor, '切换出成功率', handout_succ_ratio, '切换入成功率', handin_succ_ratio,  '切换成功率')
+

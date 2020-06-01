@@ -29,7 +29,13 @@ def draw_bar_reversal(x_axis,y_data,y_name,title):
         .add_yaxis(y_name,y_data)
         .reversal_axis()
         .set_series_opts(label_opts=opts.LabelOpts(position="right"))
-        .set_global_opts(title_opts=opts.TitleOpts(title=title))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_right="right",
+            pos_top="20"
+        ),
+        title_opts=opts.TitleOpts(title=title),
+        )
     )
     return c
 
@@ -46,6 +52,107 @@ def draw_bar2_reversal(x_axis,y_data1,y_name1,y_data2,y_name2,title):
     )
     return c
 
+def draw_bar_stack(x_axis,y_name1,y_data1,y_name2,y_data2,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name1, y_data1, stack="stack1")
+        .add_yaxis(y_name2, y_data2, stack="stack1")
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(title_opts=opts.TitleOpts(title=title),
+                         xaxis_opts=opts.AxisOpts(
+                             axislabel_opts={"interval": "0"}
+                         )
+        )
+    )
+    return c
+
+def draw_bar_stack_3(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name1, y_data1, stack="stack1")
+        .add_yaxis(y_name2, y_data2, stack="stack1")
+        .add_yaxis(y_name3, y_data3, stack="stack1")
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_left="right",
+            pos_top="20"
+        ),
+        title_opts=opts.TitleOpts(
+        title=title,
+        pos_top="0"
+        ),
+        )
+    )
+    return c
+
+def draw_bar_stack_4(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,y_name4,y_data4,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name1, y_data1, stack="stack1")
+        .add_yaxis(y_name2, y_data2, stack="stack1")
+        .add_yaxis(y_name3, y_data3, stack="stack1")
+        .add_yaxis(y_name4, y_data4, stack="stack1")
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_left="left",
+            pos_top="20"
+        ),      
+        title_opts=opts.TitleOpts(title=title))
+    )
+    return c
+
+def draw_bar_stack_5(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,y_name4,y_data4,y_name5,y_data5,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name1, y_data1, stack="stack1")
+        .add_yaxis(y_name2, y_data2, stack="stack1")
+        .add_yaxis(y_name3, y_data3, stack="stack1")
+        .add_yaxis(y_name4, y_data4, stack="stack1")
+        .add_yaxis(y_name5, y_data5, stack="stack1")
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_left="left",
+            pos_top="20"
+        ),    
+        title_opts=opts.TitleOpts(title=title))
+    )
+    return c
+
+def draw_bar_stack_6(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,y_name4,y_data4,y_name5,y_data5,y_name6,y_data6,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name1, y_data1, stack="stack1")
+        .add_yaxis(y_name2, y_data2, stack="stack1")
+        .add_yaxis(y_name3, y_data3, stack="stack1")
+        .add_yaxis(y_name4, y_data4, stack="stack1")
+        .add_yaxis(y_name5, y_data5, stack="stack1")
+        .add_yaxis(y_name6, y_data6, stack="stack1")
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_right="right",
+            pos_top="20"
+        ),
+        title_opts=opts.TitleOpts(
+        title=title,
+        pos_top="0"
+        ),
+        )
+    )
+    return c
 
 def draw_pie(x_data, y_data, series_name, title):
     data_pair = [list(z) for z in zip(x_data, y_data)]
@@ -59,7 +166,8 @@ def draw_pie(x_data, y_data, series_name, title):
             )
             .set_global_opts(
             legend_opts=opts.LegendOpts(
-                pos_left="legft",
+                pos_left="left",
+                pos_top="20",
                 orient="vertical"
             ),
             title_opts=opts.TitleOpts(
