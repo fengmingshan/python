@@ -70,14 +70,14 @@
     <h5>end of table</h5>
     <script type="text/javascript">
         //基于准备好的容器，初始化echarts实例
-        var ho_cnt_chart = echarts.init(document.getElementById('ho_cnt_chart'));
-        var HO_distance_chart = echarts.init(document.getElementById('HO_distance_chart'));
+        var ho_out_cnt_chart = echarts.init(document.getElementById('ho_cnt_chart'));
+        var ho_distance_chart = echarts.init(document.getElementById('HO_distance_chart'));
         var ho_mod3_chart = echarts.init(document.getElementById('ho_do_fail_chart'));
 
         //用.py文件中定义好的配置项和数据显示图表
-        ho_cnt_chart.setOption({{ho_cnt_chart_options | safe}});
-        HO_distance_chart.setOption({{rrc_recon_ratio_chart_options | safe}});
-        ho_mod3_chart.setOption({{rrc_recon_count_chart_options | safe}});
+        ho_out_cnt_chart.setOption({{ho_out_cnt_chart_options | safe}});
+        ho_distance_chart.setOption({{ho_distance_chart_options | safe}});
+        ho_mod3_chart.setOption({{ho_mod3_chart_options | safe}});
 
     </script>
 </body>

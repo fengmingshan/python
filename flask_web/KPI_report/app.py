@@ -615,7 +615,7 @@ def show_handover(cell_info):
     weeks = [x[0] for x in weeks]
     cur_week =max(weeks)
 
-    ho_cnt = session_handover.execute(
+    ho_reason = session_handover.execute(
         "SELECT `小区名称`,`邻区`, `切换出请求总次数`,`切换出成功次数`, `切换出失败次数`, `切换出执行失败次数_源侧发生重建立`, `切换出执行失败次数_等待UECONTEXTRELEASE消息超时`, `切换出执行失败次数_其它原因`, `切换出准备失败次数_等待切换响应定时器超时`, `切换出准备失败次数_目标侧准备失败`, `切换出准备失败次数_其它原因`, `切换出准备失败次数_源侧发生重建立`, `切换出准备失败次数_用户未激活`, `切换出准备失败次数_传输资源受限`,`切换入成功次数`, `切换入失败次数`, `切换入执行失败次数_RRC重配完成超时`, `切换入执行失败次数_源侧取消切换`, `切换入执行失败次数_目标侧发生重建立`, `切换入执行失败次数_其他原因`, `切换入准备失败次数_资源分配失败`, `切换入准备失败次数_源侧取消切换`, `切换入准备失败次数_目标侧发生重建立`, `切换入准备失败次数_传输资源受限`, `切换入准备失败次数_其它原因` FROM `邻区切换` WHERE eNodeB = {enb} and `小区` = {cell} and `周`= {week}  and `切换出失败次数`>0  order by 切换出请求总次数 asc limit 40".format(
             enb=enb, cell=cell, week=cur_week))
     ho_reason = list(ho_reason)
@@ -623,12 +623,12 @@ def show_handover(cell_info):
     ho_ne = [x.邻区 for x in ho_reason]
     ho_suc_out = [x.切换出成功次数 for x in ho_reason]
     ho_fail_out = [x.切换出失败次数 for x in ho_reason]
-    ho_outpr_fail_1 = [x.切换出准备失败次数_等待切换响应定时器超时 for x in ho_reason]
-    ho_outpr_fail_2 = [x.切换出准备失败次数_目标侧准备失败 for x in ho_reason]
-    ho_outpr_fail_3 = [x.切换出准备失败次数_其它原因 for x in ho_reason]
-    ho_outpr_fail_4 = [x.切换出准备失败次数_源侧发生重建立 for x in ho_reason]
-    ho_outpr_fail_5 = [x.切换出准备失败次数_用户未激活 for x in ho_reason]
-    ho_outpr_fail_6 = [x.切换出准备失败次数_传输资源受限 for x in ho_reason]
+    # ho_outpr_fail_1 = [x.切换出准备失败次数_等待切换响应定时器超时 for x in ho_reason]
+    # ho_outpr_fail_2 = [x.切换出准备失败次数_目标侧准备失败 for x in ho_reason]
+    # ho_outpr_fail_3 = [x.切换出准备失败次数_其它原因 for x in ho_reason]
+    # ho_outpr_fail_4 = [x.切换出准备失败次数_源侧发生重建立 for x in ho_reason]
+    # ho_outpr_fail_5 = [x.切换出准备失败次数_用户未激活 for x in ho_reason]
+    # ho_outpr_fail_6 = [x.切换出准备失败次数_传输资源受限 for x in ho_reason]
     ho_outdo_fail_1= [x.切换出执行失败次数_源侧发生重建立 for x in ho_reason]
     ho_outdo_fail_2 = [x.切换出执行失败次数_等待UECONTEXTRELEASE消息超时 for x in ho_reason]
     ho_outdo_fail_3 = [x.切换出执行失败次数_其它原因 for x in ho_reason]
@@ -638,11 +638,11 @@ def show_handover(cell_info):
     ho_do_in_2 = [x.切换入执行失败次数_源侧取消切换 for x in ho_reason]
     ho_do_in_3 = [x.切换入执行失败次数_目标侧发生重建立 for x in ho_reason]
     ho_do_in_4 = [x.切换入执行失败次数_其他原因 for x in ho_reason]
-    ho_pr_in_1 = [x.切换入准备失败次数_资源分配失败 for x in ho_reason]
-    ho_pr_in_2 = [x.切换入准备失败次数_源侧取消切换 for x in ho_reason]
-    ho_pr_in_3 = [x.切换入准备失败次数_目标侧发生重建立 for x in ho_reason]
-    ho_pr_in_4 = [x.切换入准备失败次数_传输资源受限 for x in ho_reason]
-    ho_pr_in_5 = [x.切换入准备失败次数_其它原因 for x in ho_reason]
+    # ho_pr_in_1 = [x.切换入准备失败次数_资源分配失败 for x in ho_reason]
+    # ho_pr_in_2 = [x.切换入准备失败次数_源侧取消切换 for x in ho_reason]
+    # ho_pr_in_3 = [x.切换入准备失败次数_目标侧发生重建立 for x in ho_reason]
+    # ho_pr_in_4 = [x.切换入准备失败次数_传输资源受限 for x in ho_reason]
+    # ho_pr_in_5 = [x.切换入准备失败次数_其它原因 for x in ho_reason]
     ho_out_cnt_chart = draw_bar_stack(ho_ne,'切换出成功次数',ho_suc_out,'切换出失败次数',ho_fail_out,'切换分析')
     ho_in_cnt_chart = draw_bar_stack(ho_ne, '切换入成功次数', ho_suc_in, '切换入失败次数', ho_fail_in, '切换分析')
     # ho_outpr_fail_chart = draw_bar_stack_6(['' for x in range(len(ho_ne))],'等待切换响应超时',ho_outpr_fail_1,'目标侧准备失败',ho_outpr_fail_2,'其它原因',ho_outpr_fail_3,'源侧发生重建立',ho_outpr_fail_4,'用户未激活',ho_outpr_fail_5,'传输资源受限',ho_outpr_fail_6,'切换出准备失败', )
@@ -658,15 +658,14 @@ def show_handover(cell_info):
     ho_distance = list(ho_distance)
     distance_ce = [x.邻区 for x in ho_distance]
     df_distance = [x.distance for x in ho_distance]
-    HO_distance_chart = draw_bar_reversal(distance_ce, df_distance, '邻区站点距离', ' ', )
-    HO_distan_chart = draw_bar_reversal(['' for x in range(len(distance_ce))], df_distance, '邻区站点距离', ' ', )
+    ho_distance_chart = draw_bar_reversal(['' for x in range(len(distance_ce))], df_distance, '邻区站点距离', ' ', )
 
     return render_template('hand_over.html',
                            cell_name=cell_name,
-                           zte_rrc_options=zte_rrc.dump_options(),
-                           eri_rrc_options=eri_rrc.dump_options(),
-                           hw_rrcc_options=hw_rrcc.dump_options(),
-                           qw_rrc_options=qw_rrc.dump_options())
+                           ho_out_cnt_chart_options=ho_out_cnt_chart.dump_options(),
+                           ho_distance_chart_options=ho_distance_chart.dump_options(),
+                           ho_mod3_chart_options=ho_mod3_chart.dump_options(),
+                           )
 
 
 @app.route('/put', methods=['GET', 'POST'])

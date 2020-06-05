@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>曲靖MR指标监控</title>
+    <!-- 引入 echarts.js -->
+    <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
+</head>
+
+<body>
+    <!== 为pyecharts图形准备好指定宽高的容器 ==>
+    <h1>RRC连接用户数</h1>
+    <div id="rrc_user" style="width:1300px; height:350px;"></div>
+{#    <h1>激活用户数</h1>#}
+{#    <div id="active_user" style="width:1300px; height:350px;"></div>#}
+{#    <h1>PRB利用率</h1>#}
+{#    <div id="prb" style="width:1300px; height:350px;"></div>#}
+{#    <h1>用户体验速率</h1>#}
+{#    <div id="feel_speed" style="width:1300px; height:350px;"></div>#}
+    <h5>end of table</h5>
+    <script type="text/javascript">
+        //基于准备好的容器，初始化echarts实例
+        var rrc_user_chart = echarts.init(document.getElementById('rrc_user'));
+        {#var active_user_chart = echarts.init(document.getElementById('active_user'));#}
+        {#var prb_use_chart = echarts.init(document.getElementById('prb'));#}
+        {#var feel_speed_chart = echarts.init(document.getElementById('feel_speed'));#}
+
+        //用.py文件中定义好的配置项和数据显示图表
+        rrc_user_chart.setOption({{rrc_user_options | safe}});
+        {#active_user_chart.setOption({{active_user_options | safe}});#}
+        {#prb_use_chart.setOption({{prb_use_options | safe}});#}
+        {#feel_speed_chart.setOption({{feel_speed_options | safe}});#}
+    </script>
+</body>
+</html>
