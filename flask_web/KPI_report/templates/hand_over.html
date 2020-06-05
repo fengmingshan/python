@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>小区切换详细分析</title>
+    <!-- 引入 echarts.js -->
+    <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
+</head>
+
+<body>
+    <h4>{{ cell_name }} 切换分析 </h4>
+    <!== 为pyecharts图形准备好指定宽高的容器 ==>
+    <style>
+    *{
+        padding:0;
+        margin:0;
+    }
+    .ho_container
+    {
+        width: 1300px;
+        margin: 100px auto;
+    }
+    .htem1
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 40%;
+        height: 1200px;
+        float:left;
+    }
+    .htem2
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 30%;
+        height: 1200px;
+        float:left;
+    }
+    .htem3
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 30%;
+        height: 1200px;
+        float:left;
+    }
+    .ho_container:after{
+        display: block;
+        clear: both;
+        content: ".";
+        height: 0;
+        visibility: hidden;
+        display: block;
+    }
+	</style>
+    <div class ="ho_container">
+        <div id="ho_cnt_chart" class = "htem1"></div>
+        <div id="ho_distance_chart" class = "htem2"></div>
+        <div id="ho_mod3_chart" class = "htem3"></div>
+    </div>
+    <div class ="rrc_ho_container">
+        <div id="ho_reason_in_chart" class = "htem1"></div>
+        <div id="HO_distan_chart" class = "htem2"></div>
+        <div id="ho_mod3_chart" class = "htem3"></div>
+    </div>
+
+    <h5>end of table</h5>
+    <script type="text/javascript">
+        //基于准备好的容器，初始化echarts实例
+        var ho_cnt_chart = echarts.init(document.getElementById('ho_cnt_chart'));
+        var HO_distance_chart = echarts.init(document.getElementById('HO_distance_chart'));
+        var ho_mod3_chart = echarts.init(document.getElementById('ho_do_fail_chart'));
+
+        //用.py文件中定义好的配置项和数据显示图表
+        ho_cnt_chart.setOption({{ho_cnt_chart_options | safe}});
+        HO_distance_chart.setOption({{rrc_recon_ratio_chart_options | safe}});
+        ho_mod3_chart.setOption({{rrc_recon_count_chart_options | safe}});
+
+    </script>
+</body>
+</html>

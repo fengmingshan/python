@@ -103,19 +103,47 @@ def draw_bar_stack(x_axis,y_name1,y_data1,y_name2,y_data2,title):
         .set_global_opts(title_opts=opts.TitleOpts(title="Bar-堆叠数据（全部）"))
     ).render("bar_stack.html")
 
-recon_cnt = session_handover.execute(
-        "SELECT `邻区`,`切换出成功次数`, `切换出失败次数`, `切换出成功率`, `切换入成功次数`, `切换入失败次数`, `切换入成功率` FROM `邻区切换` WHERE eNodeB = 731611 and `小区` = 18 and (`切换出请求总次数`>30 OR `切换入请求总次数`>30) order by `切换出请求总次数` asc")
-recon_cnt = list(recon_cnt)
-neibor = [x.邻区 for x in recon_cnt]
-handout_succ_cnt = [x.切换出成功次数 for x in recon_cnt]
-handout_faied_cnt = [x.切换出失败次数 for x in recon_cnt]
-handout_succ_ratio = [float(x.切换出成功率.replace('%','')) for x in recon_cnt]
-handin_succ_cnt = [x.切换入成功次数 for x in recon_cnt]
-handin_faied_cnt = [x.切换入失败次数 for x in recon_cnt]
-handin_succ_ratio = [float(x.切换入成功率.replace('%','')) for x in recon_cnt]
+    ho_reason = session_handover.execute(
+        "SELECT `邻区`, `切换出请求总次数`,`切换出成功次数`, `切换出失败次数`, `切换出执行失败次数_源侧发生重建立`, `切换出执行失败次数_等待UECONTEXTRELEASE消息超时`, `切换出执行失败次数_其它原因`, `切换出准备失败次数_等待切换响应定时器超时`, `切换出准备失败次数_目标侧准备失败`, `切换出准备失败次数_其它原因`, `切换出准备失败次数_源侧发生重建立`, `切换出准备失败次数_用户未激活`, `切换出准备失败次数_传输资源受限`,`切换入成功次数`, `切换入失败次数`, `切换入执行失败次数_RRC重配完成超时`, `切换入执行失败次数_源侧取消切换`, `切换入执行失败次数_目标侧发生重建立`, `切换入执行失败次数_其他原因`, `切换入准备失败次数_资源分配失败`, `切换入准备失败次数_源侧取消切换`, `切换入准备失败次数_目标侧发生重建立`, `切换入准备失败次数_传输资源受限`, `切换入准备失败次数_其它原因` FROM `邻区切换` WHERE eNodeB = {enb} and `小区` = {cell} and `周`= {week}  and `切换出失败次数`>0  order by 切换出请求总次数 asc limit 40".format(
+            enb=enb, cell=cell, week=cur_week))
+    ho_reason = list(ho_reason)
+    ho_reason_ne = [x[0] for x in ho_reason]
+    ho_sec_out = [x[2] for x in ho_reason]
+    ho_fail_out = [x[3] for x in ho_reason]
+    ho_re_fail_1 = [x[7] for x in ho_reason]
+    ho_re_fail_2 = [x[8] for x in ho_reason]
+    ho_re_fail_3 = [x[9] for x in ho_reason]
+    ho_re_fail_4 = [x[10] for x in ho_reason]
+    ho_re_fail_5 = [x[11] for x in ho_reason]
+    ho_re_fail_6 = [x[12] for x in ho_reason]
+    ho_do_fail_1= [x[4] for x in ho_reason]
+    ho_do_fail_2 = [x[5] for x in ho_reason]
+    ho_do_fail_3 = [x[6] for x in ho_reason]
+    ho_sec_in = [x[13] for x in ho_reason]
+    ho_fail_in = [x[14] for x in ho_reason]
+    ho_do_in_1 = [x[15] for x in ho_reason]
+    ho_do_in_2 = [x[16] for x in ho_reason]
+    ho_do_in_3 = [x[17] for x in ho_reason]
+    ho_do_in_4 = [x[18] for x in ho_reason]
+    ho_re_in_1 = [x[19] for x in ho_reason]
+    ho_re_in_2 = [x[20] for x in ho_reason]
+    ho_re_in_3 = [x[21] for x in ho_reason]
+    ho_re_in_4 = [x[22] for x in ho_reason]
+    ho_re_in_5 = [x[23] for x in ho_reason]
+    ho_reason_secc_chart = draw_bar_stack(ho_reason_ne,'切换出成功次数',ho_sec_out,'切换出失败次数',ho_fail_out,'切换分析')
+    HO_count_chart = draw_bar_stack_6(['' for x in range(len(ho_reason_ne))],'等待切换响应定时器超时',ho_re_fail_1,'目标侧准备失败',ho_re_fail_2,'传输资源受限',ho_re_fail_6,'源侧发生重建立',ho_re_fail_4,'用户未激活',ho_re_fail_5,'其它原因',ho_re_fail_3,'切换出准备失败', )
+    ho_do_fail_chart = draw_bar_stack_3(['' for x in range(len(ho_reason_ne))],'源侧发生重建立',ho_do_fail_1,'等待UECONTEXTRELEASE消息超时',ho_do_fail_2,'其它原因',ho_do_fail_3,'切换出执行失败')
+    ho_reason_in_chart = draw_bar_stack(ho_reason_ne, '切换入成功次数', ho_sec_in, '切换入失败次数', ho_fail_in, '切换分析')
+    HO_do_in_chart = draw_bar_stack_4(['' for x in range(len(ho_reason_ne))], 'RRC重配完成超时', ho_do_in_1, '源侧取消切换',
+                                      ho_do_in_2, '目标侧发生重建立', ho_do_in_3, '其他原因', ho_do_in_4,  '切换入执行失败', )
+    HO_re_in_chart = draw_bar_stack_5(['' for x in range(len(ho_reason_ne))], '资源分配失败', ho_re_in_1, '源侧取消切换',
+                                      ho_re_in_2, '目标侧发生重建立', ho_re_in_3, '传输资源受限', ho_re_in_4, '其它原因',
+                                      ho_re_in_5, '切换入准备失败', )
 
-rev_line = draw_line(neibor,'切换出成功率',handout_succ_ratio,'切换出成功率')
-rev_bar = draw_bar(neibor, '切换出成功率', handout_succ_ratio, '切换出成功率')
-bar_stack = draw_bar_stack(neibor, '切换出成功次数', handout_succ_cnt, '切换出失败次数', handout_faied_cnt,  '切换出次数')
-#hand_succ = draw_bar_stack(neibor, '切换出成功率', handout_succ_ratio, '切换入成功率', handin_succ_ratio,  '切换成功率')
-
+    ho_distance = session_handover.execute(
+        "SELECT a.`邻区`, b.distance from (SELECT `邻区`,`邻区关系`,`切换出请求总次数` FROM `邻区切换` WHERE eNodeB = {enb} and 小区 = {cell} and (`切换出请求总次数`>30 OR `切换入请求总次数`>30 OR `切换出成功次数`>30 OR `切换入成功次数`>30)) as a left JOIN  (SELECT relation,distance from `邻区距离`) as b ON a.`邻区关系`=b.relation order by a.`切换出请求总次数`".format(enb =enb ,cell = cell))
+    ho_distance = list(ho_distance)
+    distance_ce = [x.邻区 for x in ho_distance]
+    df_distance = [x.distance for x in ho_distance]
+    HO_distance_chart = draw_bar_reversal(distance_ce, df_distance, '邻区站点距离', ' ', )
+    HO_distan_chart = draw_bar_reversal(['' for x in range(len(distance_ce))], df_distance, '邻区站点距离', ' ', )
