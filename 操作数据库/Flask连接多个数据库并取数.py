@@ -103,3 +103,10 @@ def draw_bar_stack(x_axis,y_name1,y_data1,y_name2,y_data2,title):
         .set_global_opts(title_opts=opts.TitleOpts(title="Bar-堆叠数据（全部）"))
     ).render("bar_stack.html")
 
+ho_reason_tmp = session_handover.execute(
+    "SELECT `小区名称`,`邻区`, `切换出请求总次数`,`切换出成功次数`, `切换出失败次数`, `切换出执行失败次数_源侧发生重建立`, `切换出执行失败次数_等待UECONTEXTRELEASE消息超时`, `切换出执行失败次数_其它原因`, `切换出准备失败次数_等待切换响应定时器超时`, `切换出准备失败次数_目标侧准备失败`, `切换出准备失败次数_其它原因`, `切换出准备失败次数_源侧发生重建立`, `切换出准备失败次数_用户未激活`, `切换出准备失败次数_传输资源受限`,`切换入成功次数`, `切换入失败次数`, `切换入执行失败次数_RRC重配完成超时`, `切换入执行失败次数_源侧取消切换`, `切换入执行失败次数_目标侧发生重建立`, `切换入执行失败次数_其他原因`, `切换入准备失败次数_资源分配失败`, `切换入准备失败次数_源侧取消切换`, `切换入准备失败次数_目标侧发生重建立`, `切换入准备失败次数_传输资源受限`, `切换入准备失败次数_其它原因` FROM `邻区切换` WHERE eNodeB = {enb} and `小区` = {cell} and `周`= {week}  and `切换出失败次数`>0  order by 切换出请求总次数 asc limit 40".format(
+        enb=582656, cell=145, week=20))
+ho_reason = list(ho_reason_tmp)
+cell_name = ho_reason[0].小区名称
+
+ho_ne = [x.邻区 for x in ho_reason]

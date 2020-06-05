@@ -445,7 +445,7 @@ def show_rrc_success():
 
 @app.route("/rrc_rate_top/", methods=['GET', 'POST'])
 def show_rrc_rate_list():
-    cur_week = session_rrc.execute("SELECT max(week(`日期`)) from `rrc重建`")
+    cur_week = session_rrc.execute("SELECT max(`周`) from `rrc重建`")
     cur_week = list(cur_week)[0][0]
     top_cells = session_rrc.execute(
         "SELECT 站号, `小区号`, `小区名称`, `RRC连接重建成功率`, `RRC重建请求数目`, `RRC重建失败数目`, b.all_failed_ratio - ((b.failed_sum-`RRC重建失败数目`)/(b.req_sum-`RRC重建请求数目`)) as '占全网比例', b.all_failed_ratio FROM (SELECT 站号, `小区号`, `小区名称`, week(`日期`) as 'week',`RRC连接重建成功率`, `RRC重建请求数目`, `RRC重建失败数目` FROM rrc重建) as a, (SELECT sum(`RRC重建请求数目`) as req_sum, sum(`RRC重建失败数目`) as failed_sum, round(sum(`RRC重建失败数目`)/sum(`RRC重建请求数目`),4) as all_failed_ratio FROM rrc重建) as b WHERE a.`week` = {cur_week} ORDER BY b.all_failed_ratio - ((b.failed_sum-`RRC重建失败数目`)/(b.req_sum-`RRC重建请求数目`)) desc LIMIT 20".format(
@@ -484,7 +484,7 @@ def show_rrc_rate_detail(cell_info):
     rrc_fail_count = draw_bar('RRC重建失败数目',fail_count,qtem_rrc_x_axis,' ')
 
     recon_count = session_rrc.execute(
-            "SELECT 站号, `小区号`, `RRC重建请求数目`, `切换类型的RRC重建立失败数目`, `重配置类型的RRC重建立失败数目`, `其它类型的RRC重建立失败数目`,`切换类型的RRC连接重建立成功次数`,`切换类型的RRC重建立失败数目`,`重配置类型的RRC连接重建立成功次数`,`重配置类型的RRC重建立失败数目`,`其它类型的RRC连接重建立成功次数`,`其它类型的RRC重建立失败数目`, `切换类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `切换类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `切换类型的RRC连接重建立失败次数_失败原因UE上下文找不到`, `切换类型的RRC连接重建立失败次数_失败原因再次重建立`, `切换类型的RRC连接重建立失败次数_其他原因`, `重配置类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `重配置类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `重配置类型RRC连接重建立失败次数_失败原因UE上下文找不到`, `重配置类型RRC连接重建立失败次数_失败原因再次重建立`, `重配置类型RRC连接重建立失败次数_其他原因`, `其它类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `其它类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `其它类型的RRC连接重建立失败次数_失败原因UE上下文找不到`, `其它类型的RRC连接重建立失败次数_失败原因再次重建立`, `其它类型的RRC连接重建立失败次数_其他原因` FROM `rrc重建` where 站号 = {enb} and `小区号` ={cell} and week(`日期`) = {week}".format(
+            "SELECT 站号, `小区号`, `RRC重建请求数目`, `切换类型的RRC重建立失败数目`, `重配置类型的RRC重建立失败数目`, `其它类型的RRC重建立失败数目`,`切换类型的RRC连接重建立成功次数`,`切换类型的RRC重建立失败数目`,`重配置类型的RRC连接重建立成功次数`,`重配置类型的RRC重建立失败数目`,`其它类型的RRC连接重建立成功次数`,`其它类型的RRC重建立失败数目`, `切换类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `切换类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `切换类型的RRC连接重建立失败次数_失败原因UE上下文找不到`, `切换类型的RRC连接重建立失败次数_失败原因再次重建立`, `切换类型的RRC连接重建立失败次数_其他原因`, `重配置类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `重配置类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `重配置类型RRC连接重建立失败次数_失败原因UE上下文找不到`, `重配置类型RRC连接重建立失败次数_失败原因再次重建立`, `重配置类型RRC连接重建立失败次数_其他原因`, `其它类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `其它类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `其它类型的RRC连接重建立失败次数_失败原因UE上下文找不到`, `其它类型的RRC连接重建立失败次数_失败原因再次重建立`, `其它类型的RRC连接重建立失败次数_其他原因` FROM `rrc重建` where 站号 = {enb} and `小区号` ={cell} and `周` = {week}".format(
             enb=enb, cell=cell, week=cur_week))
     recon_rate_pie = list(recon_count)[0]
     recon_count = recon_rate_pie[3:6]
@@ -615,7 +615,7 @@ def show_handover(cell_info):
     weeks = [x[0] for x in weeks]
     cur_week =max(weeks)
 
-    ho_reason = session_handover.execute(
+    ho_reason_tmp = session_handover.execute(
         "SELECT `小区名称`,`邻区`, `切换出请求总次数`,`切换出成功次数`, `切换出失败次数`, `切换出执行失败次数_源侧发生重建立`, `切换出执行失败次数_等待UECONTEXTRELEASE消息超时`, `切换出执行失败次数_其它原因`, `切换出准备失败次数_等待切换响应定时器超时`, `切换出准备失败次数_目标侧准备失败`, `切换出准备失败次数_其它原因`, `切换出准备失败次数_源侧发生重建立`, `切换出准备失败次数_用户未激活`, `切换出准备失败次数_传输资源受限`,`切换入成功次数`, `切换入失败次数`, `切换入执行失败次数_RRC重配完成超时`, `切换入执行失败次数_源侧取消切换`, `切换入执行失败次数_目标侧发生重建立`, `切换入执行失败次数_其他原因`, `切换入准备失败次数_资源分配失败`, `切换入准备失败次数_源侧取消切换`, `切换入准备失败次数_目标侧发生重建立`, `切换入准备失败次数_传输资源受限`, `切换入准备失败次数_其它原因` FROM `邻区切换` WHERE eNodeB = {enb} and `小区` = {cell} and `周`= {week}  and `切换出失败次数`>0  order by 切换出请求总次数 asc limit 40".format(
             enb=enb, cell=cell, week=cur_week))
     ho_reason = list(ho_reason)
@@ -664,7 +664,7 @@ def show_handover(cell_info):
                            cell_name=cell_name,
                            ho_out_cnt_chart_options=ho_out_cnt_chart.dump_options(),
                            ho_distance_chart_options=ho_distance_chart.dump_options(),
-                           ho_mod3_chart_options=ho_mod3_chart.dump_options(),
+                           ho_mod3_chart_options=ho_distance_chart.dump_options(),
                            )
 
 
