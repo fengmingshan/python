@@ -20,31 +20,31 @@
         width: 1300px;
         margin: 100px auto;
     }
-    .htem1
+    .ho1
     {
         box-sizing: border-box;  /*border计算在width中*/
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
         width: 40%;
-        height: 1200px;
+        height: 900px;
         float:left;
     }
-    .htem2
+    .ho2
     {
         box-sizing: border-box;  /*border计算在width中*/
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
         width: 30%;
-        height: 1200px;
+        height: 900px;
         float:left;
     }
-    .htem3
+    .ho3
     {
         box-sizing: border-box;  /*border计算在width中*/
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
         width: 30%;
-        height: 1200px;
+        height: 900px;
         float:left;
     }
     .ho_container:after{
@@ -57,22 +57,22 @@
     }
 	</style>
     <div class ="ho_container">
-        <div id="ho_cnt_chart" class = "htem1"></div>
-        <div id="ho_distance_chart" class = "htem2"></div>
-        <div id="ho_mod3_chart" class = "htem3"></div>
+        <div id="ho_out_cnt_chart" class = "ho1"></div>
+        <div id="ho_distance_chart" class = "ho2"></div>
+        <div id="ho_mod3_chart" class = "ho3"></div>
     </div>
-    <div class ="rrc_ho_container">
-        <div id="ho_reason_in_chart" class = "htem1"></div>
-        <div id="HO_distan_chart" class = "htem2"></div>
-        <div id="ho_mod3_chart" class = "htem3"></div>
-    </div>
+{#    <div class ="ho_container">#}
+{#        <div id="ho_reason_in_chart" class = "htem1"></div>#}
+{#        <div id="HO_distan_chart" class = "htem2"></div>#}
+{#        <div id="ho_mod3_chart" class = "htem3"></div>#}
+{#    </div>#}
 
     <h5>end of table</h5>
     <script type="text/javascript">
         //基于准备好的容器，初始化echarts实例
-        var ho_out_cnt_chart = echarts.init(document.getElementById('ho_cnt_chart'));
-        var ho_distance_chart = echarts.init(document.getElementById('HO_distance_chart'));
-        var ho_mod3_chart = echarts.init(document.getElementById('ho_do_fail_chart'));
+        var ho_out_cnt_chart = echarts.init(document.getElementById('ho_out_cnt_chart'));
+        var ho_distance_chart = echarts.init(document.getElementById('ho_distance_chart'));
+        var ho_mod3_chart = echarts.init(document.getElementById('ho_mod3_chart'));
 
         //用.py文件中定义好的配置项和数据显示图表
         ho_out_cnt_chart.setOption({{ho_out_cnt_chart_options | safe}});

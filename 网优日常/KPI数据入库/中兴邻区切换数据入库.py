@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
 
 # 建立数据库对象
 db = SQLAlchemy(app)
-file_name = '邻区切换分析（20200511-20200517）.csv'
+file_name = '2020_05_27_09_01_25_539_qj_wxzx_8694.csv'
 
 def read_csv_partly(file):
     file_data = pd.read_csv(file, header=0,names= title, encoding = 'gbk', chunksize=50000)

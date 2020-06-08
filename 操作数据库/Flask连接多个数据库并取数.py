@@ -12,6 +12,9 @@ from sqlalchemy.orm import sessionmaker
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Line, Pie
 import os
+import pandas as pd
+
+
 path = r'C:\Users\Administrator\Desktop'
 os.chdir(path)
 
@@ -77,6 +80,7 @@ def draw_line(x_axis,y_name1,y_data1,title):
             .reversal_axis()
     ).render("./line_reversal_axis.html")
 
+
 def draw_bar(x_axis,y_name,y_data,title):
     c = (
         Bar()
@@ -92,6 +96,24 @@ def draw_bar(x_axis,y_name,y_data,title):
         )
     ).render("./bar_reversal_axis.html")
 
+
+def draw_bar_reversal(x_axis,y_data,y_name,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name,y_data)
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(position="right"))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_right="right",
+            pos_top="20"
+        ),
+        title_opts=opts.TitleOpts(title=title),
+        )
+    ).render("./draw_bar_reversal.html")
+
+
 def draw_bar_stack(x_axis,y_name1,y_data1,y_name2,y_data2,title):
     c = (
         Bar()
@@ -103,10 +125,56 @@ def draw_bar_stack(x_axis,y_name1,y_data1,y_name2,y_data2,title):
         .set_global_opts(title_opts=opts.TitleOpts(title="Bar-堆叠数据（全部）"))
     ).render("bar_stack.html")
 
-ho_reason_tmp = session_handover.execute(
-    "SELECT `小区名称`,`邻区`, `切换出请求总次数`,`切换出成功次数`, `切换出失败次数`, `切换出执行失败次数_源侧发生重建立`, `切换出执行失败次数_等待UECONTEXTRELEASE消息超时`, `切换出执行失败次数_其它原因`, `切换出准备失败次数_等待切换响应定时器超时`, `切换出准备失败次数_目标侧准备失败`, `切换出准备失败次数_其它原因`, `切换出准备失败次数_源侧发生重建立`, `切换出准备失败次数_用户未激活`, `切换出准备失败次数_传输资源受限`,`切换入成功次数`, `切换入失败次数`, `切换入执行失败次数_RRC重配完成超时`, `切换入执行失败次数_源侧取消切换`, `切换入执行失败次数_目标侧发生重建立`, `切换入执行失败次数_其他原因`, `切换入准备失败次数_资源分配失败`, `切换入准备失败次数_源侧取消切换`, `切换入准备失败次数_目标侧发生重建立`, `切换入准备失败次数_传输资源受限`, `切换入准备失败次数_其它原因` FROM `邻区切换` WHERE eNodeB = {enb} and `小区` = {cell} and `周`= {week}  and `切换出失败次数`>0  order by 切换出请求总次数 asc limit 40".format(
-        enb=582656, cell=145, week=20))
-ho_reason = list(ho_reason_tmp)
-cell_name = ho_reason[0].小区名称
 
-ho_ne = [x.邻区 for x in ho_reason]
+def draw_bar_stack_3(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name1, y_data1, stack="stack1")
+        .add_yaxis(y_name2, y_data2, stack="stack1")
+        .add_yaxis(y_name3, y_data3, stack="stack1")
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_left="right",
+            pos_top="20"
+        ),
+        title_opts=opts.TitleOpts(
+        title=title,
+        pos_top="0"
+        ),
+        )
+    ).render("./draw_bar_stack_3.html")
+
+
+
+def draw_bar_stack_4(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,y_name4,y_data4,title):
+    c = (
+        Bar()
+        .add_xaxis(x_axis)
+        .add_yaxis(y_name1, y_data1, stack="stack1")
+        .add_yaxis(y_name2, y_data2, stack="stack1")
+        .add_yaxis(y_name3, y_data3, stack="stack1")
+        .add_yaxis(y_name4, y_data4, stack="stack1")
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(
+        legend_opts=opts.LegendOpts(
+            pos_left="left",
+            pos_top="20"
+        ),
+        title_opts=opts.TitleOpts(title=title))
+    ).render("./draw_bar_stack_4.html")
+
+
+
+relations = session_handover.execute("SELECT DISTINCT relation from `邻区距离`")
+session_handover.close()
+relations = list(relations)
+relations = [x.relation for x in relations]
+
+df = pd.DataFrame({'relations':relations })
+
+with open(r'C:\Users\Administrator\Desktop\relations.csv','w',newline = '') as f:
+    df.to_csv(f,index = False)
