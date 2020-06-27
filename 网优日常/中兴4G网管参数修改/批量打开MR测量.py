@@ -40,7 +40,7 @@ with open(data_path + current_date+ '_' +  'Modify_MR_OMMB1.txt','w') as f:
         line = r'UPDATE:MOC="EUtranCellMeasurement",MOI="{0}",ATTRIBUTES="intraFPeriodMeasSwitch=1",EXTENDS="";'\
         .format(df_OMMB1.loc[i,'MOI'])
         f.write(line+'\n')         
-   
+
 with open(data_path + 'Apply_right_MR_OMMB1.txt','w') as f:
     for i in range(0,len(df_OMMB1),1):
         line = r'APPLY MUTEXRIGHT:SUBNET="{0}",NE="{1}";'\

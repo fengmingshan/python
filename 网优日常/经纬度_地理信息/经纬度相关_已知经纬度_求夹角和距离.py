@@ -14,7 +14,7 @@ from math import atan2
 # =============================================================================
 # 计算夹角
 # =============================================================================
-def getDegree(latA, lonA, latB, lonB):
+def getDegree(lonA,latA,lonB,latB):
     """
     Args:
         point p1(latA, lonA)

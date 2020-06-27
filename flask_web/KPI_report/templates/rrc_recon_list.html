@@ -7,9 +7,9 @@
 
 <body>
     <!== 曲靖无线KPI指标主页 ==>
-    <h1>曲靖RRC重建TOP小区清单</h1>
-    {% for cell,name in top_cells_info|zip(top_cells_name) %}
-    <a href= "{{url_for('show_rrc_recon_list')}}{{cell}}" style="color#666;font-size:24px;">{{name}}</a><br/>
+    <h1>第{{cur_week}}周曲靖RRC重建TOP小区清单</h1>
+    {% for cell,name,count,rate in top_cells_info|zip(top_cells_name,recon_count,recon_rate) %}
+    <a href= "{{url_for('show_rrc_recon_list')}}{{cell}}" style="color#666;font-size:24px;">{{name}}</a>&emsp;{{count}}&emsp;{{rate}}<br/>
     {% endfor %}
 </body>
 </html>

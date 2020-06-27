@@ -1,0 +1,58 @@
+    ho_count = session_handover.execute(
+        SELECT `邻区`, `切换出请求总次数`,`切换出成功次数`, `切换出失败次数`, `切换出执行失败次数_源侧发生重建立`, `切换出执行失败次数_等待UECONTEXTRELEASE消息超时`, `切换出执行失败次数_其它原因`, `切换出准备失败次数_等待切换响应定时器超时`, `切换出准备失败次数_目标侧准备失败`, `切换出准备失败次数_其它原因`, `切换出准备失败次数_源侧发生重建立`, `切换出准备失败次数_用户未激活`, `切换出准备失败次数_传输资源受限`,`切换入成功次数`, `切换入失败次数`, `切换入执行失败次数_RRC重配完成超时`, `切换入执行失败次数_源侧取消切换`, `切换入执行失败次数_目标侧发生重建立`, `切换入执行失败次数_其他原因`, `切换入准备失败次数_资源分配失败`, `切换入准备失败次数_源侧取消切换`, `切换入准备失败次数_目标侧发生重建立`, `切换入准备失败次数_传输资源受限`, `切换入准备失败次数_其它原因` FROM `rrc重建比例top小区` WHERE eNodeB = {enb} and `小区` = {cell} and `周`= {week}  and `切换出失败次数`0  order by 切换出请求总次数 asc limit 40.format(
+            enb=enb, cell=cell, week=cur_week))
+    ho_count = list(ho_count)
+    ho_ne = [x.邻区 for x in ho_count]
+    ho_suc_out = [x.切换出成功次数 for x in ho_count]
+    ho_fail_out = [x.切换出失败次数 for x in ho_count]
+    ho_re_out_1 = [x.切换出准备失败次数_等待切换响应定时器超时 for x in ho_count]
+    ho_re_out_2 = [x.切换出准备失败次数_目标侧准备失败 for x in ho_count]
+    ho_re_out_3 = [x.切换出准备失败次数_其它原因 for x in ho_count]
+    ho_re_out_4 = [x.切换出准备失败次数_源侧发生重建立 for x in ho_count]
+    ho_re_out_5 = [x.切换出准备失败次数_用户未激活 for x in ho_count]
+    ho_re_out_6 = [x.切换出准备失败次数_传输资源受限 for x in ho_count]
+    ho_do_out_1 = [x.切换出执行失败次数_源侧发生重建立 for x in ho_count]
+    ho_do_out_2 = [x.切换出执行失败次数_等待UECONTEXTRELEASE消息超时 for x in ho_count]
+    ho_do_out_3 = [x.切换出执行失败次数_其它原因 for x in ho_count]
+    ho_suc_in = [x.切换入成功次数 for x in ho_count]
+    ho_fail_in = [x.切换入失败次数 for x in ho_count]
+    ho_do_in_1 = [x.切换入执行失败次数_RRC重配完成超时 for x in ho_count]
+    ho_do_in_2 = [x.切换入执行失败次数_源侧取消切换 for x in ho_count]
+    ho_do_in_3 = [x.切换入执行失败次数_目标侧发生重建立 for x in ho_count]
+    ho_do_in_4 = [x.切换入执行失败次数_其他原因 for x in ho_count]
+    ho_re_in_1 = [x.切换入准备失败次数_资源分配失败 for x in ho_count]
+    ho_re_in_2 = [x.切换入准备失败次数_源侧取消切换 for x in ho_count]
+    ho_re_in_3 = [x.切换入准备失败次数_目标侧发生重建立 for x in ho_count]
+    ho_re_in_4 = [x.切换入准备失败次数_传输资源受限 for x in ho_count]
+    ho_re_in_5 = [x.切换入准备失败次数_其它原因 for x in ho_count]
+    ho_count_secc_chart = draw_bar_stack(ho_ne, '切换出成功次数', ho_suc_out, '切换出失败次数', ho_fail_out, '切换分析')
+    HO_count_chart = draw_bar_stack_6(['' for x in range(len(ho_ne))], '等待切换响应定时器超时', ho_re_out_1, '目标侧准备失败',
+                                      ho_re_out_2, '传输资源受限', ho_re_out_6, '源侧发生重建立', ho_re_out_4, '用户未激活',
+                                      ho_re_out_5, '其它原因', ho_re_out_3, '切换出准备失败', )
+    ho_do_fail_chart = draw_bar_stack_3(['' for x in range(len(ho_ne))], '源侧发生重建立', ho_do_out_1,
+                                        '等待UECONTEXTRELEASE消息超时', ho_do_out_2, '其它原因', ho_do_out_3, '切换出执行失败')
+    ho_count_in_chart = draw_bar_stack(ho_ne, '切换入成功次数', ho_suc_in, '切换入失败次数', ho_fail_in, '切换分析')
+    HO_do_in_chart = draw_bar_stack_4(['' for x in range(len(ho_ne))], 'RRC重配完成超时', ho_do_in_1, '源侧取消切换',
+                                      ho_do_in_2, '目标侧发生重建立', ho_do_in_3, '其他原因', ho_do_in_4, '切换入执行失败', )
+    HO_re_in_chart = draw_bar_stack_5(['' for x in range(len(ho_ne))], '资源分配失败', ho_re_in_1, '源侧取消切换',
+                                      ho_re_in_2, '目标侧发生重建立', ho_re_in_3, '传输资源受限', ho_re_in_4, '其它原因',
+                                      ho_re_in_5, '切换入准备失败', )
+
+    ho_distance = session_handover.execute(
+        SELECT a.`邻区`, b.distance from (SELECT `邻区`,`邻区关系`,`切换出请求总次数` FROM `邻区切换` WHERE eNodeB = {enb} and `小区` = {cell} and `周`= {week}  and `切换出失败次数`0  order by 切换出请求总次数 asc limit 40) as a left JOIN  (SELECT relation,distance from `邻区距离`) as b ON a.`邻区关系`=b.relation order by a.`切换出请求总次数`.format(
+            enb=enb, cell=cell, week=cur_week))
+    ho_distance = list(ho_distance)
+    distance_ce = [x.邻区 for x in ho_distance]
+    df_distance = [x.distance for x in ho_distance]
+    HO_distance_chart = draw_bar_reversal(distance_ce, df_distance, '邻区站点距离', ' ', )
+    HO_distan_chart = draw_bar_reversal(['' for x in range(len(distance_ce))], df_distance, '邻区站点距离', ' ', )
+
+
+ho_count_secc_chart_options=ho_count_secc_chart.dump_options(),
+HO_count_chart_options=HO_count_chart.dump_options(),
+ho_do_fail_chart_options=ho_do_fail_chart.dump_options(),
+HO_distance_chart_options=HO_distance_chart.dump_options(),
+ho_count_in_chart_options=ho_count_in_chart.dump_options(),
+HO_distan_chart_options=HO_distan_chart.dump_options(),
+HO_do_in_chart_options=HO_do_in_chart.dump_options(),
+HO_re_in_chart_options=HO_re_in_chart.dump_options(),

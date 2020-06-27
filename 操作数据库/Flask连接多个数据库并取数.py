@@ -19,7 +19,6 @@ path = r'C:\Users\Administrator\Desktop'
 os.chdir(path)
 
 app = Flask(__name__)
-app.jinja_env.filters['zip'] = zip
 
 
 engine_mr = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/mr_report?charset=utf8", pool_recycle=7200)
@@ -47,134 +46,75 @@ session_rrc = Session_rrc()
 session_handover = Session_handover()
 
 
-def draw_line(x_axis,y_name1,y_data1,title):
+def draw_line2(title,x_axis,y_name1,y_data1,y_name2,y_data2):
     c = (
         Line()
             .add_xaxis(xaxis_data=x_axis)
             .add_yaxis(
-                series_name=y_name1,
-                y_axis=y_data1,
-                symbol="circle",
-                symbol_size=10,
-                is_symbol_show=True,
-                label_opts=opts.LabelOpts(is_show=True),
-                linestyle_opts=opts.LineStyleOpts(width=3)
+            series_name=y_name1,
+            y_axis=y_data1,
+            symbol="circle",
+            symbol_size=10,
+            is_symbol_show=True,
+            label_opts=opts.LabelOpts(is_show=True),
+            linestyle_opts=opts.LineStyleOpts(width=3)
+            )
+            .add_yaxis(
+            series_name=y_name2,
+            y_axis=y_data2,
+            symbol="circle",
+            symbol_size=10,
+            is_symbol_show=True,
+            label_opts=opts.LabelOpts(is_show=True),
+            linestyle_opts=opts.LineStyleOpts(width=3)
             )
             .set_global_opts(
-                tooltip_opts=opts.TooltipOpts(is_show=False),
-                xaxis_opts=opts.AxisOpts(
-                    type_="category",
-                    axislabel_opts=opts.LabelOpts(rotate=-30),
+            tooltip_opts=opts.TooltipOpts(is_show=False),
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                axislabel_opts=opts.LabelOpts(rotate=-30),
                 ),
+            yaxis_opts=opts.AxisOpts(
+                type_="value",
+                axistick_opts=opts.AxisTickOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+                ),
+            title_opts=opts.TitleOpts(title=title),
+            )
+    )
+    return c
+
+
+def draw_bar(y_name1,y_data1,x_axis,title):
+    c = (
+        Bar()
+            .add_xaxis(x_axis)
+            .add_yaxis(y_name1, y_data1,category_gap="60%")
+            .set_global_opts(
+                title_opts=opts.TitleOpts(title=title,title_textstyle_opts=opts.TextStyleOpts(color="#6a98ab")),
+                xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(rotate=-30)),
                 yaxis_opts=opts.AxisOpts(
-                    name=y_name1,
+                    name= y_name1,
                     type_="value",
-                ),
-                title_opts=opts.TitleOpts(
-                    title=title,
-                    title_textstyle_opts=opts.TextStyleOpts(
-                        color="#6a98ab"
-                    )
+                    axistick_opts=opts.AxisTickOpts(is_show=True),
+                    splitline_opts=opts.SplitLineOpts(is_show=True),
                 ),
             )
-            .reversal_axis()
-    ).render("./line_reversal_axis.html")
-
-
-def draw_bar(x_axis,y_name,y_data,title):
-    c = (
-        Bar()
-        .add_xaxis(x_axis)
-        .add_yaxis(y_name, y_data)
-        .reversal_axis()
-        .set_series_opts(label_opts=opts.LabelOpts(position="right"))
-        .set_global_opts(
-            title_opts=opts.TitleOpts(
-                title=title,
-                pos_top='top',
-            ),
-        )
-    ).render("./bar_reversal_axis.html")
-
-
-def draw_bar_reversal(x_axis,y_data,y_name,title):
-    c = (
-        Bar()
-        .add_xaxis(x_axis)
-        .add_yaxis(y_name,y_data)
-        .reversal_axis()
-        .set_series_opts(label_opts=opts.LabelOpts(position="right"))
-        .set_global_opts(
-        legend_opts=opts.LegendOpts(
-            pos_right="right",
-            pos_top="20"
-        ),
-        title_opts=opts.TitleOpts(title=title),
-        )
-    ).render("./draw_bar_reversal.html")
-
-
-def draw_bar_stack(x_axis,y_name1,y_data1,y_name2,y_data2,title):
-    c = (
-        Bar()
-        .add_xaxis(x_axis)
-        .add_yaxis(y_name1, y_data1, stack="stack1")
-        .add_yaxis(y_name2, y_data2, stack="stack1")
-        .reversal_axis()
-        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
-        .set_global_opts(title_opts=opts.TitleOpts(title="Bar-堆叠数据（全部）"))
-    ).render("bar_stack.html")
-
-
-def draw_bar_stack_3(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,title):
-    c = (
-        Bar()
-        .add_xaxis(x_axis)
-        .add_yaxis(y_name1, y_data1, stack="stack1")
-        .add_yaxis(y_name2, y_data2, stack="stack1")
-        .add_yaxis(y_name3, y_data3, stack="stack1")
-        .reversal_axis()
-        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
-        .set_global_opts(
-        legend_opts=opts.LegendOpts(
-            pos_left="right",
-            pos_top="20"
-        ),
-        title_opts=opts.TitleOpts(
-        title=title,
-        pos_top="0"
-        ),
-        )
-    ).render("./draw_bar_stack_3.html")
+    )
+    return c
 
 
 
-def draw_bar_stack_4(x_axis,y_name1,y_data1,y_name2,y_data2,y_name3,y_data3,y_name4,y_data4,title):
-    c = (
-        Bar()
-        .add_xaxis(x_axis)
-        .add_yaxis(y_name1, y_data1, stack="stack1")
-        .add_yaxis(y_name2, y_data2, stack="stack1")
-        .add_yaxis(y_name3, y_data3, stack="stack1")
-        .add_yaxis(y_name4, y_data4, stack="stack1")
-        .reversal_axis()
-        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
-        .set_global_opts(
-        legend_opts=opts.LegendOpts(
-            pos_left="left",
-            pos_top="20"
-        ),
-        title_opts=opts.TitleOpts(title=title))
-    ).render("./draw_bar_stack_4.html")
+recon_ratio = session_rrc.execute(
+    "SELECT * from `rrc重建比例top小区` where 站号 = {enb} and `小区号` ={cell} LIMIT 5".format(
+        enb=enb, cell=cell))
+recon_ratio = list(recon_ratio)
+cell_name = recon_ratio[0].小区名称
+ratio = [x.RRC重建立比例 for x in recon_ratio]
+ratio_sec = [x.RRC连接重建成功率 for x in recon_ratio]
+recon_count = [x.RRC重建请求数目 for x in recon_ratio]
+recon_ratio_chart = draw_line2(' ', weeks, 'RRC重建比例', ratio, 'RRC连接重建成功率', ratio_sec)
+recon_count_chart = draw_bar('RRC重建请求次数', recon_count, weeks, 'RRC重建次数', )
 
-
-
-relations = session_handover.execute("SELECT DISTINCT relation from `邻区距离`")
-session_handover.close()
-relations = list(relations)
-relations = [x.relation for x in relations]
-
-df = pd.DataFrame({'relations':relations })
-
-with open(r'C:\Users\Administrator\Desktop\relations.csv','w',newline = '') as f:
-    df.to_csv(f,index = False)
+recon_reason = recon_ratio[0][6:]
+recon_reason_chart = draw_pie(['切换失败', '其它原因', '重配失败'], recon_reason, 'RRC重建原因:', 'RRC重建原因')

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提交成功</title>
+</head>
+<body>
+    <h2> 入库成功 </h2>
+    <p> {{delete_bts_info}} </p>
+    <h2>本次入库的数据</h2>
+    <style type="text/css">
+         .table{
+             font-size: 14px;
+             color: black;
+         }
+        table
+        {
+            border-collapse: collapse;
+            text-align: center;
+            table-layout: fixed;
+            width: 700px;
+        }
+        table td, table th
+        {
+            border: 1px solid #cad9ea;
+            color: #666;
+            height: 30px;
+        }
+        table thead th
+        {
+            background-color: #CCE8EB;
+            width: 100px;
+        }
+        table tr:nth-child(odd)
+        {
+            background: #fff;
+        }
+        table tr:nth-child(even)
+        {
+            background: #F5FAFA;
+        }
+    </style>
+    <table class="table" , border="1">
+        <tr>
+            {% for title in table_titles %}
+            <th>{{ title }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>{{ omc }}</td>
+            <td>{{ type }}</td>
+            <td>{{ btsid }}</td>
+            <td>{{ btsname }}</td>
+            <td>{{ reason }}</td>
+            <td>{{ shuttime }}</td>
+            <td>{{ bbustate }}</td>
+            <td>{{ rrustate }}</td>
+            <td>{{ antstate }}</td>
+        </tr>
+     </table>
+<a href= {{url_for('delbts2datebase')}} style="color#666;font-size:48px;">返回</a><br/>
+</body>
+</html>

@@ -36,9 +36,9 @@ data_path = 'D:/_python小程序/根据经纬度计算基站间距离'
 os.chdir(data_path)
 
 source_cell_info = '3G.xlsx'
-destination_cell_info = '800M.xlsx'
+destination_cell_info = '师宗爱立信.xlsx'
 
-max_distance = 1500
+max_distance = 3000
 
 df_source_cell = pd.read_excel(source_cell_info)
 df_source_cell.columns=['name','eNodeB','lon','lat']
@@ -64,11 +64,15 @@ df_res['s_lon'], df_res['s_lat'], df_res['des_lon'], df_res['des_lat'])])
 
 df_res = df_res[['s_name', 's_eNodeB', 's_lon', 's_lat', 'des_name', 'des_eNodeB', 'des_lon', 'des_lat', 'distance']]
 df_res['distance'] = df_res['distance'].map(lambda x: ceil(x))
-df_res = df_res[df_res['distance'] < max_distance]
-df_min_distance = df_res.groupby(['源基站ID', '源基站名', '源基站经度', '源基站纬度'], as_index=False)['距离（米）'].agg(min)
+df_min_distance = df_res.groupby(['s_eNodeB', 's_name', 's_lon', 's_lat'], as_index=False)['distance'].agg(min)
+
 df_min_distance = df_min_distance[df_min_distance['distance'] > max_distance]
-with open('距离计算结果.csv', 'w', newline = '') as writer:
-    df_res.df_min_distance(writer, '最近距离', index=False)
-    df_res.to_csv(writer, '全量表格', index=False)
+
+with open('最小距离.csv', 'w', newline = '') as writer:
+    df_min_distance.to_csv(writer, index=False)
+
+with open('全量表格.csv', 'w', newline = '') as writer:
+    df_res.to_csv(writer, index=False)
+
 print('\n' + '结果已输出到：{path}，请到该目录查看！'.format(path=os.getcwd().replace('\\\\', '\\') + '\\'))
 os.startfile(data_path)
