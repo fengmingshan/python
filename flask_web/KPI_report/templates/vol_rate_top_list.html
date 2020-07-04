@@ -1,0 +1,40 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>曲靖Volte语音连接失败TOP小区清单</title>
+    </head>
+    <body>
+        <style type="text/css">
+            table.gridtable {
+                font-family: verdana,arial,sans-serif;
+                font-size:16px;
+                color:#333333;
+                border-width: 1px;
+                border-color: #666666;
+                border-collapse: collapse;
+            }
+        </style>
+        <h3>曲靖Volte语音连接失败TOP小区清单</h3>
+        <table class="gridtable" , border="1">
+            <tr>
+                {% for title in table_titles %}
+                <th>{{ title }}</th>
+                {% endfor %}
+            </tr>
+            {% for cell,cn,rc,rr,re,me,hn in top_cells_info|zip(top_cells_name,recon_count,recon_rate,res,mea,hand) %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('show_vol_rate_list') }}{{cell}}"  style="color#666;font-size:19px;">{{ cn }}</a>
+                </td>
+                <td>{{ rc }}</td>
+                <td>{{ rr }}</td>
+                <td>{{ re }}</td>
+                <td>{{ me }}</td>
+                <td>{{ hn }}</td>
+            </tr>
+            {% endfor %}
+         </table>
+        <br />
+    </body>
+    </html>

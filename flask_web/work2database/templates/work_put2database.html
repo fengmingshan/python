@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人工作周报</title>
+</head>
+<body>
+    <style type="text/css">
+        table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size:16px;
+            color:#333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+    </style>
+
+    <h3><font color="#FF7F00">{{ staffname }} 安排的工作</font></h3>
+    <table class="gridtable" , border="1">
+        <tr>
+            {% for title in table_titles %}
+                <th>{{ title }}</th>
+            {% endfor %}
+        </tr>
+        {% for pwk,pna,psd,ped,pty,pco,pst in p_weeks|zip(p_realnames,p_start_date,p_end_date,p_work_type,p_content,p_state) %}
+            <tr>
+                <td>{{ pwk }}</td>
+                <td>{{ pna }}</td>
+                <td>{{ psd }}</td>
+                <td>{{ ped }}</td>
+                <td>{{ pty }}</td>
+                <td>{{ pco }}</td>
+                <td>{{ pst }}</td>
+                <td>
+                    <a href={{ url_for('update_work') }}?source=person&wk={{ pwk }}&na={{ pna }}&sd={{ psd }}&ed={{ ped }}&ty={{ pty }}&co={{ pco }}&st={{ pst }}
+                       style="color#666;font-size:16px;">更新进度</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+    <h3>{{ staffname }} 本周个人工作</h3>
+    <table class="gridtable" , border="1">
+        <tr>
+            {% for title in table_titles %}
+                <th>{{ title }}</th>
+            {% endfor %}
+        </tr>
+        {% for wk,na,sd,ed,ty,co,st in weeks|zip(realnames,start_date,end_date,work_type,content,state) %}
+            <tr>
+                <td>{{ wk }}</td>
+                <td>{{ na }}</td>
+                <td>{{ sd }}</td>
+                <td>{{ ed }}</td>
+                <td>{{ ty }}</td>
+                <td>{{ co }}</td>
+                <td>{{ st }}</td>
+                <td>
+                    <a href={{ url_for('update_work') }}?source=person&wk={{ wk }}&na={{ na }}&sd={{ sd }}&ed={{ ed }}&ty={{ ty }}&co={{ co }}&st={{ st }}
+                       style="color#666;font-size:16px;">修改</a>
+                </td>
+                <td>
+                    <a href={{ url_for('delete_work_confirm') }}?source=person&wk={{ wk }}&na={{ na }}&sd={{ sd }}&ed={{ ed }}&ty={{ ty }}&co={{ co }}&st={{ st }}
+                       style="color#666;font-size:16px;">删除</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+    <h3>个人工作内容入库</h3>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <style type="text/css">
+            .info {
+                border-width: 4px;
+                font-size: 22px;
+                color: black);
+            }
+            .mytable {
+                font-size: 22px;
+                color: black;
+            }
+        </style>
+        <table class="mytable">
+            <tr>
+                <td>{{ form.start_date.label }}</td>
+                <td>{{ form.start_date }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.end_date.label }}&emsp;</td>
+                <td>{{ form.end_date }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.work_type.label }}&emsp;</td>
+                <td>{{ form.work_type }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.content.label }}&emsp;</td>
+                <td>{{ form.content }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.state.label }}&emsp;</td>
+                <td>{{ form.state }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.submit() }}</td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

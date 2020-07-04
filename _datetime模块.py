@@ -9,11 +9,61 @@ from datetime import timedelta
 from datetime import timezone
 import time
 
+
 # 获取当前时间
 now = datetime.now()    # 获取当前时间
 today = datetime.today()    # 获取今天时间
 dt = datetime(1980, 10, 31, 12, 30)  # 指定一个时间
 dt_stamp = dt.timestamp() # 将时间装换成timestamp
+
+
+# dateTime转换为date，但date不能直接转换为dateTime
+dateTime_p = datetime.now()
+date_p = dateTime_p.date()
+print(dateTime_p) #2019-01-30 15:17:46.573139
+print(date_p) #2019-01-30
+
+
+# 日期类型datetime转换为字符串str
+today1 = str(datetime.today().date())
+print(today1) # '2020-07-04'
+today2 = datetime.today().strftime("%Y-%m-%d")
+print(today2) # '2020-01-21'
+today3 = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+print(today3) # '2020-01-21 23:40:38'
+
+
+# 字符串类型str转换为dateTime类型
+str_p = '2019-01-30 15:29:08'
+dateTime_p = datetime.strptime(str_p,'%Y-%m-%d %H:%M:%S')
+print(dateTime_p) # 2019-01-30 15:29:08
+
+str_p = '2020-07-05'
+dateTime_p = datetime.strptime(str_p,'%Y-%m-%d')
+print(dateTime_p) # 2019-01-30 15:29:08
+
+
+# 字符串类型str转换为date类型
+str_p = '2020-07-05'
+date_p = datetime.strptime(str_p,'%Y-%m-%d').date()
+print(date_p,type(date_p)) # 2019-01-30 <class 'datetime.date'>
+
+
+# dateTime类型和date类型可以直接做加1减1操作
+from datetime import timedelta
+
+today = datetime.today().date()
+yestoday = today + timedelta(days=-1)
+tomorrow = today + timedelta(days=1)
+print(today) # 2019-01-30
+print(yestoday)# 2019-01-29
+print(tomorrow)# 2019-01-31
+
+now = datetime.now()
+now + timedelta(hours=10)
+now - timedelta(days=1)
+now + timedelta(days=2, hours=12)
+
 
 # timestamp
 t=time.time()
@@ -23,29 +73,6 @@ print(datetime.fromtimestamp(t)) # print出来的效果就是普通的时间格�
 datetime.utcfromtimestamp(t)  # 格林威治标准时间-UTC时间
 print(datetime.utcfromtimestamp(t))
 
-# str 转时间
-cday = datetime.strptime('2015-6-1 18:19:59', '%Y-%m-%d %H:%M:%S')
-print(cday)
-
-# 时间转 str
-now = datetime.now()
-print(now.strftime('%a, %b %d %H:%M'))
-
-today1 = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-# '2020-01-21 23:40:38'
-today2 = datetime.today().strftime("%Y-%m-%d")
-# '2020-01-21'
-
-# datetime的加减
-from datetime import timedelta
-
-now = datetime.now()
-
-now + timedelta(hours=10)
-
-now - timedelta(days=1)
-
-now + timedelta(days=2, hours=12)
 
 # 计算时间差
 t1 = '2015-04-06 23:30:03'

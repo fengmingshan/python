@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>曲靖TOP小区切换详细分析</title>
+    <!-- 引入 echarts.js -->
+    <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
+</head>
+
+<body>
+    <h4>{{ cell_name }} 切换分析 </h4>
+    <!== 为pyecharts图形准备好指定宽高的容器 ==>
+    <style>
+    *{
+        padding:0;
+        margin:0;
+    }
+    .rrc_container
+    {
+        width: 1200px;
+        margin: 100px auto;
+    }
+    .item
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 33.33%;
+        height: 300px;
+        float:left;
+    }
+    .rrc_container:after{
+        display: block;
+        clear: both;
+        content: ".";
+        height: 0;
+        visibility: hidden;
+        display: block;
+    }
+	</style>
+    <style>
+    *{
+        padding:0;
+        margin:0;
+    }
+    .rrc_ho_container
+    {
+        width: 1300px;
+        margin: 100px auto;
+    }
+    .htem1
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 58%;
+        height: 800px;
+        float:left;
+    }
+    .htem2
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 10%;
+        height: 800px;
+        float:left;
+    }
+    .htem3
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 16%;
+        height: 800px;
+        float:left;
+    }
+    .rrc_ho_container:after{
+        display: block;
+        clear: both;
+        content: ".";
+        height: 0;
+        visibility: hidden;
+        display: block;
+    }
+	</style>
+        <style>
+    *{
+        padding:0;
+        margin:0;
+    }
+    .rrc_kpi_container
+    {
+        width: 1300px;
+        margin: 100px auto;
+    }
+    .ttem1
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 65%;
+        height: 300px;
+        float:left;
+    }
+    .ttem2
+    {
+        box-sizing: border-box;  /*border计算在width中*/
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+        width: 35%;
+        height: 300px;
+        float:left;
+    }
+    .rrc_kpi_container:after{
+        display: block;
+        clear: both;
+        content: ".";
+        height: 0;
+        visibility: hidden;
+        display: block;
+    }
+	</style>
+
+    <h1>TA分布</h1>
+    <div id="TA_dist_chart" style="width:1300px; height:350px;"></div>
+    <div class ="rrc_ho_container">
+        <div id="ho_reason_secc_chart" class = "htem1"></div>
+        <div id="HO_distance_chart" class = "htem2"></div>
+        <div id="ho_do_fail_chart" class = "htem3"></div>
+        <div id="HO_count_chart" class = "htem3"></div>
+    </div>
+    <div class ="rrc_ho_container">
+        <div id="ho_reason_in_chart" class = "htem1"></div>
+        <div id="HO_distan_chart" class = "htem2"></div>
+        <div id="HO_do_in_chart" class = "htem3"></div>
+        <div id="HO_re_in_chart" class = "htem3"></div>
+    </div>
+
+
+{#    <h1>激活用户数</h1>#}
+{#    <div id="active_user" style="width:1300px; height:350px;"></div>#}
+{#    <h1>PRB利用率</h1>#}
+{#    <div id="prb" style="width:1300px; height:350px;"></div>#}
+{#    <h1>用户体验速率</h1>#}
+{#    <div id="feel_speed" style="width:1300px; height:350px;"></div>#}
+
+    <script type="text/javascript">
+        //基于准备好的容器，初始化echarts实例
+        var ho_reason_secc_chart = echarts.init(document.getElementById('ho_reason_secc_chart'));
+        var HO_distance_chart = echarts.init(document.getElementById('HO_distance_chart'));
+        var ho_do_fail_chart = echarts.init(document.getElementById('ho_do_fail_chart'));
+        var HO_count_chart = echarts.init(document.getElementById('HO_count_chart'));
+        var ho_reason_in_chart = echarts.init(document.getElementById('ho_reason_in_chart'));
+        var HO_distan_chart = echarts.init(document.getElementById('HO_distan_chart'));
+        var HO_do_in_chart = echarts.init(document.getElementById('HO_do_in_chart'));
+        var HO_re_in_chart = echarts.init(document.getElementById('HO_re_in_chart'));
+        var TA_dist_chart = echarts.init(document.getElementById('TA_dist_chart'));
+
+        //用.py文件中定义好的配置项和数据显示图表
+        ho_reason_secc_chart.setOption({{ho_reason_secc_chart_options | safe}});
+        HO_distance_chart.setOption({{HO_distance_chart_options | safe}});
+        ho_do_fail_chart.setOption({{ho_do_fail_chart_options | safe}});
+        HO_count_chart.setOption({{HO_count_chart_options | safe}});
+        ho_reason_in_chart.setOption({{ho_reason_in_chart_options | safe}});
+        HO_distan_chart.setOption({{HO_distan_chart_options | safe}});
+        HO_do_in_chart.setOption({{HO_do_in_chart_options | safe}});
+        HO_re_in_chart.setOption({{HO_re_in_chart_options | safe}});
+        TA_dist_chart.setOption({{TA_dist_chart_options | safe}});
+
+    </script>
+     <h1>TOP小区处理入库</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <style type="text/css">
+             .info{
+                 border-width: 4px;
+                 border-style:inset;
+                 font-size: 22px;
+                 color: black);
+             }
+             .table{
+                 font-size: 20px;
+                 color: black;
+             }
+        </style>
+        <p class="table">
+            {{ form.serial_number.label }}&emsp;
+            {{ form.serial_number}}
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.serial_numberu.0 }}</span>
+            {% endif %}
+        </p>
+        <p class="table">
+            {{ form.content.label }}&emsp;
+            {{ form.content}}
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.content.0 }}</span>
+            {% endif %}
+        </p>
+         <p class="table">
+            {{ form.content1.label }}&emsp;
+            {{ form.content1}}
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.content1.0 }}</span>
+            {% endif %}
+        </p>
+        <p class="table">
+            {{ form.result.label }}&emsp;
+            {{ form.result}}
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.result.0 }}</span>
+            {% endif %}
+        </p>
+        <p class="table">
+            {{ form.submit() }}&emsp;
+        </p>
+    </form>
+    <h5>end of table</h5>
+</body>
+</html>

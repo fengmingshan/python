@@ -79,5 +79,39 @@
         recon_other_cause_chart.setOption({{recon_other_cause_chart_options | safe}});
 
     </script>
+    <h1>TOP小区处理入库</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <style type="text/css">
+             .info{
+                 border-width: 4px;
+                 border-style:inset;
+                 font-size: 22px;
+                 color: black);
+             }
+             .table{
+                 font-size: 20px;
+                 color: black;
+             }
+        </style>
+         <p class="table">
+            {{ form.cause.label }}&emsp;
+            {{ form.cause}}&emsp;&emsp;
+            {{ form.measure.label }}&emsp;
+            {{ form.measure}}&emsp;&emsp;
+            {{ form.handler.label }}&emsp;
+            {{ form.handler}}&emsp;&emsp;
+        </p>
+        <p class="table">
+            {{ form.result.label }}&emsp;
+            {{ form.result}}
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.result.0 }}</span>
+            {% endif %}
+        </p>
+        <p class="table">
+            {{ form.submit() }}&emsp;
+        </p>
+    </form>
 </body>
 </html>

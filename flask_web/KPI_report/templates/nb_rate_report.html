@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>曲靖CQI指标监控</title>
+    <!-- 引入 echarts.js -->
+    <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
+</head>
+
+<body>
+    <!== 为pyecharts图形准备好指定宽高的容器 ==>
+    <h1>全网NB_IoT小区RRC连接次数</h1>
+    <div id="nb_request" style="width:1300px; height:350px;"></div>
+    <h1>全网NB_IoT小区RRC连接建立成功率</h1>
+    <div id="qw_rrc" style="width:1300px; height:350px;"></div>
+    <h1>中兴NB_IoT小区RRC连接建立成功率</h1>
+    <div id="zte_rrc" style="width:1300px; height:350px;"></div>
+    <h1>爱立信NB_IoT小区RRC连接建立成功率</h1>
+    <div id="eri_rrc" style="width:1300px; height:350px;"></div>
+    <h5>end of table</h5>
+    <script type="text/javascript">
+        //基于准备好的容器，初始化echarts实例
+        var nb_request_chart = echarts.init(document.getElementById('nb_request'));
+        var qw_rrc_chart = echarts.init(document.getElementById('qw_rrc'));
+        var zte_rrc_chart = echarts.init(document.getElementById('zte_rrc'));
+        var eri_rrc_chart = echarts.init(document.getElementById('eri_rrc'));
+        //用.py文件中定义好的配置项和数据显示图表
+        nb_request_chart.setOption({{nb_request_options | safe}});
+        qw_rrc_chart.setOption({{qw_rrc_options | safe}});
+        zte_rrc_chart.setOption({{zte_rrc_options | safe}});
+        eri_rrc_chart.setOption({{eri_rrc_options | safe}});
+    </script>
+</body>
+</html>

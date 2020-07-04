@@ -14,10 +14,7 @@
       </list>
     </option>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
-  </component>
-  <component name="JupyterTrust" id="9eedadaa-355a-4c36-9fb4-45f82b960938" />
+  <component name="JupyterTrust" id="404e3d6f-a2db-4d83-8d07-13385e90577e" />
   <component name="ProjectId" id="1bO3nHLKr4IfU67o5QrG7S9WWjU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -29,7 +26,6 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
@@ -92,23 +88,28 @@
       <workItem from="1591064969088" duration="573000" />
       <workItem from="1591067528255" duration="936000" />
       <workItem from="1591166923442" duration="75000" />
-      <workItem from="1591167766852" duration="2650000" />
-      <workItem from="1591170907146" duration="3633000" />
-      <workItem from="1591322620221" duration="2550000" />
-      <workItem from="1591348404570" duration="1481000" />
-      <workItem from="1591349915057" duration="280000" />
-      <workItem from="1591408158655" duration="886000" />
-      <workItem from="1591415727973" duration="2783000" />
-      <workItem from="1591665945898" duration="596000" />
-      <workItem from="1591774234163" duration="4998000" />
-      <workItem from="1591947859896" duration="1966000" />
-      <workItem from="1591951431062" duration="386000" />
-      <workItem from="1591951832729" duration="603000" />
-      <workItem from="1592147376823" duration="6849000" />
-      <workItem from="1592203572372" duration="2122000" />
-      <workItem from="1592290950460" duration="3456000" />
-      <workItem from="1592354788663" duration="2042000" />
-      <workItem from="1592470379663" duration="338000" />
+      <workItem from="1591754199743" duration="709000" />
+      <workItem from="1591781733189" duration="137000" />
+      <workItem from="1591954490880" duration="741000" />
+      <workItem from="1591955606929" duration="453000" />
+      <workItem from="1592188390938" duration="527000" />
+      <workItem from="1592189372647" duration="2438000" />
+      <workItem from="1592204755922" duration="1336000" />
+      <workItem from="1592293631119" duration="516000" />
+      <workItem from="1592356546531" duration="127000" />
+      <workItem from="1592360272006" duration="215000" />
+      <workItem from="1592792515410" duration="174000" />
+      <workItem from="1592895562306" duration="892000" />
+      <workItem from="1592899025180" duration="139000" />
+      <workItem from="1592899254561" duration="326000" />
+      <workItem from="1593150220467" duration="9000" />
+      <workItem from="1593333088290" duration="1752000" />
+      <workItem from="1593335515493" duration="188000" />
+      <workItem from="1593505167633" duration="640000" />
+      <workItem from="1593505838645" duration="487000" />
+      <workItem from="1593508819350" duration="139000" />
+      <workItem from="1593509028492" duration="142000" />
+      <workItem from="1593763394099" duration="1313000" />
     </task>
     <servers />
   </component>
@@ -120,38 +121,30 @@
       <screen x="0" y="0" width="1280" height="984" />
     </state>
     <state x="94" y="146" width="1092" height="696" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.984@0.0.1280.984" timestamp="1590721960841" />
-    <state x="437" y="232" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1591323034910">
-      <screen x="0" y="0" width="1366" height="728" />
-    </state>
-    <state x="437" y="232" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1366.728@0.0.1366.728" timestamp="1591323034910" />
     <state x="420" y="246" key="FileChooserDialogImpl" timestamp="1588730148683">
       <screen x="0" y="0" width="1280" height="984" />
     </state>
     <state x="420" y="246" key="FileChooserDialogImpl/0.0.1280.984@0.0.1280.984" timestamp="1588730148683" />
-    <state width="1304" height="136" key="GridCell.Tab.0.bottom" timestamp="1592300960792">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1320" height="258" key="GridCell.Tab.0.bottom" timestamp="1593769228618">
+      <screen x="0" y="0" width="1364" height="728" />
     </state>
-    <state width="1236" height="258" key="GridCell.Tab.0.bottom/0.0.1280.984@0.0.1280.984" timestamp="1591068467088" />
-    <state width="1320" height="174" key="GridCell.Tab.0.bottom/0.0.1364.728@0.0.1364.728" timestamp="1588638348006" />
-    <state width="1304" height="136" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1592300960792" />
-    <state width="1304" height="136" key="GridCell.Tab.0.center" timestamp="1592300960792">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1236" height="258" key="GridCell.Tab.0.bottom/0.0.1280.984@0.0.1280.984" timestamp="1593506326574" />
+    <state width="1320" height="258" key="GridCell.Tab.0.bottom/0.0.1364.728@0.0.1364.728" timestamp="1593769228618" />
+    <state width="1320" height="258" key="GridCell.Tab.0.center" timestamp="1593769228618">
+      <screen x="0" y="0" width="1364" height="728" />
     </state>
-    <state width="1236" height="258" key="GridCell.Tab.0.center/0.0.1280.984@0.0.1280.984" timestamp="1591068467088" />
-    <state width="1320" height="174" key="GridCell.Tab.0.center/0.0.1364.728@0.0.1364.728" timestamp="1588638348006" />
-    <state width="1304" height="136" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1592300960792" />
-    <state width="1304" height="136" key="GridCell.Tab.0.left" timestamp="1592300960792">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1236" height="258" key="GridCell.Tab.0.center/0.0.1280.984@0.0.1280.984" timestamp="1593506326574" />
+    <state width="1320" height="258" key="GridCell.Tab.0.center/0.0.1364.728@0.0.1364.728" timestamp="1593769228618" />
+    <state width="1320" height="258" key="GridCell.Tab.0.left" timestamp="1593769228618">
+      <screen x="0" y="0" width="1364" height="728" />
     </state>
-    <state width="1236" height="258" key="GridCell.Tab.0.left/0.0.1280.984@0.0.1280.984" timestamp="1591068467088" />
-    <state width="1320" height="174" key="GridCell.Tab.0.left/0.0.1364.728@0.0.1364.728" timestamp="1588638348006" />
-    <state width="1304" height="136" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1592300960791" />
-    <state width="1304" height="136" key="GridCell.Tab.0.right" timestamp="1592300960792">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1236" height="258" key="GridCell.Tab.0.left/0.0.1280.984@0.0.1280.984" timestamp="1593506326574" />
+    <state width="1320" height="258" key="GridCell.Tab.0.left/0.0.1364.728@0.0.1364.728" timestamp="1593769228618" />
+    <state width="1320" height="258" key="GridCell.Tab.0.right" timestamp="1593769228618">
+      <screen x="0" y="0" width="1364" height="728" />
     </state>
-    <state width="1236" height="258" key="GridCell.Tab.0.right/0.0.1280.984@0.0.1280.984" timestamp="1591068467088" />
-    <state width="1320" height="174" key="GridCell.Tab.0.right/0.0.1364.728@0.0.1364.728" timestamp="1588638348006" />
-    <state width="1304" height="136" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1592300960792" />
+    <state width="1236" height="258" key="GridCell.Tab.0.right/0.0.1280.984@0.0.1280.984" timestamp="1593506326574" />
+    <state width="1320" height="258" key="GridCell.Tab.0.right/0.0.1364.728@0.0.1364.728" timestamp="1593769228618" />
     <state x="141" y="123" key="SettingsEditor" timestamp="1588489682818">
       <screen x="0" y="0" width="1280" height="984" />
     </state>
@@ -167,18 +160,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/func.py</url>
-          <line>59</line>
+          <line>78</line>
           <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/app.py</url>
-          <line>576</line>
-          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/KPI_report$KPI_report.coverage" NAME="KPI_report Coverage Results" MODIFIED="1592293968840" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/KPI_report$KPI_report.coverage" NAME="KPI_report Coverage Results" MODIFIED="1593763470308" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

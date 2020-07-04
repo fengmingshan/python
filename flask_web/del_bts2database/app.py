@@ -61,8 +61,7 @@ def delbts2datebase():
             session_del.execute(
                 "INSERT INTO  `网管删除的基站`(`omc`, `type`, `btsid`, `btsname`, `reason`, `shuttime`,`bbustate`,`rrustate`,`antstate`) VALUES ('{om}','{ty}','{id}','{na}','{re}','{sh}','{bb}','{rr}','{an}')".format(
                     om=omc, ty=type, id=btsid, na=btsname, re=reason, sh=shuttime, bb=bbustate, rr=rrustate,
-                    an=antstate)
-            )
+                    an=antstate))
             session_del.commit()
             session_del.close()
 
@@ -145,9 +144,9 @@ def show_department_work():
     if request.method == 'POST':
         if form.validate_on_submit():
             plan_info = request.form.to_dict()
-            c_week = week
             s_name = plan_info.get('name')
             s_date = plan_info.get('start_date')
+            w_week = datetime.strptime(s_date,'%Y-%m-%d').date().isocalendar()[1]
             e_date = '9999-09-09'
             w_type = '安排的工作'
             w_content = plan_info.get('content')
@@ -156,7 +155,7 @@ def show_department_work():
 
             session_work.execute(
                 "INSERT INTO  `工作周报`(`周`,`姓名`, `开始日期`,`结束日期`,`工作类别`,`工作内容`,`当前状态`) VALUES ({wk},'{na}','{sd}','{ed}','{ty}','{co}','{st}')".format(
-                    wk=c_week, na=s_name, sd=s_date, ed=e_date, ty=w_type, co=w_content ,st=w_state))
+                    wk=w_week, na=s_name, sd=s_date, ed=e_date, ty=w_type, co=w_content ,st=w_state))
             session_work.commit()
             session_work.close()
 
@@ -237,15 +236,17 @@ def work2datebase(name):
         if form.validate_on_submit():
             work_info = request.form.to_dict()
             s_date = work_info.get('start_date')
+            w_week = datetime.strptime(s_date,'%Y-%m-%d').date().isocalendar()[1]
             e_date = work_info.get('end_date')
             w_type = work_info.get('work_type')
             w_content = work_info.get('content')
             w_content = w_content.strip().replace(' ', '')
+            w_content = w_content.strip().replace('\t', '')
             w_state = work_info.get('state')
 
             session_work.execute(
                 "INSERT INTO  `工作周报`(`周`,`姓名`, `开始日期`, `结束日期`, `工作类别`, `工作内容`, `当前状态`) VALUES ({wk},'{na}','{sd}','{ed}','{ty}','{co}','{st}')".format(
-                    wk=week, na=real_name, sd=s_date, ed=e_date, ty=w_type, co=w_content, st=w_state))
+                    wk=w_week, na=real_name, sd=s_date, ed=e_date, ty=w_type, co=w_content, st=w_state))
             session_work.commit()
             session_work.close()
 
@@ -303,7 +304,7 @@ def update_work():
     enddate = table_data.get('ed') if table_data.get('ed') != 'None' else '9999-09-09'
     enddate_date = datetime.strptime(enddate, '%Y-%m-%d')
     worktype = table_data.get('ty')
-    content = table_data.get('co')
+    ori_content = table_data.get('co')
     workstate = table_data.get('st') if table_data.get('ed') != 'None' else '进行中'
 
     form = Work_report_form()
@@ -311,7 +312,7 @@ def update_work():
     form.start_date.data = stratdate_date
     form.end_date.data = enddate_date
     form.work_type.data = worktype
-    form.content.data = content
+    form.content.data = ori_content
     form.state.data = workstate
 
     if source == 'person':
@@ -329,9 +330,9 @@ def update_work():
             w_state = work_info.get('state')
 
             session_work.execute(
-                "UPDATE `工作周报` SET `周` = '{wk}' ,`开始日期` = '{sd}' ,`结束日期` = '{ed}' ,`工作内容` = '{co}' ,`当前状态` = '{st}' WHERE `姓名` = '{na}' AND `开始日期` = '{date}' AND `工作类别` = '{ty}' AND  `工作内容` = '{ori_content}'".format(
-                    wk=week, sd=s_date, ed=e_date, co=w_content, st=w_state, na=realname, date=stratdate, ty=worktype,
-                    ori_content=content))
+                "UPDATE `工作周报` SET `周` = '{wk}' ,`开始日期` = '{sd}' ,`结束日期` = '{ed}' ,`工作类别` = '{nty}' ,`工作内容` = '{co}' , `当前状态` = '{st}' WHERE `姓名` = '{na}' AND `开始日期` = '{date}' AND `工作类别` = '{ty}' AND  `工作内容` = '{ori_content}'".format(
+                    wk=week, sd=s_date, ed=e_date, nty=w_type, co=w_content, st=w_state, na=realname, date=stratdate,ty=worktype,
+                    ori_content=ori_content))
             session_work.commit()
             session_work.close()
 
@@ -435,4 +436,4 @@ def delete_work():
     return redirect(url_for('work2datebase',name = name))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,port = 8002)

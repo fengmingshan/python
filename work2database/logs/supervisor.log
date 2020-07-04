@@ -1,0 +1,27 @@
+[2020-07-01 15:27:28 +0800] [4871] [INFO] Starting gunicorn 20.0.4
+[2020-07-01 15:27:28 +0800] [4871] [INFO] Listening at: http://0.0.0.0:8002 (4871)
+[2020-07-01 15:27:28 +0800] [4871] [INFO] Using worker: gevent
+[2020-07-01 15:27:28 +0800] [4874] [INFO] Booting worker with pid: 4874
+[2020-07-01 15:27:28 +0800] [4875] [INFO] Booting worker with pid: 4875
+[2020-07-01 15:29:57 +0800] [4960] [INFO] Starting gunicorn 20.0.4
+[2020-07-01 15:29:57 +0800] [4960] [INFO] Listening at: http://0.0.0.0:8002 (4960)
+[2020-07-01 15:29:57 +0800] [4960] [INFO] Using worker: gevent
+[2020-07-01 15:29:57 +0800] [4963] [INFO] Booting worker with pid: 4963
+[2020-07-01 15:29:57 +0800] [4964] [INFO] Booting worker with pid: 4964
+[2020-07-01 15:30:15 +0800] [4969] [INFO] Booting worker with pid: 4969
+[2020-07-01 15:30:25 +0800] [4972] [INFO] Booting worker with pid: 4972
+[2020-07-01 15:30:40 +0800] [4972] [INFO] Parent changed, shutting down: <Worker 4972>
+[2020-07-01 15:30:40 +0800] [4972] [INFO] Worker exiting (pid: 4972)
+[2020-07-01 15:30:41 +0800] [4978] [INFO] Starting gunicorn 20.0.4
+[2020-07-01 15:30:41 +0800] [4978] [ERROR] Connection in use: ('0.0.0.0', 8002)
+[2020-07-01 15:30:41 +0800] [4978] [ERROR] Retrying in 1 second.
+[2020-07-01 15:30:42 +0800] [4978] [INFO] Listening at: http://0.0.0.0:8002 (4978)
+[2020-07-01 15:30:42 +0800] [4978] [INFO] Using worker: gevent
+[2020-07-01 15:30:42 +0800] [4981] [INFO] Booting worker with pid: 4981
+[2020-07-01 15:30:42 +0800] [4982] [INFO] Booting worker with pid: 4982
+[2020-07-01 15:35:42 +0800] [4978] [INFO] Handling signal: term
+/home/fms/project/venv/lib/python3.7/site-packages/pymysql/cursors.py:170: Warning: (1366, "Incorrect string value: '\\xD6\\xD0\\xB9\\xFA\\xB1\\xEA...' for column 'VARIABLE_VALUE' at row 480")
+  result = self._query(query)
+[2020-07-01 15:35:43 +0800] [4981] [INFO] Worker exiting (pid: 4981)
+[2020-07-01 15:35:43 +0800] [4982] [INFO] Worker exiting (pid: 4982)
+[2020-07-01 15:35:43 +0800] [4978] [INFO] Shutting down: Master

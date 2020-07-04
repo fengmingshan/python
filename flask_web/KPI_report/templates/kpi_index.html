@@ -15,14 +15,16 @@
     <a href= {{url_for('show_rrc_success')}} style="color#666;font-size:28px;">RRC重建成功率</a><br/>
     <a href= {{url_for('show_rrc_rate_list')}} style="color#666;font-size:28px;">RRC重建成功率TOP小区列表</a><br/>
     <a href= {{url_for('show_erab_rate')}} style="color#666;font-size:28px;">E-RAB掉线率</a><br/>
-    <a href= {{url_for('show_erab_rate')}} style="color#666;font-size:28px;">E-RAB掉线率TOP小区列表</a><br/>
+    <a href= {{url_for('show_erab_drop_list')}} style="color#666;font-size:28px;">E-RAB掉线率TOP小区列表</a><br/>
     <a href="http://218.63.75.44:8000/mod3" style="color#666;font-size:28px;">MOD3干扰小区占比</a><br/>
     <a href="http://218.63.75.44:8000/hand23g" style="color#666;font-size:28px;">4G下切3G比例</a><br/>
-    <a href="http://218.63.75.44:8000/vo_con" style="color#666;font-size:28px;">VOLTE语音接通率</a><br/>
-    <a href="http://218.63.75.44:8000/vo_drop" style="color#666;font-size:28px;">VOLTE掉话率</a><br/>
-    <a href="http://218.63.75.44:8000/nb_con" style="color#666;font-size:28px;">NB-IOT无线连接成功率</a><br/>
+    <a href={{url_for('show_volte_rate')}} style="color#666;font-size:28px;">VOLTE语音接通率</a><br/>
+    <a href={{url_for('show_vol_rate_list')}} style="color#666;font-size:28px;">VOLTE语音接通率TOP小区列表</a><br/>
+    <a href={{url_for('show_volte_drop')}} style="color#666;font-size:28px;">VOLTE掉话率</a><br/>
+    <a href={{url_for('show_vol_drop_list')}} style="color#666;font-size:28px;">VOLTE掉话率TOP小区列表</a><br/>
+    <a href={{url_for('show_nb_rate')}} style="color#666;font-size:28px;">NB-IOT无线连接成功率</a><br/>
     <a href= {{url_for('show_wire_conn')}} style="color#666;font-size:28px;">无线连接成功率</a><br/>
-    <a href={{url_for('show_cell_traffic')}} style="color#666;font-size:28px;">邻区切换分析</a><br/>
-    <a href={{url_for('show_cell_traffic')}} style="color#666;font-size:28px;">小区话务查询</a><br/>
+    <a href={{url_for('show_cell_traffic')}} style="color#666;font-size:28px;">小区话务</a><br/>
+    <a href= {{url_for('school')}} style="color#666;font-size:28px;">校园指标</a><br/>
 </body>
 </html>

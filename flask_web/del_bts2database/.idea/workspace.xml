@@ -83,9 +83,10 @@
       <workItem from="1593150821069" duration="17000" />
       <workItem from="1593152759258" duration="2748000" />
       <workItem from="1593181700074" duration="11817000" />
-      <workItem from="1593244520694" duration="2464000" />
-      <workItem from="1593247225327" duration="687000" />
-      <workItem from="1593272167333" duration="106000" />
+      <workItem from="1593244520694" duration="2156000" />
+      <workItem from="1593326644289" duration="359000" />
+      <workItem from="1593333125316" duration="450000" />
+      <workItem from="1593829302173" duration="286000" />
     </task>
     <servers />
   </component>
@@ -93,26 +94,26 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1304" height="169" key="GridCell.Tab.0.bottom" timestamp="1593246993358">
+    <state width="1304" height="169" key="GridCell.Tab.0.bottom" timestamp="1593333577684">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1236" height="259" key="GridCell.Tab.0.bottom/0.0.1280.984@0.0.1280.984" timestamp="1592897922356" />
-    <state width="1304" height="169" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1593246993358" />
-    <state width="1304" height="169" key="GridCell.Tab.0.center" timestamp="1593246993357">
+    <state width="1236" height="259" key="GridCell.Tab.0.bottom/0.0.1280.984@0.0.1280.984" timestamp="1593327016759" />
+    <state width="1304" height="169" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1593333577684" />
+    <state width="1304" height="169" key="GridCell.Tab.0.center" timestamp="1593333577684">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1236" height="259" key="GridCell.Tab.0.center/0.0.1280.984@0.0.1280.984" timestamp="1592897922356" />
-    <state width="1304" height="169" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1593246993357" />
-    <state width="1304" height="169" key="GridCell.Tab.0.left" timestamp="1593246993357">
+    <state width="1236" height="259" key="GridCell.Tab.0.center/0.0.1280.984@0.0.1280.984" timestamp="1593327016759" />
+    <state width="1304" height="169" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1593333577684" />
+    <state width="1304" height="169" key="GridCell.Tab.0.left" timestamp="1593333577683">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1236" height="259" key="GridCell.Tab.0.left/0.0.1280.984@0.0.1280.984" timestamp="1592897922356" />
-    <state width="1304" height="169" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1593246993357" />
-    <state width="1304" height="169" key="GridCell.Tab.0.right" timestamp="1593246993357">
+    <state width="1236" height="259" key="GridCell.Tab.0.left/0.0.1280.984@0.0.1280.984" timestamp="1593327016759" />
+    <state width="1304" height="169" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1593333577683" />
+    <state width="1304" height="169" key="GridCell.Tab.0.right" timestamp="1593333577684">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1236" height="259" key="GridCell.Tab.0.right/0.0.1280.984@0.0.1280.984" timestamp="1592897922356" />
-    <state width="1304" height="169" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1593246993357" />
+    <state width="1236" height="259" key="GridCell.Tab.0.right/0.0.1280.984@0.0.1280.984" timestamp="1593327016759" />
+    <state width="1304" height="169" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1593333577684" />
     <state width="1304" height="211" key="GridCell.Tab.1.bottom" timestamp="1593233880314">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -136,6 +137,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/_$_.coverage" NAME="表单_删除基站入库 Coverage Results" MODIFIED="1592555420872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/del_bts2database$_.coverage" NAME="表单_删除基站入库 Coverage Results" MODIFIED="1593246687283" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/del_bts2database$_.coverage" NAME="表单_删除基站入库 Coverage Results" MODIFIED="1593829592234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

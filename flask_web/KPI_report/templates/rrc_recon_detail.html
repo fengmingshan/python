@@ -54,7 +54,7 @@
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
         width: 58%;
-        height: 800px;
+        height: 760px;
         float:left;
     }
     .htem2
@@ -62,8 +62,8 @@
         box-sizing: border-box;  /*border计算在width中*/
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
-        width: 10%;
-        height: 800px;
+        width: 42%;
+        height: 760px;
         float:left;
     }
     .htem3
@@ -72,7 +72,7 @@
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
         width: 16%;
-        height: 800px;
+        height: 760px;
         float:left;
     }
     .rrc_ho_container:after{
@@ -131,6 +131,10 @@
         <div id="TA_dist_chart" class = "ttem1"></div>
         <div id="recon_kpi_chart" class = "ttem2"></div>
     </div>
+    <div class ="rrc_kpi_container">
+        <div id="MR_dist_chart" class = "ttem1"></div>
+    </div>
+
 
 {#    <h1>激活用户数</h1>#}
 {#    <div id="active_user" style="width:1300px; height:350px;"></div>#}
@@ -141,21 +145,54 @@
     <h5>end of table</h5>
     <script type="text/javascript">
         //基于准备好的容器，初始化echarts实例
-        var rrc_recon_reason_chart = echarts.init(document.getElementById('rrc_recon_reason_chart'));
-        var rrc_recon_ratio_chart = echarts.init(document.getElementById('rrc_recon_ratio_chart'));
         var rrc_recon_count_chart = echarts.init(document.getElementById('rrc_recon_count_chart'));
-
+        var rrc_recon_ratio_chart = echarts.init(document.getElementById('rrc_recon_ratio_chart'));
+        var rrc_recon_reason_chart = echarts.init(document.getElementById('rrc_recon_reason_chart'));
         var TA_dist_chart = echarts.init(document.getElementById('TA_dist_chart'));
         var recon_kpi_chart = echarts.init(document.getElementById('recon_kpi_chart'));
+        var MR_dist_chart = echarts.init(document.getElementById('MR_dist_chart'));
 
         //用.py文件中定义好的配置项和数据显示图表
         rrc_recon_count_chart.setOption({{rrc_recon_reason_chart_options | safe}});
         rrc_recon_ratio_chart.setOption({{rrc_recon_ratio_chart_options | safe}});
         rrc_recon_reason_chart.setOption({{rrc_recon_count_chart_options | safe}});
-
         TA_dist_chart.setOption({{TA_dist_chart_options | safe}});
         recon_kpi_chart.setOption({{recon_kpi_chart_options | safe}});
-
+        MR_dist_chart.setOption({{MR_dist_chart_options | safe}});
     </script>
+    <h1>TOP小区处理入库</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <style type="text/css">
+             .info{
+                 border-width: 4px;
+                 border-style:inset;
+                 font-size: 22px;
+                 color: black);
+             }
+             .table{
+                 font-size: 20px;
+                 color: black;
+             }
+        </style>
+         <p class="table">
+            {{ form.cause.label }}&emsp;
+            {{ form.cause}}&emsp;&emsp;
+            {{ form.measure.label }}&emsp;
+            {{ form.measure}}&emsp;&emsp;
+            {{ form.handler.label }}&emsp;
+            {{ form.handler}}&emsp;&emsp;
+        </p>
+        <p class="table">
+            {{ form.result.label }}&emsp;
+            {{ form.result}}
+            {% if form.errors %}
+                <span style="color:#ff1212;">{{ form.errors.result.0 }}</span>
+            {% endif %}
+        </p>
+        <p class="table">
+            {{ form.submit() }}&emsp;
+        </p>
+    </form>
 </body>
 </html>

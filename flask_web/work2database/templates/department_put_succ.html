@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>工作安排成功</title>
+</head>
+<body>
+    <h2> 工作安排成功 </h2>
+
+    <h3>本次安排的工作</h3>
+    <style type="text/css">
+       table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size:16px;
+            color:#333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+    </style>
+    <table class="gridtable" , border="1">
+        <tr>
+            {% for title in schedule_titles %}
+            <th>{{ title }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>{{ week }}</td>
+            <td>{{ realname }}</td>
+            <td>{{ start_date }}</td>
+            <td>{{ work_type }}</td>
+            <td>{{ content }}</td>
+        </tr>
+     </table>
+
+
+
+<a href= {{ url_for('show_department_work') }} style="color#666;font-size:30px;">返回</a><br/>
+</body>
+</html>
