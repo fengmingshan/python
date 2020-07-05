@@ -25,7 +25,7 @@ session_tousu = Session_tousu()
 session_work = Session_work()
 
 
-@app.route('/del', methods=['GET', 'POST'])
+@app.route('/del/', methods=['GET', 'POST'])
 def delbts2datebase():
     # 将表单类实例化
     form = Delete_bts_form()
@@ -92,7 +92,7 @@ def delbts2datebase():
                            )
 
 
-@app.route('/put', methods=['GET', 'POST'])
+@app.route('/put/', methods=['GET', 'POST'])
 def put2datebase():
     # 将表单类实例化
     form = Complaint_form()
@@ -144,9 +144,9 @@ def show_department_work():
     if request.method == 'POST':
         if form.validate_on_submit():
             plan_info = request.form.to_dict()
-            c_week = week
             s_name = plan_info.get('name')
             s_date = plan_info.get('start_date')
+            w_week = datetime.strptime(s_date,'%Y-%m-%d').date().isocalendar()[1]
             e_date = '9999-09-09'
             w_type = '安排的工作'
             w_content = plan_info.get('content')
@@ -155,14 +155,14 @@ def show_department_work():
 
             session_work.execute(
                 "INSERT INTO  `工作周报`(`周`,`姓名`, `开始日期`,`结束日期`,`工作类别`,`工作内容`,`当前状态`) VALUES ({wk},'{na}','{sd}','{ed}','{ty}','{co}','{st}')".format(
-                    wk=c_week, na=s_name, sd=s_date, ed=e_date, ty=w_type, co=w_content ,st=w_state))
+                    wk=w_week, na=s_name, sd=s_date, ed=e_date, ty=w_type, co=w_content ,st=w_state))
             session_work.commit()
             session_work.close()
 
             schedule_titles = ['周', '姓名', '开始日期', '工作类别', '工作内容']
             return render_template('department_put_succ.html',
                                    schedule_titles=schedule_titles,
-                                   week=c_week,
+                                   week=w_week,
                                    realname=s_name,
                                    start_date=s_date,
                                    work_type=w_type,
@@ -236,6 +236,7 @@ def work2datebase(name):
         if form.validate_on_submit():
             work_info = request.form.to_dict()
             s_date = work_info.get('start_date')
+            w_week = datetime.strptime(s_date,'%Y-%m-%d').date().isocalendar()[1]
             e_date = work_info.get('end_date')
             w_type = work_info.get('work_type')
             w_content = work_info.get('content')
@@ -245,14 +246,14 @@ def work2datebase(name):
 
             session_work.execute(
                 "INSERT INTO  `工作周报`(`周`,`姓名`, `开始日期`, `结束日期`, `工作类别`, `工作内容`, `当前状态`) VALUES ({wk},'{na}','{sd}','{ed}','{ty}','{co}','{st}')".format(
-                    wk=week, na=real_name, sd=s_date, ed=e_date, ty=w_type, co=w_content, st=w_state))
+                    wk=w_week, na=real_name, sd=s_date, ed=e_date, ty=w_type, co=w_content, st=w_state))
             session_work.commit()
             session_work.close()
 
             return render_template('work_put_succ.html',
                                    table_titles=table_titles,
                                    name=name,
-                                   week=week,
+                                   week=w_week,
                                    realname=real_name,
                                    start_date=s_date,
                                    end_date=e_date,

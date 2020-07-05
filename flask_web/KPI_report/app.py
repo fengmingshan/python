@@ -51,9 +51,13 @@ session_vol = Session_vol()
 @app.route("/")
 def show_index():
     month = session_mr.execute("select DISTINCT month(date_time) as 'month' from mr_summary")
+    session_mr.close()
     month = list(month)
     month = [x.month for x in month]
     month = max(month)
+
+    session_mr.close()
+
     return render_template('kpi_index.html', month=month)
 
 
@@ -128,7 +132,9 @@ def show_mr_kpi():
     eric800_data = session_mr.execute(
         "select date_time,mr_good_rate from mr_summary where area = '曲靖市' and static_zone = '爱立信800M' and month(date_time) = {month} order by date_time asc".format(
             month=month))
+
     session_mr.close()
+
     eric800_data = list(eric800_data)
     eric800_x_axis = [x[0] for x in eric800_data]
     eric800_y_data = [round(x[1] * 100, 2) for x in eric800_data]
@@ -210,7 +216,9 @@ def show_cqi_kpi():
     eric800_data = session_cqi.execute(
         "select date_time,abpve7_rate from cqi_summary where area = '曲靖市' and static_zone = '爱立信800M' and month(date_time) = {month} order by date_time asc".format(
             month=month))
+
     session_cqi.close()
+
     eric800_data = list(eric800_data)
     eric800_x_axis = [x[0] for x in eric800_data]
     eric800_y_data = [round(x[1] * 100, 2) for x in eric800_data]
@@ -234,6 +242,9 @@ def show_cell_traffic():
             rrc_user = session_kpi.execute(
                 "SELECT Start_time, Avg_number_of_UE_in_RRc from zte_hour WHERE month(zte_hour.Start_time) = {month} and day(zte_hour.Start_time) = {day} and eNodeB = {enb} and cell = {cell} ORDER BY zte_hour.Start_time asc".format(
                     month=Month, day=Date, enb=eNodeB, cell=Cell))
+
+            session_kpi.close()
+
             rrc_user = list(rrc_user)
             rrc_user_x_axis = [x[0] for x in rrc_user]
             rrc_user_y_data = [x[1] for x in rrc_user]
@@ -246,7 +257,6 @@ def show_cell_traffic():
 def show_rrc_kpi():
     qtem_rrc = session_kpi.execute(
         "select 时间,RRC连接重建比例 from(select 时间,RRC连接重建比例 from kpi_summary where 厂家='不区分厂家' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     qtem_rrc = list(qtem_rrc)
     qtem_rrc_x_axis = [x.时间 for x in qtem_rrc]
     qtem_rrc_data = [x.RRC连接重建比例 for x in qtem_rrc]
@@ -254,33 +264,31 @@ def show_rrc_kpi():
 
     item_rrc = session_kpi.execute(
         "select 时间,RRC连接重建比例 from(select 时间,RRC连接重建比例 from kpi_summary where 厂家='中兴' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc1 = list(item_rrc)
     item_rrc_x_axis = [x[0] for x in item_rrc1]
     item_rrc_800_data = [x[1] for x in item_rrc1]
     item_rrc2 = session_kpi.execute(
         "select 时间,RRC连接重建比例 from(select 时间,RRC连接重建比例 from kpi_summary where 厂家='中兴' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc2 = list(item_rrc2)
     item_rrc_n800_data = [x[1] for x in item_rrc2]
     zte_rrc = draw_line2('中兴两网指标对比', item_rrc_x_axis, '中兴800M', item_rrc_800_data, '中兴非800M', item_rrc_n800_data)
 
     rtem_rrc = session_kpi.execute(
         "select 时间,RRC连接重建比例 from(select 时间,RRC连接重建比例 from kpi_summary where 厂家='爱立信' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc1 = list(rtem_rrc)
     rtem_rrc_x_axis = [x[0] for x in rtem_rrc1]
     rtem_rrc_800_data = [x[1] for x in rtem_rrc1]
     rtem_rrc2 = session_kpi.execute(
         "select 时间,RRC连接重建比例 from(select 时间,RRC连接重建比例 from kpi_summary where 厂家='爱立信' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc2 = list(rtem_rrc2)
     rtem_rrc_n800_data = [x[1] for x in rtem_rrc2]
     eri_rrc = draw_line2('爱立信两网指标对比', rtem_rrc_x_axis, '爱立信800M', rtem_rrc_800_data, '爱立信非800M', rtem_rrc_n800_data)
 
     htem_rrc = session_kpi.execute(
         "select 时间,RRC连接重建比例 from(select 时间,RRC连接重建比例 from kpi_summary where 厂家='华为' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
+
     session_kpi.close()
+
     htem_rrc1 = list(htem_rrc)
     htem_rrc_x_axis = [x[0] for x in htem_rrc1]
     htem_rrc_data = [x[1] for x in htem_rrc1]
@@ -309,6 +317,7 @@ def show_rrc_recon_list():
     res = [x.重建原因 for x in top_cells]
     mea = [x.处理措施 for x in top_cells]
     hand = [x.处理人 for x in top_cells]
+
     session_rrc.close()
 
     table_titles = ['小区名称', 'RRC重建请求数目', 'RRC重建立比例', '重建原因', '处理措施','处理人']
@@ -339,6 +348,7 @@ def show_rrc_recon_detail(cell_info):
     recon_reason = session_rrc.execute(
         "SELECT 站号, `小区号`, `RRC重建请求数目`, `切换失败触发的RRC重建立请求次数`, `其它原因触发的RRC重建立请求次数`, `重配失败触发的RRC重建立请求次数` FROM `rrc重建比例top小区` where 站号 = {enb} and `小区号` ={cell} and 周 = {week}".format(
             enb=enb, cell=cell, week=cur_week))
+    session_rrc.close()
     recon_reason = list(recon_reason)[0]
     recon_reason = recon_reason[3:]
     recon_reason_chart = draw_pie(['切换失败','其它原因','重配失败'],recon_reason,'RRC重建原因:','RRC重建原因')
@@ -346,7 +356,6 @@ def show_rrc_recon_detail(cell_info):
     item_TA = session_kpi.execute(
         "select TA0_1,TA1_3,TA3_5,TA5_7,TA7_9,TA9_11,TA11_13,TA13_20,TA20_27,TA27_34,TA34_40,TA40_50,TA50_81,TA81_129,TA129_179 FROM zte_day_{}  where 站号 = {} and 小区号 = {} ORDER BY 日期 DESC LIMIT 1".format(
             6,enb, cell))
-    session_kpi.close()
     item_TA = list(item_TA)
     item_TA = list(item_TA[0])
     item_TA_x_axis = ['78.12m', '78~234m', '234~390m', '390~547m', '547~703m', '703~859m', '859~1015m', '1015~1562m',
@@ -367,7 +376,9 @@ def show_rrc_recon_detail(cell_info):
     rrc_rec = session_kpi.execute(
         "select 日期,系统内切换成功率 from(select 日期,系统内切换成功率 from zte_day_{} where 站号 = {} and 小区号 = {} order by 日期 DESC LIMIT 10)aa ORDER BY 日期 asc".format(
             6,enb, cell))
+
     session_kpi.close()
+
     rrc_rec = list(rrc_rec)
     rrc_rec_x_axis = [x[0] for x in rrc_rec]
     rec_ho_y_data = [round(x[1] * 100, 2) for x in rrc_rec]
@@ -394,7 +405,6 @@ def show_rrc_recon_detail(cell_info):
 def show_rrc_success():
     qtem_rrc = session_kpi.execute(
         "select 时间,RRC连接重建成功率 from(select 时间,RRC连接重建成功率 from kpi_summary where 厂家='不区分厂家' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     qtem_rrc = list(qtem_rrc)
     qtem_rrc_x_axis = [x.时间 for x in qtem_rrc]
     qtem_rrc_data = [x.RRC连接重建成功率 for x in qtem_rrc]
@@ -402,33 +412,31 @@ def show_rrc_success():
 
     item_rrc = session_kpi.execute(
         "select 时间,RRC连接重建成功率 from(select 时间,RRC连接重建成功率 from kpi_summary where 厂家='中兴' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc1 = list(item_rrc)
     item_rrc_x_axis = [x[0] for x in item_rrc1]
     item_rrc_800_data = [x[1] for x in item_rrc1]
     item_rrc2 = session_kpi.execute(
         "select 时间,RRC连接重建成功率 from(select 时间,RRC连接重建成功率 from kpi_summary where 厂家='中兴' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc2 = list(item_rrc2)
     item_rrc_n800_data = [x[1] for x in item_rrc2]
     zte_rrc = draw_line2('中兴两网指标对比', item_rrc_x_axis, '中兴800M', item_rrc_800_data, '中兴非800M', item_rrc_n800_data)
 
     rtem_rrc = session_kpi.execute(
         "select 时间,RRC连接重建成功率 from(select 时间,RRC连接重建成功率 from kpi_summary where 厂家='爱立信' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc1 = list(rtem_rrc)
     rtem_rrc_x_axis = [x[0] for x in rtem_rrc1]
     rtem_rrc_800_data = [x[1] for x in rtem_rrc1]
     rtem_rrc2 = session_kpi.execute(
         "select 时间,RRC连接重建成功率 from(select 时间,RRC连接重建成功率 from kpi_summary where 厂家='爱立信' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc2 = list(rtem_rrc2)
     rtem_rrc_n800_data = [x[1] for x in rtem_rrc2]
     eri_rrc = draw_line2('爱立信两网指标对比', rtem_rrc_x_axis, '爱立信800M', rtem_rrc_800_data, '爱立信非800M', rtem_rrc_n800_data)
 
     htem_rrc = session_kpi.execute(
         "select 时间,RRC连接重建成功率 from(select 时间,RRC连接重建成功率 from kpi_summary where 厂家='华为' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
+
     session_kpi.close()
+
     htem_rrc1 = list(htem_rrc)
     htem_rrc_x_axis = [x[0] for x in htem_rrc1]
     htem_rrc_data = [x[1] for x in htem_rrc1]
@@ -456,6 +464,7 @@ def show_rrc_rate_list():
     res = [x.重建原因 for x in top_cells]
     mea = [x.处理措施 for x in top_cells]
     hand = [x.处理人 for x in top_cells]
+
     session_rrc.close()
 
     table_titles = ['小区名称', 'RRC重建失败数目', 'RRC连接重建成功率', '重建原因', '处理措施', '处理人']
@@ -496,6 +505,9 @@ def show_rrc_rate_detail(cell_info):
     recon_count = session_rrc.execute(
             "SELECT 站号, `小区号`, `RRC重建请求数目`, `切换类型的RRC重建立失败数目`, `重配置类型的RRC重建立失败数目`, `其它类型的RRC重建立失败数目`,`切换类型的RRC连接重建立成功次数`,`切换类型的RRC重建立失败数目`,`重配置类型的RRC连接重建立成功次数`,`重配置类型的RRC重建立失败数目`,`其它类型的RRC连接重建立成功次数`,`其它类型的RRC重建立失败数目`, `切换类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `切换类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `切换类型的RRC连接重建立失败次数_失败原因UE上下文找不到`, `切换类型的RRC连接重建立失败次数_失败原因再次重建立`, `切换类型的RRC连接重建立失败次数_其他原因`, `重配置类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `重配置类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `重配置类型RRC连接重建立失败次数_失败原因UE上下文找不到`, `重配置类型RRC连接重建立失败次数_失败原因再次重建立`, `重配置类型RRC连接重建立失败次数_其他原因`, `其它类型的RRC连接重建立失败次数_失败原因等待RRC连接重建立完成定时器超时`, `其它类型的RRC连接重建立失败次数_失败原因eNB接纳失败`, `其它类型的RRC连接重建立失败次数_失败原因UE上下文找不到`, `其它类型的RRC连接重建立失败次数_失败原因再次重建立`, `其它类型的RRC连接重建立失败次数_其他原因` FROM `rrc重建` where 站号 = {enb} and `小区号` ={cell} and week(`日期`) = {week}".format(
             enb=enb, cell=cell, week=cur_week))
+
+    session_rrc.close()
+
     recon_rate_pie = list(recon_count)[0]
     recon_count = recon_rate_pie[3:6]
     recon_ho = recon_rate_pie[6:8]
@@ -543,7 +555,6 @@ def show_rrc_rate_detail(cell_info):
 def show_erab_rate():
     qtem_rrc = session_kpi.execute(
         "select 时间,E_RAB掉线率 from(select 时间,E_RAB掉线率 from kpi_summary where 厂家='不区分厂家' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     qtem_rrc = list(qtem_rrc)
     qtem_rrc_x_axis = [x.时间 for x in qtem_rrc]
     qtem_rrc_data = [x.E_RAB掉线率 for x in qtem_rrc]
@@ -551,26 +562,22 @@ def show_erab_rate():
 
     item_rrc = session_kpi.execute(
         "select 时间,E_RAB掉线率 from(select 时间,E_RAB掉线率 from kpi_summary where 厂家='中兴' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc1 = list(item_rrc)
     item_rrc_x_axis = [x[0] for x in item_rrc1]
     item_rrc_800_data = [x[1] for x in item_rrc1]
     item_rrc2 = session_kpi.execute(
         "select 时间,E_RAB掉线率 from(select 时间,E_RAB掉线率 from kpi_summary where 厂家='中兴' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc2 = list(item_rrc2)
     item_rrc_n800_data = [x[1] for x in item_rrc2]
     zte_rrc = draw_line2('中兴两网指标对比', item_rrc_x_axis, '中兴800M', item_rrc_800_data, '中兴非800M', item_rrc_n800_data)
 
     rtem_rrc = session_kpi.execute(
         "select 时间,E_RAB掉线率 from(select 时间,E_RAB掉线率 from kpi_summary where 厂家='爱立信' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc1 = list(rtem_rrc)
     rtem_rrc_x_axis = [x[0] for x in rtem_rrc1]
     rtem_rrc_800_data = [x[1] for x in rtem_rrc1]
     rtem_rrc2 = session_kpi.execute(
         "select 时间,E_RAB掉线率 from(select 时间,E_RAB掉线率 from kpi_summary where 厂家='爱立信' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc2 = list(rtem_rrc2)
     rtem_rrc_n800_data = [x[1] for x in rtem_rrc2]
     eri_rrc = draw_line2('爱立信两网指标对比', rtem_rrc_x_axis, '爱立信800M', rtem_rrc_800_data, '爱立信非800M', rtem_rrc_n800_data)
@@ -647,6 +654,8 @@ def show_erab_drop_detail(cell_info):
     recon_rate_pie = list(recon_count)[0]
     recon_count = recon_rate_pie[2:]
 
+    session_erab.close()
+
     recon_count_chart = draw_pie(['E_RAB释放次数_由于ENB过载控制导致的释放', 'E_RAB释放次数_由于ENB其他异常原因', 'E_RAB释放次数_由于ENB小区拥塞导致的释放', 'E_RAB释放次数_由于ENB的无线链路失败', 'E_RAB释放次数_由于ENB重建立失败', 'E_RAB释放次数_由于小区关断或复位', 'E_RAB释放次数_跨站重建立失败导致的释放', 'E_RAB释放次数_ENB由于S1链路故障发起释放', 'E_RAB释放次数_由于UE不在线导致释放'], recon_count, 'E_RAB掉线原因:', 'E_RAB掉线原因')
 
     if request.method == 'POST':
@@ -676,7 +685,7 @@ def show_volte_rate():
     cur_day = list(cur_day)[0][0]
     vtem_vol = session_vol.execute(
         "select 日期,下行QCI_1最大激活用户数,下行QCI_2最大激活用户数,E_RAB建立请求数目_QCI_1,E_RAB建立请求数目_QCI_2 from vol_rate where DAY(日期)={cur_day}".format(cur_day=cur_day))
-    session_kpi.close()
+    session_vol.close()
     vtem_vol = list(vtem_vol)
     vtem_vol_x_axis = [str(x.日期).split(' ')[1] for x in vtem_vol]
     vtem_vol_data1 = [x.下行QCI_1最大激活用户数 for x in vtem_vol]
@@ -714,11 +723,13 @@ def show_volte_rate():
 
     htem_rrc = session_kpi.execute(
         "select 时间,VoLTE语音无线接通率 from(select 时间,VoLTE语音无线接通率 from kpi_summary_vol_nb where 厂家='华为' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
-    session_kpi.close()
+
     htem_rrc1 = list(htem_rrc)
     htem_rrc_x_axis = [x[0] for x in htem_rrc1]
     htem_rrc_data = [x[1] for x in htem_rrc1]
     hw_rrcc = draw_line(htem_rrc_x_axis, '华为', htem_rrc_data, '华为', )
+
+    session_kpi.close()
 
     return render_template('vol_rate_report.html', zte_rrc_options=zte_rrc.dump_options(),
                            eri_rrc_options=eri_rrc.dump_options(),
@@ -776,6 +787,8 @@ def show_vol_connect_detail(cell_info):
     recon_count_chart = draw_pie(['QCI1_初始的E_RAB建立失败次数_空口失败', 'QCI1_初始的E_RAB建立失败次数_eNB接纳失败', 'QCI1_初始的E_RAB建立失败次数_RRC重建立原因', 'QCI1_初始的E_RAB建立失败次数_传输层原因', 'QCI1_初始的E_RAB建立失败次数_消息参数错误', 'QCI1_初始的E_RAB建立失败次数_安全激活失败', 'QCI1_初始的E_RAB建立失败次数_其他原因', 'QCI1_增加的E_RAB建立失败次数_空口失败', 'QCI1_增加的E_RAB建立失败次数_切换引起', 'QCI1_增加的E_RAB建立失败次数_eNB接纳失败', 'QCI1_增加的E_RAB建立失败次数_RRC重建立原因', 'QCI1_增加的E_RAB建立失败次数_传输层原因', 'QCI1_增加的E_RAB建立失败次数_消息参数错误', 'QCI1_增加的E_RAB建立失败次数_其他原因'], recon_count, 'Volte未接通详细原因:', 'Volte未接通详细原因')
     recon_ratio_chart = draw_pie(['空口问题占比','切换问题占比','拥塞占比','传输故障占比','参数或软件故障占比','安全激活失败','其他原因占比'], recon_ratio, 'Volte未接通原因分类:', 'Volte未接通原因分类')
 
+    session_vol.close()
+
     if request.method == 'POST':
         if form.validate_on_submit():
             complaint_info = request.form.to_dict()
@@ -814,6 +827,7 @@ def show_vol_drop_list():
     res = [x.掉话原因 for x in top_cells]
     mea = [x.处理措施 for x in top_cells]
     hand = [x.处理人 for x in top_cells]
+
     session_vol.close()
 
     table_titles = ['小区名称', '接通率', '未接通次数', '未接通原因', '处理措施', '处理人']
@@ -846,6 +860,8 @@ def show_vol_drop_detail(cell_info):
     recon_count = recon_rate_pie[2:10]
     recon_ratio = recon_rate_pie[10:]
 
+    session_vol.close()
+
     recon_count_chart = draw_pie(['QCI1_E_RAB释放次数_由于ENB小区拥塞导致的释放', 'QCI1_E_RAB释放次数_由于ENB过载控制导致的释放', 'QCI1_E_RAB释放次数_由于ENB的无线链路失败', 'QCI1_E_RAB释放次数_由于ENB重建立失败', 'QCI1_E_RAB释放次数_由于小区关断或复位', 'QCI1_E_RAB释放次数_跨站重建立失败导致的释放', 'QCI1_E_RAB释放次数_ENB由于S1链路故障发起释放', 'QCI1_E_RAB释放次数_由于ENB其他异常原因', 'QCI1_增加的E_RAB建立失败次数_切换引起', 'QCI1_增加的E_RAB建立失败次数_eNB接纳失败', 'QCI1_增加的E_RAB建立失败次数_RRC重建立原因', 'QCI1_增加的E_RAB建立失败次数_传输层原因', 'QCI1_增加的E_RAB建立失败次数_消息参数错误', 'QCI1_增加的E_RAB建立失败次数_其他原因'], recon_count, 'Volte掉话详细原因:', 'Volte掉话详细原因')
     recon_ratio_chart = draw_pie(['小区拥塞占比','无线环境问题占比','切换失败占比','基站关断或复位占比','传输故障占比','其他原因占比'], recon_ratio, 'Volte掉话原因分类:', 'Volte掉话原因分类')
 
@@ -875,7 +891,6 @@ def show_vol_drop_detail(cell_info):
 def show_volte_drop():
     qtem_vol = session_kpi.execute(
         "select 时间,VoLTE语音掉话率 from(select 时间,VoLTE语音掉话率 from kpi_summary_vol_nb where 厂家='不区分厂家' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
-    session_kpi.close()
     qtem_vol = list(qtem_vol)
     qtem_vol_x_axis = [x.时间 for x in qtem_vol]
     qtem_vol_data = [round(x.VoLTE语音掉话率,2) for x in qtem_vol]
@@ -883,7 +898,6 @@ def show_volte_drop():
 
     item_rrc = session_kpi.execute(
         "select 时间,VoLTE语音掉话率 from(select 时间,VoLTE语音掉话率 from kpi_summary_vol_nb where 厂家='中兴' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc1 = list(item_rrc)
     item_rrc_x_axis = [x[0] for x in item_rrc1]
     item_rrc_800_data = [round(x[1],2) for x in item_rrc1]
@@ -891,7 +905,6 @@ def show_volte_drop():
 
     rtem_rrc = session_kpi.execute(
         "select 时间,VoLTE语音掉话率 from(select 时间,VoLTE语音掉话率 from kpi_summary_vol_nb where 厂家='爱立信' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc1 = list(rtem_rrc)
     rtem_rrc_x_axis = [x[0] for x in rtem_rrc1]
     rtem_rrc_800_data =  [round(x[1],2) for x in rtem_rrc1]
@@ -899,6 +912,7 @@ def show_volte_drop():
 
     htem_rrc = session_kpi.execute(
         "select 时间,VoLTE语音掉话率 from(select 时间,VoLTE语音掉话率 from kpi_summary_vol_nb where 厂家='华为' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
+
     session_kpi.close()
     htem_rrc1 = list(htem_rrc)
     htem_rrc_x_axis = [x[0] for x in htem_rrc1]
@@ -913,7 +927,6 @@ def show_volte_drop():
 def show_nb_rate():
     vtem_nb = session_kpi.execute(
         "select 时间,NB_IoT小区RRC连接建立请求次数,NB_IoT小区RRC连接建立失败总次数 FROM (select 时间,NB_IoT小区RRC连接建立请求次数,NB_IoT小区RRC连接建立失败总次数 from kpi_summary_vol_nb where 厂家='不区分厂家' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
-    session_kpi.close()
     vtem_nb = list(vtem_nb)
     vtem_nb_x_axis = [x.时间 for x in vtem_nb]
     vtem_nb_requ1 = [x.NB_IoT小区RRC连接建立请求次数 for x in vtem_nb]
@@ -924,7 +937,6 @@ def show_nb_rate():
 
     qtem_vol = session_kpi.execute(
         "select 时间,NB_IoT小区RRC连接建立成功率 from(select 时间,NB_IoT小区RRC连接建立成功率 from kpi_summary_vol_nb where 厂家='不区分厂家' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
-    session_kpi.close()
     qtem_vol = list(qtem_vol)
     qtem_vol_x_axis = [x.时间 for x in qtem_vol]
     qtem_vol_data = [round(x.NB_IoT小区RRC连接建立成功率*100,2) for x in qtem_vol]
@@ -932,7 +944,6 @@ def show_nb_rate():
 
     item_rrc = session_kpi.execute(
         "select 时间,NB_IoT小区RRC连接建立成功率 from(select 时间,NB_IoT小区RRC连接建立成功率 from kpi_summary_vol_nb where 厂家='中兴' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc1 = list(item_rrc)
     item_rrc_x_axis = [x[0] for x in item_rrc1]
     item_rrc_800_data = [round(x[1]*100,2) for x in item_rrc1]
@@ -940,7 +951,9 @@ def show_nb_rate():
 
     rtem_rrc = session_kpi.execute(
         "select 时间,NB_IoT小区RRC连接建立成功率 from(select 时间,NB_IoT小区RRC连接建立成功率 from kpi_summary_vol_nb where 厂家='爱立信' order by 时间 DESC LIMIT 20)aa ORDER BY 时间 asc")
+
     session_kpi.close()
+
     rtem_rrc1 = list(rtem_rrc)
     rtem_rrc_x_axis = [x[0] for x in rtem_rrc1]
     rtem_rrc_800_data = [round(x[1]*100,2) for x in rtem_rrc1]
@@ -954,7 +967,6 @@ def show_nb_rate():
 def show_wire_conn():
     qtem_rrc = session_kpi.execute(
         "select 时间,无线连接成功率 from(select 时间,无线连接成功率 from kpi_summary where 厂家='不区分厂家' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     qtem_rrc = list(qtem_rrc)
     qtem_rrc_x_axis = [x.时间 for x in qtem_rrc]
     qtem_rrc_data = [x.无线连接成功率 for x in qtem_rrc]
@@ -962,33 +974,31 @@ def show_wire_conn():
 
     item_rrc = session_kpi.execute(
         "select 时间,无线连接成功率 from(select 时间,无线连接成功率 from kpi_summary where 厂家='中兴' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc1 = list(item_rrc)
     item_rrc_x_axis = [x[0] for x in item_rrc1]
     item_rrc_800_data = [x[1] for x in item_rrc1]
     item_rrc2 = session_kpi.execute(
         "select 时间,无线连接成功率 from(select 时间,无线连接成功率 from kpi_summary where 厂家='中兴' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     item_rrc2 = list(item_rrc2)
     item_rrc_n800_data = [x[1] for x in item_rrc2]
     zte_rrc = draw_line2('中兴两网指标对比', item_rrc_x_axis, '中兴800M', item_rrc_800_data, '中兴非800M', item_rrc_n800_data)
 
     rtem_rrc = session_kpi.execute(
         "select 时间,无线连接成功率 from(select 时间,无线连接成功率 from kpi_summary where 厂家='爱立信' and 频段标识='800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc1 = list(rtem_rrc)
     rtem_rrc_x_axis = [x[0] for x in rtem_rrc1]
     rtem_rrc_800_data = [x[1] for x in rtem_rrc1]
     rtem_rrc2 = session_kpi.execute(
         "select 时间,无线连接成功率 from(select 时间,无线连接成功率 from kpi_summary where 厂家='爱立信' and 频段标识='非800M' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
-    session_kpi.close()
     rtem_rrc2 = list(rtem_rrc2)
     rtem_rrc_n800_data = [x[1] for x in rtem_rrc2]
     eri_rrc = draw_line2('爱立信两网指标对比', rtem_rrc_x_axis, '爱立信800M', rtem_rrc_800_data, '爱立信非800M', rtem_rrc_n800_data)
 
     htem_rrc = session_kpi.execute(
         "select 时间,无线连接成功率 from(select 时间,无线连接成功率 from kpi_summary where 厂家='华为' order by 时间 DESC LIMIT 30)aa ORDER BY 时间 asc")
+
     session_kpi.close()
+
     htem_rrc1 = list(htem_rrc)
     htem_rrc_x_axis = [x[0] for x in htem_rrc1]
     htem_rrc_data = [x[1] for x in htem_rrc1]
@@ -1002,19 +1012,7 @@ def show_wire_conn():
 def show_handover(cell_info):
     enb = str(cell_info.split('_')[0])
     cell = str(cell_info.split('_')[1])
-    cell_name =  session_rrc.execute("SELECT `小区名称` FROM `rrc重建` where `站号` = {enb} and `小区号` = {cell}".format(enb=enb, cell=cell))
-    cell_name = list(cell_name)
-    cell_name = cell_name[0].小区名称
-    weeks = session_rrc.execute("SELECT DISTINCT week(`日期`) from `rrc重建`")
-    weeks = list(weeks)
-    weeks = [x[0] for x in weeks]
-    cur_week = session_rrc.execute("SELECT max(week(`日期`)) from `rrc重建`")
-    cur_week = list(cur_week)[0][0]
-    return render_template('hand_over.html',
-                           zte_rrc_options=zte_rrc.dump_options(),
-                           eri_rrc_options=eri_rrc.dump_options(),
-                           hw_rrcc_options=hw_rrcc.dump_options(),
-                           qw_rrc_options=qw_rrc.dump_options())
+    return '建设中......'
 
 @app.route("/school/", methods=['GET', 'POST'])
 def school():
@@ -1026,6 +1024,7 @@ def school():
     cur_week = list(cur_week)[0][0]
     top_cells = session_kpi.execute(
         "SELECT 校园名称,sum(上行流量)as 上行流量, sum(下行流量) as 下行流量,avg(下行体验速率)as 下行体验速率, avg(用户面下行包平均时延)as 用户面下行包平均时延, avg(上行prb利用率)as 上行prb利用率, avg(下行prb利用率)as 下行prb利用率,avg(b.上行体验速率)as 上行体验速率 FROM (SELECT * FROM school) as a inner JOIN (SELECT 小区名称,最大RRC连接用户数,上行流量,下行流量,上行体验速率,下行体验速率,用户面下行包平均时延,上行prb利用率,下行prb利用率 FROM zte_day_{b} WHERE WEEK(日期,3)={cur_week}) as b ON a.小区名称=b.小区名称 GROUP BY 校园名称".format(cur_week=cur_week,b=month))
+    session_mr.close()
     session_kpi.close()
     cells = list(top_cells)
     school_ul = [round(x.上行流量/1024/1024,2) for x in cells]
@@ -1062,6 +1061,7 @@ def school_list(school_name):
     cur_week = session_kpi.execute("SELECT max(week(`日期`)) from `zte_day_{}`".format(month))
     cur_week = list(cur_week)[0][0]
     top_cells = session_kpi.execute("SELECT 日期,校园名称,sum(最大RRC连接用户数)as 最大RRC连接用户数,sum(上行流量)as 上行流量, sum(下行流量) as 下行流量,avg(下行体验速率)as 下行体验速率, avg(用户面下行包平均时延)as 用户面下行包平均时延, avg(上行prb利用率)as 上行prb利用率, avg(下行prb利用率)as 下行prb利用率,avg(b.上行体验速率)as 上行体验速率 FROM (SELECT * FROM school WHERE 校园名称='{school_name}') as a inner JOIN (SELECT 日期,小区名称,最大RRC连接用户数,上行流量,下行流量,上行体验速率,下行体验速率,用户面下行包平均时延,上行prb利用率,下行prb利用率 FROM zte_day_{b} WHERE WEEK(日期,3)={cur_week}) as b ON a.小区名称=b.小区名称 GROUP BY 校园名称,日期".format(cur_week=cur_week,school_name=school_name,b=month))
+    session_mr.close()
     session_kpi.close()
     cells = list(top_cells)
     school_ul = [round(x.上行流量/1024/1024, 2) for x in cells]

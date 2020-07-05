@@ -14,6 +14,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
   <component name="JupyterTrust" id="404e3d6f-a2db-4d83-8d07-13385e90577e" />
   <component name="ProjectId" id="1bO3nHLKr4IfU67o5QrG7S9WWjU" />
   <component name="ProjectViewState">
@@ -110,6 +113,8 @@
       <workItem from="1593508819350" duration="139000" />
       <workItem from="1593509028492" duration="142000" />
       <workItem from="1593763394099" duration="1313000" />
+      <workItem from="1593907454407" duration="415000" />
+      <workItem from="1593913952258" duration="806000" />
     </task>
     <servers />
   </component>
@@ -155,12 +160,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app.py</url>
-          <line>13</line>
+          <line>14</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/func.py</url>
-          <line>78</line>
+          <line>80</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
