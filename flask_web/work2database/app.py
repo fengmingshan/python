@@ -140,7 +140,9 @@ def show_department_work():
     p_work_type = [x.工作类别 for x in plan_work_data]
     p_content = [x.工作内容 for x in plan_work_data]
     p_state = [x.当前状态 for x in plan_work_data]
-
+    
+    session_work.closed()
+    
     if request.method == 'POST':
         if form.validate_on_submit():
             plan_info = request.form.to_dict()
@@ -432,7 +434,7 @@ def delete_work():
         "DELETE FROM `工作周报` WHERE `姓名` = '{na}' AND `开始日期` = '{sd}' AND `结束日期` = '{ed}' AND `工作类别` = '{ty}' AND `工作内容` = '{co}' AND `当前状态` = '{st}'".format(
             na=realname, sd=stratdate, ed=enddate, ty=worktype, co=content, st=workstate))
     session_work.commit()
-
+    session_work.closed()
     return redirect(url_for('work2datebase',name = name))
 
 if __name__ == '__main__':
