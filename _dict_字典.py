@@ -21,7 +21,7 @@ del dict2['Age']
 dict.clear()  #清除键值对，保留字典
 del dict2   #删除整个字典
 
-
+dict2.update({'school':'middle'})
 dict3 = {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
 dict3['school']= 'qujing'
 len(dict3)
