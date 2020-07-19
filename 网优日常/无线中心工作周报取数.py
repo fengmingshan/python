@@ -12,7 +12,7 @@ from sqlalchemy.orm import sessionmaker
 path = r'D:\2020年工作\_工作周报'
 os.chdir(path)
 
-week = 28
+week = 29
 
 engine_work = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/work_report?charset=utf8",
                             pool_recycle=7200)
@@ -66,7 +66,6 @@ maintain_cotent = [x.工作内容 for x in maintain_report]
 with open('第{week}周工作周报.txt'.format(week = week),'w') as f:
     f.writelines('无线中心全部工作汇总')
     f.writelines('\n')
-    f.writelines('\n')
 
 with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
     for num,line in enumerate(work_cotent):
@@ -76,13 +75,10 @@ with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
         f.writelines('\n')
 
 with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
-    f.writelines('\n')
-    f.writelines('\n')
-
+        f.writelines('\n')
 
 with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
     f.writelines('一、无线网维护方面：')
-    f.writelines('\n')
     f.writelines('\n')
 
 with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
@@ -93,12 +89,10 @@ with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
         f.writelines('\n')
 
 with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
-    f.writelines('\n')
-    f.writelines('\n')
+        f.writelines('\n')
 
 with open('第{week}周工作周报.txt'.format(week = week),'a') as f:
     f.writelines('二、无线网优化方面：')
-    f.writelines('\n')
     f.writelines('\n')
 
 with open('第{week}周工作周报.txt'.format(week = week),'a') as f:

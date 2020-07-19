@@ -8,7 +8,7 @@ Created on Tue Jul 17 12:50:42 2018
 import pandas as pd
 import os
 
-data_path = r'd:\_3G配置数据汇总' + '\\'
+data_path = r'D:\_python小程序\3G配置数据合并' + '\\'
 files =  os.listdir(data_path)
 df_content = pd.DataFrame()
 for file in files:

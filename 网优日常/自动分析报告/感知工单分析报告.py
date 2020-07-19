@@ -18,8 +18,9 @@ plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 # 导入读写word文档的库
 
-path = 'D:/_小程序/感知工单分析报告'
-pic_path = 'D:/_小程序/感知工单分析报告/pic/'
+path = r'D:\_python小程序\感知工单分析报告'
+global pic_path
+pic_path = 'D:/_python小程序/感知工单分析报告/pic/'
 analyze_cell = '730448_6'
 
 if not os.path.exists(pic_path):
@@ -117,7 +118,7 @@ def coverage_problem_locate(mr_good_rate,cqi_rate):
         if cqi_rate >=  90:
             cqi_coverage =  'CQI优良率正常。'
         else:
-            cqi_coverage =  '但CQI优良率稍差，可能存在mod3干扰，需要检查邻区和PCI规划。'
+            cqi_coverage =  'CQI优良率稍差，可能存在mod3干扰，需要检查邻区和PCI规划。'
     else:
         coverage =  'MR覆盖良好'
         if cqi_rate >=  90:

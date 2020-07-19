@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-data_path = 'D:/Test/制作添加DO小区脚本'
+data_path = r'D:\_python小程序\制作添加DO小区脚本'
 os.chdir(data_path)
 
 df_DO_CELL_info = pd.read_excel('add_carrier.xlsx')
