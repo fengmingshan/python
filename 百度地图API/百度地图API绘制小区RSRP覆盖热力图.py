@@ -145,9 +145,9 @@ html = '''
 </script>
 '''
 
-with open('d:/hotmap.html', 'w', encoding='utf-8') as f:
+with open('d:/{cell_name}小区{hour}点RSRP覆盖图.html'.format(cell_name=cell_name,hour = HOUR), 'w', encoding='utf-8') as f:
     f.writelines(html.format(point_info=point_info, cell_lon=cell_lon,
                              cell_lat=cell_lat, cell_direction=cell_direction,cell_name=cell_name,hour = HOUR))
 
 driver = webdriver.Chrome()
-driver.get("d:/hotmap.html")
+driver.get('d:/{cell_name}小区{hour}点RSRP覆盖图.html'.format(cell_name=cell_name,hour = HOUR))
