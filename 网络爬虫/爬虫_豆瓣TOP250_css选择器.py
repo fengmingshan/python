@@ -6,10 +6,10 @@ Created on Wed Dec 20 09:47:48 2017
 @author: Administrator
 """
 
-import requests            #导入requests库  
-from bs4 import BeautifulSoup   #导入BeautifulSoup库  
-from requests.exceptions import RequestException     #导入requests库中的错误和异常字段   
-import json                      #导入json库  
+import requests            #导入requests库
+from bs4 import BeautifulSoup   #导入BeautifulSoup库
+from requests.exceptions import RequestException     #导入requests库中的错误和异常字段
+import json                      #导入json库
 
 def get_one_page(url):        #定义爬取一个页面的函数
     try:                      #尝试打开页面
@@ -29,7 +29,7 @@ def prase_one_page(html):      #定义解析一个页面的程序
         img=item.select('img')[0]['src']                              #获取影片图片
         title=item.select('.title')[0].text.replace('\xa0','')        #获取影片名称
         titleAll=title
-        if len(item.select('.title'))>1:                             #获取影片别名          
+        if len(item.select('.title'))>1:                             #获取影片别名
             title1=item.select('.title')[1].text.replace('\xa0','')  #因为影片别名中有日文和韩文影响输出，所以不使用
             titleAll+=title1
         titleother=item.select('.other')[0].text.replace('\xa0','')  #获取影片其他名称
@@ -49,10 +49,10 @@ def prase_one_page(html):      #定义解析一个页面的程序
     return moivelist
 
 def write_to_file(content):       #定义输出到文件的程序
-    with open(r'D:\python\movielist.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
-        f.write(json.dumps(content,ensure_ascii=False)+'\n')      #打开写入文件编码方式：utf-8    
+    with open(r'D:\movielist.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
+        f.write(json.dumps(content,ensure_ascii=False)+'\n')      #打开写入文件编码方式：utf-8
         f.close()
-        
+
 def main():                #定义主程序
     for i in range (10):
         pagecount=i*25
@@ -66,4 +66,3 @@ def main():                #定义主程序
 
 if __name__=='__main__':        #python最终封装，python的固定格式
     main()
-  

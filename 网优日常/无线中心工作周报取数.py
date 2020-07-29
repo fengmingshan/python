@@ -12,7 +12,7 @@ from sqlalchemy.orm import sessionmaker
 path = r'D:\2020年工作\_工作周报'
 os.chdir(path)
 
-week = 29
+week = 30
 
 engine_work = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/work_report?charset=utf8",
                             pool_recycle=7200)

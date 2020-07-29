@@ -35,18 +35,30 @@ def calc_Distance(lon1,lat1,lon2,lat2):
 data_path = 'D:/_python小程序/根据经纬度计算基站间距离'
 os.chdir(data_path)
 
-source_cell_info = '3G.xlsx'
-destination_cell_info = '师宗爱立信.xlsx'
+source_cell_info = '铁塔站址.xlsx'
+destination_cell_info = '铁塔站址.xlsx'
 
-max_distance = 3000
+min_distance = 300
+
 
 df_source_cell = pd.read_excel(source_cell_info)
 df_source_cell.columns=['name','eNodeB','lon','lat']
+df_source_cell = df_source_cell[df_source_cell['lon']!='——']
+
+df_source_cell['lon'] = df_source_cell['lon'].astype(float)
+df_source_cell['lat'] = df_source_cell['lat'].astype(float)
 df_source_cell['lon'] = df_source_cell['lon'].map(lambda x: round(x, 5))
 df_source_cell['lat'] = df_source_cell['lat'].map(lambda x: round(x, 5))
 
 df_destination_cell = pd.read_excel(destination_cell_info)
 df_destination_cell.columns=['name','eNodeB','lon','lat']
+df_destination_cell = df_destination_cell[df_destination_cell['lon']!='——']
+
+df_destination_cell['lon'] = df_destination_cell['lon'].astype(float)
+df_destination_cell['lat'] = df_destination_cell['lat'].astype(float)
+
+df_destination_cell['lon'] = df_destination_cell['lon'].map(lambda x: round(x, 5))
+df_destination_cell['lat'] = df_destination_cell['lat'].map(lambda x: round(x, 5))
 df_destination_cell['lon'] = df_destination_cell['lon'].map(lambda x: round(x, 5))
 df_destination_cell['lat'] = df_destination_cell['lat'].map(lambda x: round(x, 5))
 
@@ -64,10 +76,8 @@ df_res['s_lon'], df_res['s_lat'], df_res['des_lon'], df_res['des_lat'])])
 
 df_res = df_res[['s_name', 's_eNodeB', 's_lon', 's_lat', 'des_name', 'des_eNodeB', 'des_lon', 'des_lat', 'distance']]
 df_res['distance'] = df_res['distance'].map(lambda x: ceil(x))
-df_min_distance = df_res.groupby(['s_eNodeB', 's_name', 's_lon', 's_lat'], as_index=False)['distance'].agg(min)
 
-df_min_distance = df_min_distance[df_min_distance['distance'] > max_distance]
-
+df_min_distance = df_res[(df_res['distance'] <= 300)&(df_res['s_eNodeB'] != df_res['des_eNodeB'])]
 with open('最小距离.csv', 'w', newline = '') as writer:
     df_min_distance.to_csv(writer, index=False)
 
