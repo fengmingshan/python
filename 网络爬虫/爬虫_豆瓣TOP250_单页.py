@@ -4,13 +4,17 @@ Created on Mon Jan 22 20:22:41 2018
 
 @author: Administrator
 """
-import requests            #导入requests库  
-from bs4 import BeautifulSoup   #导入BeautifulSoup库  
-from requests.exceptions import RequestException     #导入requests库中的错误和异常字段   
-import json                      #导入json库  
+import requests            #导入requests库
+from bs4 import BeautifulSoup   #导入BeautifulSoup库
+from requests.exceptions import RequestException     #导入requests库中的错误和异常字段
+import json                      #导入json库
 
 url="https://movie.douban.com/top250"   #网址
-response = requests.get(url)
+# 伪装成浏览器,应付网站的反爬虫设置
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"}
+
+response = requests.get(url,headers=headers)
 res=response.text
 soup=BeautifulSoup(res,'lxml')
 moivelist=['豆瓣电影TOP250']
@@ -21,7 +25,7 @@ for item in soup.findAll("div",class_="item"):
     img=item.select('img')[0]['src']                              #获取影片图片
     title=item.select('.title')[0].text.replace('\xa0','')        #获取影片名称
     titleAll=title
-    if len(item.select('.title'))>1:                         #获取影片别名          
+    if len(item.select('.title'))>1:                         #获取影片别名
         title1=item.select('.title')[1].text.replace('\xa0','')  #因为影片别名中有日文和韩文影响输出，所以不使用
         titleAll+=title1
     titleother=item.select('.other')[0].text.replace('\xa0','')  #获取影片其他名称
@@ -38,9 +42,9 @@ for item in soup.findAll("div",class_="item"):
     quote=item.select('.quote')[0].text.replace('\n','')       #获取影片经典台词
     dic={"em":em,"a":a,"img":img,"title":titleAll,"actor":actors,"releasetime":releasetime,"releasecountry":releasecountry,"typename":typename,"score":score,"quote":quote}
     moivelist.append(dic)
-    
-with open(r'D:\python\movielist.txt','a',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
-    for content in  moivelist:   
-        f.write(json.dumps(content,ensure_ascii=False)+'\n')      #打开写入文件编码方式：utf-8    
+
+with open(r'C:\Users\Administrator\Desktop\movielist.txt','w',encoding='utf-8') as f:  #打开写入文件编码方式utf-8
+    for content in  moivelist:
+        f.write(json.dumps(content,ensure_ascii=False)+'\n')      #打开写入文件编码方式：utf-8
     f.close()
 
