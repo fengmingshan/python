@@ -3,7 +3,6 @@
 
 # # 对可迭代对象添加进度条
 
-# In[ ]:
 
 
 # 对于可以迭代的对象都可以使用下面这种方式，来实现可视化进度，非常方便
@@ -36,8 +35,6 @@ for c in pbar:
 
 
 # # 手动设置进度条更新的粒度
-
-# In[ ]:
 
 
 # 通过update方法可以控制每次进度条更新的进度
@@ -77,9 +74,6 @@ with trange(100) as t:
         time.sleep(0.1)
 
 
-# In[ ]:
-
-
 
 from tqdm import tqdm
 import time
@@ -94,7 +88,6 @@ with tqdm(total=10,bar_format="{postfix[0]}{postfix[1][value]:>9.3g}",
 
 # # 多层循环进度条
 
-# In[ ]:
 
 
 # 通过tqdm也可以很简单的实现嵌套循环进度条的展示
@@ -149,8 +142,6 @@ def find_files_recursively(path, show_progress=True):
 find_files_recursively("d:/")
 
 
-# # 在pandas中使用tqdm
-# In[5]:
 import pandas as pd
 import time
 import numpy as np
