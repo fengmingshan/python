@@ -21,22 +21,6 @@ def read_csv_partly(file):
         yield df_tmp
 
 
-def chose_color(rsrp):
-    if rsrp >= -80:
-        color = 'darkblue'
-    if -80 > rsrp >= -95:
-        color = 'blue'
-    elif -95 > rsrp >= -105:
-        color = 'green'
-    elif -105 > rsrp >= -115:
-        color = 'yellow'
-    elif -115 > rsrp >= -125:
-        color = 'red'
-    elif -125 > rsrp:
-        color = 'black'
-    return color
-
-
 list_df =[]
 i = 1
 for df in read_csv_partly(file_name):
@@ -51,13 +35,7 @@ cols = ['SDATE', 'CITY', 'SC_ECI', 'GRIDX', 'GRIDY', 'NUM_HOURS', 'AVG_SCRSRP',
 
 df_res['CELLID'] = df_res['SC_ECI'].map(lambda x:x%256)
 df_res['eNB'] = df_res['SC_ECI'].map(lambda x:x//256)
-df_res['color'] =  df_res['AVG_SCRSRP'].map(lambda x:chose_color(x))
 df_res['cell_ind'] = df_res['eNB'].map(str) + '_' + df_res['CELLID'].map(str)
 
 with open('预处理后栅格数据.csv','w', newline = '') as f:
     df_res.to_csv(f,index =False)
-#df_ql = pd.read_excel('ql_eci.xlsx')
-#
-#df_QL = df_res[df_res['SC_ECI'].isin(df_ql['ECI'])]
-#with open('栅格化数据_麒麟区.csv','w',newline = '') as f:
-#    df_QL.to_csv(f,index =False)
