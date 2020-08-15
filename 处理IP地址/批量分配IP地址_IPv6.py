@@ -28,19 +28,19 @@ def get_ip_list(begin_ip, count, netmask):
     return ip_list
 
 if __name__ == "__main__":
-    ipv6_list  = get_ip_list(begin_ip = '240e:184:c00c::1000', count=15, netmask=120)
+    ipv6_list  = get_ip_list(begin_ip = '240e:184:c00c:0000::', count=15, netmask=126)
     print('批量分配业务IPv6地址:')
     print('============================')
     print(ipv6_list)
 
     ip_list = ipv6_list.strip().split('\n')
-    ip_num = [IP(x+'/120').len() for x in ip_list]
-    ip_add_begin = [str(IP(x+'/120')[2]) for x in ip_list]
-    ip_add_end =  [str(IP(x+'/120')[-2]) for x in ip_list]
+    ip_num = [IP(x+'/126').len() for x in ip_list]
+    ip_add_begin = [str(IP(x+'/126')[2]) for x in ip_list]
+    ip_add_end =  [str(IP(x+'/126')[-2]) for x in ip_list]
 
     df_ip = pd.DataFrame({
             'IP地址段':ip_list,
-            '掩码':120,
+            '掩码':126,
             '数量':ip_num,
             '起始地址':ip_add_begin,
             '终止地址':ip_add_end,
