@@ -40,6 +40,7 @@ with open('./5G中级题库汇总版_修正格式.txt','r',encoding = 'utf-8') a
     answer =[x.strip().replace('\n','') for x in answer]
 
 df_questions = pd.DataFrame({
+    'no':range(1,len(questions)+1),
     'squence':squence,
     'question':question,
     'selection':selection,
