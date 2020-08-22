@@ -35,10 +35,10 @@ def calc_Distance(lon1,lat1,lon2,lat2):
 data_path = 'D:/_python小程序/根据经纬度计算基站间距离'
 os.chdir(data_path)
 
-source_cell_info = '铁塔站址.xlsx'
-destination_cell_info = '铁塔站址.xlsx'
+source_cell_info = '容量类.xlsx'
+destination_cell_info = '容量类_copy.xlsx'
 
-min_distance = 300
+min_distance = 3000
 
 
 df_source_cell = pd.read_excel(source_cell_info)

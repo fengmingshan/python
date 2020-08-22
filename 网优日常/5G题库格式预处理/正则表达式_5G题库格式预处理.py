@@ -10,7 +10,7 @@ import re
 import pandas as pd
 import os
 
-path = r'D:\_python小程序\处理5G题库格式'
+path = r'D:\_python小程序\5G题库格式预处理'
 os.chdir(path)
 
 with open('./5G中级题库汇总版_修正格式.txt','r',encoding = 'utf-8') as f:
@@ -47,7 +47,8 @@ df_questions = pd.DataFrame({
     'type':question_type,
     'question':question,
     'options':options,
-    'answer':answer
+    'answer':answer,
+    'source':'5G中级题库汇总版'
     })
 
 with open('5G中级题库汇总版.csv','w',newline = '',encoding = 'utf-8') as f:

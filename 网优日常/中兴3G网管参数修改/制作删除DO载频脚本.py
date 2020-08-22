@@ -25,7 +25,7 @@ if not os.path.exists('./指令输出'):
     os.mkdir('./指令输出')
 
 file_name = '曲靖BSS2_CM_载频无线参数表(DO).xls'
-del_file = '会泽退网小区.xlsx'
+del_file = '宣威退网小区.xlsx'
 df_delete = pd.read_excel(del_file)
 df_delete.drop_duplicates('cell_ind', keep ='first', inplace = True)
 
