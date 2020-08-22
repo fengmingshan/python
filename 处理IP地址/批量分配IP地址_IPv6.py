@@ -14,13 +14,13 @@ def get_ip_list(begin_ip, count, netmask):
     begin_ip = IP(begin_ip)
     ip_list += str(begin_ip) + '\n' #将第一个地址放入ip_列表中
     if begin_ip.version() == 4:
-        for i in range(count):
+        for i in range(count-1):
             ip = IP(begin_ip)
             new_ip = IP(ip.ip + 2 ** (32 - netmask))
             begin_ip =  str(new_ip)
             ip_list += begin_ip + '\n'
     else:
-        for i in range(count):
+        for i in range(count-1):
             ipv6 = IP(begin_ip)
             new_ipv6 = IP(ipv6.ip + 2 ** (128 - netmask))
             begin_ip =  str(new_ipv6)
@@ -30,14 +30,14 @@ def get_ip_list(begin_ip, count, netmask):
 
 if __name__ == "__main__":
     mask = 126
-    ipv6_list  = get_ip_list(begin_ip = '2408:8163:2200:10::', count=1, netmask = mask)
+    ipv6_list  = get_ip_list(begin_ip = '2408:8163:2200:10::1000', count=64, netmask = mask)
     print('批量分配业务IPv6地址:')
     print('============================')
     print(ipv6_list)
 
     ip_list = ipv6_list.strip().split('\n')
-    ip_num = [IP(x+'/{}'.format(mask)).len() for x in ip_list]
-    ip_add_begin = [str(IP(x+'/{}'.format(mask))[2]) for x in ip_list]
+    ip_num = [IP(x+'/{}'.format(mask)).len()-2 for x in ip_list]
+    ip_add_begin = [str(IP(x+'/{}'.format(mask))[1]) for x in ip_list]
     ip_add_end =  [str(IP(x+'/{}'.format(mask))[-2]) for x in ip_list]
 
     df_ip = pd.DataFrame({
