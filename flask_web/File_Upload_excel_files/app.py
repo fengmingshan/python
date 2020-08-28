@@ -12,6 +12,7 @@ from wtforms import SubmitField
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'I have a dream'
+
 work_path = 'D:/_python/python/flask_web/File_Upload_excel_files'
 os.chdir(work_path)
 if not os.path.exists('upload'):
@@ -24,9 +25,6 @@ configure_uploads(app, excels)
 patch_request_class(app)  # set maximum file size, default is 16MB
 
 
-class UploadForm(FlaskForm):
-    excel = FileField(validators=[FileAllowed(excels, u'Only allowed Excel files!'), FileRequired(u'Choose a file!')])
-    submit = SubmitField(u'Upload')
 
 
 @app.route('/', methods=['GET', 'POST'])
