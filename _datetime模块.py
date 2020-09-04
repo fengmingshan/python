@@ -55,9 +55,8 @@ weekday
 
 
 # 日期转换成周数
-s_date =
 week = datetime.strptime('2020-07-18','%Y-%m-%d').date().isocalendar()[1]
-week
+
 
 # dateTime类型和date类型可以直接做加1减1操作
 from datetime import timedelta

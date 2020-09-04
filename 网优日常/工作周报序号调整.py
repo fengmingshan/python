@@ -10,7 +10,7 @@ import os
 
 path = r'C:\Users\Administrator\Desktop'
 os.chdir(path)
-with open('第34周工作周报.txt') as f:
+with open('第35周工作周报_调整格式.txt') as f:
     content = f.read()
     graphs = content.split('\n\n')
     graph1 = graphs[0].split('\n')

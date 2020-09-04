@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <title>Upload File</title>
 <h1>Upload File</h1>
-{#<a href="{{ url_for('upload_file') }}">Upload</a> /#}
-{#<a href="{{ url_for('manage_file') }}">Manage</a>#}
+
 <hr>
 
+<a href = {{ url_for('download_file') }} style="color#666;font-size:16px;">下载文件</a>
+<br>
+<br>
 <form method="POST" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     {{ form.excel}}

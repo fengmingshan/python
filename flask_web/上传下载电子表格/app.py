@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import pandas as pd
-import time
-import hashlib
-
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, make_response, send_from_directory
 from flask_uploads import UploadSet,configure_uploads, IMAGES, patch_request_class
 from config import Config
 from form import UploadForm
@@ -31,17 +28,30 @@ def upload_file():
         #对文件进行重命名
         store_filename = '{}.{}'.format('tmp', file_postfix)
         #检查文件保存路径
-        if not os.path.exists(app.config['UPLOADED_EXCELS_DEST']):
-            os.makedirs(app.config['UPLOADED_EXCELS_DEST'])
-
-        path = os.path.join(app.config['UPLOADED_EXCELS_DEST'], store_filename)
+        if not os.path.exists(app.config['UPLOADS_DEFAULT_DEST']):
+            os.makedirs(app.config['UPLOADS_DEFAULT_DEST'])
         #保存文件
-        file_obj.save(path)
+        file_obj.save(app.config['UPLOADS_DEFAULT_DEST']+'/'+store_filename)
+
+        df = pd.read_excel(file_obj)
+        cols = df.columns
         success = True
+        return render_template('index.html', form=form, success=success, cols=cols)
     else:
         success = False
     return render_template('index.html', form=form, success=success)
 
+@app.route('/down', methods=['GET'])
+def download_file():
+    path = app.config['UPLOADS_DEFAULT_DEST']
+    df = pd.DataFrame({'col1':[1,2,3,4],'col2':[5,6,7,8]})
+    with pd.ExcelWriter(path + './download.xlsx' ) as f:
+        df.to_excel(f,index = False)
+    filename ='download.xlsx'
+    response = make_response(
+        send_from_directory(path, filename.encode('utf-8').decode('utf-8'), as_attachment=True))
+    response.headers["Content-Disposition"] = "attachment; filename={}".format(filename.encode().decode('latin-1'))
+    return response
 
 if __name__ == '__main__':
     app.run()
