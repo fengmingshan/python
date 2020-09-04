@@ -12,7 +12,7 @@ from sqlalchemy.orm import sessionmaker
 path = r'D:\2020年工作\_工作周报'
 os.chdir(path)
 
-week = 35
+week = 36
 
 engine_work = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/work_report?charset=utf8",
                             pool_recycle=7200)
@@ -24,7 +24,6 @@ work_report = session_work.execute(
         WHERE `周` = {week}
         AND `当前状态` != '待反馈'
         AND `项目类别` in ('优化','工程')
-        AND `工作类别` != '安排的工作'
         AND `工作类别` != '学习提升'
         ORDER BY `姓名`,`开始日期`)
         UNION
@@ -32,7 +31,6 @@ work_report = session_work.execute(
         WHERE `周` = {week}
         AND `当前状态` != '待反馈'
         AND `项目类别` = '维护'
-        AND `工作类别` != '安排的工作'
         AND `工作类别` != '学习提升'
         ORDER BY `姓名`,`开始日期`)'''.format(week = week)
 )
