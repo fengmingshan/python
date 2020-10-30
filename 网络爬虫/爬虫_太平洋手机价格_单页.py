@@ -8,7 +8,10 @@ Created on Tue Jul 28 08:49:17 2020
 import requests
 from bs4 import BeautifulSoup
 url = 'http://detail.zol.com.cn/cell_phone_index/subcate57_0_list_1_0_1_1_0_1.html'
-with requests.get(url) as response:
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"}
+
+with requests.get(url,headers = headers) as response:
     bs = BeautifulSoup(response.text, features='html5lib')
     items = bs.select('.list-box .list-item')
     for item in items:

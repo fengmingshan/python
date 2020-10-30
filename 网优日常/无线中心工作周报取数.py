@@ -8,11 +8,15 @@ Created on Sat Jun 27 16:39:39 2020
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from datetime import datetime
+
+week = datetime.now().date().isocalendar()[1]
+print(week)
 
 path = r'D:\2020年工作\_工作周报'
 os.chdir(path)
 
-week = 36
+week = 44
 
 engine_work = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/work_report?charset=utf8",
                             pool_recycle=7200)
@@ -36,7 +40,8 @@ work_report = session_work.execute(
 )
 
 wireless_report = session_work.execute(
-    '''SELECT * from `工作周报` WHERE `周` = {week}
+    '''SELECT * from `工作周报`
+        WHERE `周` = {week}
         AND `当前状态` != '待反馈'
         AND `工作类别` != '学习提升'
         AND `项目类别` in ('优化','工程')
@@ -54,9 +59,43 @@ maintain_report = session_work.execute(
 
 work_report = list(work_report)
 work_cotent = [x.工作内容 for x in work_report]
+work_cotent = [x.replace('（尚利娅）','') for x in work_cotent]
+work_cotent = [x.replace('（柳鹏）','') for x in work_cotent]
+work_cotent = [x.replace('（卢辉）','') for x in work_cotent]
+work_cotent = [x.replace('（鲁敏）','') for x in work_cotent]
+work_cotent = [x.replace('（帅波）','') for x in work_cotent]
+work_cotent = [x.replace('（程远辉）','') for x in work_cotent]
+work_cotent = [x.replace('(卢辉)','') for x in work_cotent]
+work_cotent = [x.replace('(鲁敏)','') for x in work_cotent]
+work_cotent = [x.replace('(帅波)','') for x in work_cotent]
+work_cotent = [x.replace('(程远辉)','') for x in work_cotent]
+work_cotent = [x.replace('卢辉','') for x in work_cotent]
+work_cotent = [x.replace('鲁敏','') for x in work_cotent]
+work_cotent = [x.replace('帅波','') for x in work_cotent]
+work_cotent = [x.replace('程远辉','') for x in work_cotent]
+work_cotent = [x.replace('：','') for x in work_cotent]
+work_cotent = [x.replace('今日完成','') for x in work_cotent]
+work_cotent = [x.replace('今日工作','') for x in work_cotent]
 
 wireless_report = list(wireless_report)
 wireless_cotent = [x.工作内容 for x in wireless_report]
+wireless_cotent = [x.replace('（尚利娅）','') for x in wireless_cotent]
+wireless_cotent = [x.replace('（柳鹏）','') for x in wireless_cotent]
+wireless_cotent = [x.replace('（卢辉）','') for x in wireless_cotent]
+wireless_cotent = [x.replace('（鲁敏）','') for x in wireless_cotent]
+wireless_cotent = [x.replace('（帅波）','') for x in wireless_cotent]
+wireless_cotent = [x.replace('（程远辉）','') for x in wireless_cotent]
+wireless_cotent = [x.replace('(卢辉)','') for x in wireless_cotent]
+wireless_cotent = [x.replace('(鲁敏)','') for x in wireless_cotent]
+wireless_cotent = [x.replace('(帅波)','') for x in wireless_cotent]
+wireless_cotent = [x.replace('(程远辉)','') for x in wireless_cotent]
+wireless_cotent = [x.replace('卢辉','') for x in wireless_cotent]
+wireless_cotent = [x.replace('鲁敏','') for x in wireless_cotent]
+wireless_cotent = [x.replace('帅波','') for x in wireless_cotent]
+wireless_cotent = [x.replace('程远辉','') for x in wireless_cotent]
+wireless_cotent = [x.replace('：','') for x in wireless_cotent]
+wireless_cotent = [x.replace('今日完成','') for x in wireless_cotent]
+wireless_cotent = [x.replace('今日工作','') for x in wireless_cotent]
 
 maintain_report = list(maintain_report)
 maintain_cotent = [x.工作内容 for x in maintain_report]

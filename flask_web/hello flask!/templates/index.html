@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人简介</title>
+</head>
+
+<body>
+    <h1>My name is {{ name }}.</h1>
+    <p style="font-size:22px;color:red">下面是条件语句的例子:</p>
+    {% if gender == 'male' %}
+    <p>I am a boy.</p>
+    {% else %}
+    <p>I am a girl.</p>
+    {% endif %}
+
+    <p>I am {{ age }} years old!</p>
+    <p>I like {{ interest }} !</p>
+
+    <p style="font-size:22px;color:red">下面是for循环的例子:</p>
+    <p>My workmates are:</p>
+    {% for  person  in  workmates %}
+    <p> {{ person }} </p>
+    {% endfor %}
+</body>
+</html>
