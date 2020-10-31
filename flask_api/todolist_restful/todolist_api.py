@@ -10,17 +10,18 @@ from flask_restful import reqparse, abort, Api, Resource
 
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 api = Api(app)
 
 TODOS = {
-    'todo1': {'task': 'build an API'},
-    'todo2': {'task': 'buy some milk'},
-    'todo3': {'task': 'watch NBA'},
+    'todo1': {'task': u'build an API'},
+    'todo2': {'task': u'buy some milk'},
+    'todo3': {'task': u'watch NBA'},
 }
 
 def abort_if_todo_doesnt_exist(todo_id):
     if todo_id not in TODOS:
-        abort(404, message="待办事项 {} 不存在".format(todo_id))
+        abort(404, message="todo_id {} not exist".format(todo_id))
 
 parser = reqparse.RequestParser()
 parser.add_argument('task')
@@ -58,7 +59,7 @@ class TodoList(Resource):
         return TODOS[todo_id], 201
 
 # Actually setup the Api resource routing here
-api.add_resource(TodoList, '/todos')
+api.add_resource(TodoList, '/todos/')
 api.add_resource(Todo, '/todos/<todo_id>')
 
 
