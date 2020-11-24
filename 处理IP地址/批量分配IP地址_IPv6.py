@@ -30,7 +30,7 @@ def get_ip_list(begin_ip, count, netmask):
 
 if __name__ == "__main__":
     mask = 126
-    ipv6_list  = get_ip_list(begin_ip = '2408:8163:2200:10::1000', count=64, netmask = mask)
+    ipv6_list  = get_ip_list(begin_ip = '240e:184:c00c::1700', count=64, netmask = mask)
     print('批量分配业务IPv6地址:')
     print('============================')
     print(ipv6_list)

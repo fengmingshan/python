@@ -14,9 +14,9 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:a123456@localhost:3306/test123?charset=utf8"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SQLALCHEMY_COMMMIT_ON_TEARDOWN'] = True
+
 #建立数据库对象
-db = SQLAlchemy(app)
-#db = SQLAlchemy(app, use_native_unicode='utf8')
+db = SQLAlchemy(app, use_native_unicode='utf8')
 
 #建立数据库类，用来映射数据库表,将数据库的模型作为参数传入
 class User(db.Model):
