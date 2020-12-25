@@ -7,12 +7,12 @@ Created on Mon Aug 24 14:54:46 2020
 
 import os
 
-path= r'C:\Users\Administrator\Desktop'
+path= 'D:/'
 os.chdir(path)
 
-db_name = '5g_bts_info'
+db_name = 'rsrp_grid_09'
 
-with open('5g_bts_info.sql', 'r',encoding ='utf-8') as f:
+with open('rsrp_grid_10.sql', 'r',encoding ='utf-8') as f:
     content = f.read()
     with open('5g_bts_info_new.sql', 'w',encoding ='gbk') as f:
         f.writelines('DROP DATABASE IF EXISTS {};'.format(db_name)+'\n')

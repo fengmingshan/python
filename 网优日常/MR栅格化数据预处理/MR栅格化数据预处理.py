@@ -8,10 +8,10 @@ import pandas as pd
 import os
 
 
-path =r'D:\pytho小程序\MR栅格化数据预处理'
+path =r'D:\_python小程序\MR栅格化数据预处理'
 os.chdir(path)
 
-file_name = 'YX小区栅格9月.csv'
+file_name = 'QJ小区栅格10月.csv'
 # =============================================================================
 # 通过生成器读取大型 excel 文件
 # =============================================================================
@@ -54,7 +54,7 @@ df_res['eNB'] = df_res['SC_ECI'].map(lambda x:x//256)
 df_res['cell_ind'] = df_res['eNB'].map(str) +'_'+df_res['CELLID'].map(str)
 df_res['color'] =  df_res['AVG_SCRSRP'].map(lambda x:chose_color(x))
 
-with open('YX小区栅格9月.csv','w', newline = '') as f:
+with open('QJ小区栅格10月_处理后.csv','w', newline = '') as f:
     df_res.to_csv(f,index =False)
 #df_ql = pd.read_excel('ql_eci.xlsx')
 #
