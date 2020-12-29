@@ -262,6 +262,7 @@ df2 = df1.groupby(by='BTS', as_index=False).sum()
 df3 = df1.groupby(by='BTS').sum()
 df4 = df1.groupby(by='BTS')[['呼叫话务量(Erl)', 'DO最大用户数']].sum()
 df4 = df1.groupby(by='col1', as_index=False)[['col2', 'col3']].sum()
+df4 = df1.groupby(by='col1', as_index=False)[['col2', 'col3']].agg({'col2':len,'col3':np.sum})
 
 # =============================================================================
 # 数据透视表

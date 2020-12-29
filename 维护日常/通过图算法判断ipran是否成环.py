@@ -93,36 +93,3 @@ df_num.rename(columns ={
 )
 df_port_right = pd.merge(df_port_right, df_num, how ='left', on = '设备名称')
 df_port_right['关联基站总数'] = df_port_right['下挂基站数'] + df_port_right['关联基站数量']
-df_many_bts = df_port_right[(df_port_right['关联基站总数']>=7)&(df_port_right['关联A设备数量']>2)]
-df_many_A = df_port_right[df_port_right['关联A设备数量']>=4]
-li_many_bts = list(df_many_bts['设备名称'].unique())
-li_many_A = list(df_many_A['设备名称'].unique())
-li_key_node = list(set(li_many_bts +li_many_A))
-df_key_node = df_port_right[df_port_right['设备名称'].isin(li_key_node)]
-
-
-
-with pd.ExcelWriter('传输节点.xlsx') as f:
-    df_key_node.to_excel(f,index =False)
-
-with pd.ExcelWriter('原始数据.xlsx') as f:
-    df_port_has_describe.to_excel(f,index =False)
-
-# 创建图
-#graph = {}
-#equipment_list = list(df_port_right['设备id'].unique())
-#for equip in equipment_list:
-#    graph[equip] = list(df_port_right['相邻A设备id'][df_port_right['设备id']==equip].map(int))
-
-
-# 筛选出吊扣描述错误的站点
-#df_port['描述错误'] = ''
-#for item in wrong_host_list:
-#    df_port['描述错误'][df_port['端口描述'].str.contains(item)&~df_port['端口描述'].isnull()] = '是'
-
-#df_port_wrong = df_port[df_port['描述错误']=='是']
-#with pd.ExcelWriter('端口描述主机名错误.xlsx') as f:
-#    df_port_wrong.to_excel(f, index =False)
-
-
-
