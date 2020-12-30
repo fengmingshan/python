@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Dec 25 17:13:06 2020
+Created on Wed Dec 30 23:22:37 2020
 
 @author: Administrator
 """
 
+import networkx as nx
 import pandas as pd
 import os
-import numpy as np
+
 
 path = r'D:\_python小程序\通过ipran端口数据判断相邻节点'
 like_file = 'ipran_link.xls'
 equipment_file = 'ipran_equipment.xls'
 bts_file = 'ipran_bts.xls'
+on_loop_file = '成环的设备.xlsx'
+not_on_loop_file = '未成环的设备.xlsx'
 
-os.chdir(path)
+G = nx.Graph()
+
+df_on_loop = pd.read_excel(on_loop_file)
+df_not_on_loop = pd.read_excel(not_on_loop_file)
 
 #处理全网基站业务数据，统计全网A设备下挂基站数量
 df_bts = pd.read_excel(bts_file)
@@ -95,37 +101,6 @@ df_link = df_link[['A端设备名称',
                    'BB对'
 ]]
 
-def find_loop(num_dict):
-    global graph
-    one_neighbor = [k for k,v in num_dict.items() if v ==1]
-    for node in one_neighbor:
-        num_dict.pop(node)
-        new_dict = {k:(v-1 if node in graph[k] else v) for k,v in num_dict.items()}
-        return new_dict
-
-on_loop_dict = {}
-for BB in df_link['BB对'].unique():
-    df_tmp = df_link[df_link['BB对']== BB]
-
-    # 创建图
-    graph = {}
-    id_list = list(df_tmp['A端设备id'].unique())
-    for id_num in id_list:
-        graph[id_num] = list(df_tmp['B端设备id'][df_tmp['A端设备id']==id_num].map(int))
-    neighbor_num_dict = {k:len(v) for k,v in graph.items()}
-
-    # 通过循环剪枝，剪去末梢node，直到图中剩余的node都在环上
-    while 1 in neighbor_num_dict.values():
-        neighbor_num_dict = find_loop(neighbor_num_dict)
-    on_loop_node = {k:reverse_equip_dict[k] for k in neighbor_num_dict.keys()}
-    on_loop_dict.update(on_loop_node)
-
-df_on_loop =pd.DataFrame({'设备id':list(on_loop_dict.keys()), '设备名称':list(on_loop_dict.values())})
-with pd.ExcelWriter('成环的设备.xlsx') as f:
-    df_on_loop.to_excel(f, index =False)
-
-df_not_on_loop = df_link[~df_link['A端设备名称'].isin(on_loop_dict.values())]
-with pd.ExcelWriter('未成环的设备.xlsx') as f:
-    df_not_on_loop.to_excel(f, index =False)
-
+G.add_nodes_from(df_link['A端设备id'])
+G.add_edges_from(zip(df_link['A端设备id'], df_link['B端设备id']))
 
