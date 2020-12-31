@@ -124,7 +124,7 @@ df_on_loop =pd.DataFrame({'设备id':list(on_loop_dict.keys()), '设备名称':l
 with pd.ExcelWriter('成环的设备.xlsx') as f:
     df_on_loop.to_excel(f, index =False)
 
-df_not_on_loop = df_link[~df_link['A端设备名称'].isin(on_loop_dict.values())]
+df_not_on_loop = df_link[['A端设备名称','A端设备id']][~df_link['A端设备名称'].isin(on_loop_dict.values())]
 with pd.ExcelWriter('未成环的设备.xlsx') as f:
     df_not_on_loop.to_excel(f, index =False)
 

@@ -8,12 +8,13 @@ Created on Wed Dec 30 23:22:37 2020
 import networkx as nx
 import pandas as pd
 import os
-
+from copy import deepcopy
 
 path = r'D:\_python小程序\通过ipran端口数据判断相邻节点'
 like_file = 'ipran_link.xls'
 equipment_file = 'ipran_equipment.xls'
 bts_file = 'ipran_bts.xls'
+os.chdir(path)
 
 G = nx.Graph()
 
@@ -116,7 +117,7 @@ for BB in df_link['BB对'].unique():
     while 1 in [G_tmp.degree(x) for x in G_tmp.nodes()]:
         G_tmp = find_loop(G_tmp)
     on_loop_list = on_loop_list + list(G_tmp.nodes())
-
+on_loop_list = list(set(on_loop_list))
 #with pd.ExcelWriter('成环节点.xlsx') as f:
 #    df_on_loop.to_excel(f, index =False)
 
@@ -137,7 +138,14 @@ G.remove_nodes_from(b_device_node)
 
 # 只选A设备，使用广度搜索算法 bfs，生成环带链的节点关联的数
 loop_with_chain = [x for x in loop_with_chain if x not in b_device_node]
-loop_with_chain_tree_dict = {x:list(nx.bfs_tree(G,x)) for x in loop_with_chain}
+loop_with_chain_tree_dict = {}
+# 要生成环带链节点的树，要把在环上的其他节点全部删除，只考虑自己和不成环的节点
+for node in loop_with_chain:
+    li_tmp = deepcopy(on_loop_list)
+    G_tmp = G.copy()
+    li_tmp.remove(node)
+    G_tmp.remove_nodes_from(li_tmp)
+    loop_with_chain_tree_dict[node] = list(nx.bfs_tree(G_tmp,node))
 
 # 翻译环带链下挂A设备的名字
 loop_with_chain_name_dict ={
@@ -155,7 +163,7 @@ loop_with_chain_bts_num_dict ={
 core_node_dict = {
     k:v
     for k,v in loop_with_chain_bts_num_dict.items()
-    if v>=8
+    if v>=7
 }
 
 # 翻译关键节点的名字
