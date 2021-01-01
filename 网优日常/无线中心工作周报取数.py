@@ -16,7 +16,7 @@ print(week)
 path = r'D:\2020年工作\_工作周报'
 os.chdir(path)
 
-week = 52
+week = 53
 
 engine_work = create_engine("mysql+pymysql://root:a123456@218.63.75.43:3306/work_report?charset=utf8",
                             pool_recycle=7200)
